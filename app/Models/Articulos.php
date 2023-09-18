@@ -14,8 +14,14 @@ class Articulos extends Model
     protected $fillable = [
         "name",
         "stock",
+        "id_categoria",
 
     ];
+
+    public function servicios()
+    {
+        return $this->belongsToMany('app\Models\Servicio', 'servicio_articulo', 'articulo_id', 'servicio_id')->withPivot('stock_usado');
+    }
 
     /**
      * Mutaciones de fecha.

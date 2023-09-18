@@ -7,6 +7,7 @@ use App\Models\Cursos;
 use App\Models\Empresa;
 use App\Models\Presupuesto;
 use App\Models\Facturas;
+use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Carbon\Carbon;
@@ -74,6 +75,7 @@ class CreateComponent extends Component
 
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
 
         // Alertas de guardado exitoso
         if ($facturasSave) {

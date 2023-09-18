@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
-@section('content')
+@section('title', 'Opciones')
 
-@livewire('settings-component')
+@section('head')
+@vite(['resources/sass/productos.scss'])
+@vite(['resources/sass/alumnos.scss'])
+<meta charset="UTF-8">
+@endsection
 
+@section('content-principal')
+<div>
+    @livewire('settings-component')
+</div>
 @endsection

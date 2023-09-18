@@ -16,7 +16,7 @@
     <!-- end page-title -->
 
     <div class="row">
-        <div class="col-12">
+        <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
@@ -41,14 +41,38 @@
                                 @enderror
                             </div>
                         </div>
-                
-                        <div class="form-group row mt-3">
-                            <button type="submit" class="btn btn-primary btn-lg waves-effect waves-light">Guardar</button>
-                        </div> 
-                
                     </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <h5>Acciones</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Crear nuevo departamento</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@section('scripts')
+<script>
+        $("#alertaGuardar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Pulsa el botón de confirmar para crear el departamento.',
+                icon: 'warning',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('submit');
+                }
+            });
+        });
+    </script>
+@endsection

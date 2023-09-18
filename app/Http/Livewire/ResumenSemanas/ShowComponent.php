@@ -20,21 +20,12 @@ class ShowComponent extends Component
 {
     use LivewireAlert;
     // public $search;
-    public $day;
-    public $semanas = [];
-    public $programasDia;
-    public $clientes;
+    public $dias = [];
+    public $semana;
+    public $monitores_datos;
+    public $fechas = [];
+    public $presupuestos;
     public $eventos;
-    public $monitores;
-    public $i_semana;
-
-    public $selectedEventos = [];
-
-    public $programasEvento;
-    public $servicioPrograma;
-    public $resumenDia = [];
-    public $serviciosEvento;
-    public $serviciosPrograma;
 
     protected $listeners = [
         'loadWeek' => 'loadWeek',
@@ -44,117 +35,34 @@ class ShowComponent extends Component
 
     public function mount()
     {
-
-
-        // dd($this->resumenDia);
-        //    dd($this->programasDia);
+        $this->presupuestos = Presupuesto::all();
+        $this->monitores_datos = Monitor::all();
     }
 
-    public function loadMonth()
-    {
-        $day = Carbon::parse($this->day);
-        $daysMonth = $day->daysInMonth;
-        $strDay = $this->day;
-        $endDayDateStr = substr_replace($strDay, strval($daysMonth), strlen($strDay) - 2, strlen($strDay));
-        $firstDayDateStr = substr_replace($strDay, "01", strlen($strDay) - 2, strlen($strDay));
-        $endDayDate = Carbon::parse($endDayDateStr);
-        $firstDayDate = Carbon::parse($firstDayDateStr);
-
-
-        $period = CarbonPeriod::create($firstDayDate, $endDayDate);
-        $semana = [];
-        foreach ($period as $i => $date) {
-
-            $semana[$date->weekNumberInMonth][$date->format("Y-m-d")] = $date;
-        }
-        $this->semanas = $semana;
-    }
-
-    public function loadWeek()
-    {
-        $day = Carbon::parse($this->day);
-        $weekStartDate = $day->startOfWeek()->format('Y-m-d H:i');
-        $weekEndDate = $day->endOfWeek()->format('Y-m-d H:i');
-        $period = CarbonPeriod::create($weekStartDate, $weekEndDate);
-        $semana = [];
-        foreach ($period as $i => $date) {
-
-            $semana[$i] = $date->format("Y-m-d");
-        }
-
-        $this->semanas[count($this->semanas)] = $semana;
-        // dd($semana);
-    }
-
-    public function getTotalMonitores($indice)
-    {
-        $total = 0;
-        // dd($this->resumenDia[$indice]["servicios"]);
-        $servicios =  $this->resumenDia[$indice]["servicios"];
-
-        foreach ($servicios as $servicio) {
-            foreach ($servicio["programas"] as $programa) {
-                $total += $programa["precioMonitor"];
-            }
-        }
-
-
-        return $total;
-    }
-    public function getTotalMonitoresPagado($indice)
-    {
-        $total = 0;
-        // dd($this->resumenDia[$indice]["servicios"]);
-        $servicios =  $this->resumenDia[$indice]["servicios"];
-
-        foreach ($servicios as $servicio) {
-            foreach ($servicio["programas"] as $programa) {
-                $total += $programa["pagado"];
-            }
-        }
-
-
-        return $total;
-    }
-    public function getTotalMonitoresDesplazamiento($indice)
-    {
-        $total = 0;
-        // dd($this->resumenDia[$indice]["servicios"]);
-        $servicios =  $this->resumenDia[$indice]["servicios"];
-
-        foreach ($servicios as $servicio) {
-            foreach ($servicio["programas"] as $programa) {
-                $total += $programa["costoDesplazamiento"];
-            }
-        }
-
-
-        return $total;
-    }
-
-    public function getGastos($indice)
-    {
-        $monitores = $this->getTotalMonitores($indice);
-        $desplazamiento = $this->getTotalMonitoresDesplazamiento($indice);
-
-        // Todo gastos seguridad social y material
-
-        $total = $monitores + $desplazamiento;
-        return $total;
-    }
-
-    public function getBalance($indice)
-    {
-        $gastos = $this->getGastos($indice);
-        $ingresos = $this->resumenDia[$indice]["presupuesto"]["precioFinal"];
-        $total = $ingresos - $gastos;
-
-        return $total;
-    }
 
     public function render()
     {
 
         return view('livewire.resumen-semana.show-component');
+    }
+
+    public function cambioSemana()
+    {
+        $this->fechas = [];
+        $this->dias = [];
+
+        list($year, $week) = explode('-W', $this->semana);
+
+        $fechaInicio = Carbon::now()->setISODate($year, $week, 1); // El 1 al final establece el día de inicio de la semana a lunes
+        for ($i = 0; $i < 7; $i++) {
+            $this->fechas[] = $fechaInicio->copy()->addDays($i)->toDateString();
+        }
+        $this->eventos = Evento::whereBetween('diaEvento', [$this->fechas[0], $this->fechas[6]])->get();
+
+        foreach ($this->fechas as $diaIndex => $dia) {
+            $date = Carbon::parse($dia);
+            $formattedDate = $date->isoFormat('dddd, D [de] MMMM [de] Y');
+            $this->dias[$diaIndex] = str_replace('s畸bado', 'sábado', $formattedDate);  // lunes, 21 de agosto de 2023
+        }
     }
 }

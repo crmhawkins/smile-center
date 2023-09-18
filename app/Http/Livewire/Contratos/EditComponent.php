@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Contratos;
 
 use App\Models\Evento;
 use App\Models\Servicio;
+use App\Models\ServicioPack;
 use App\Models\Cliente;
 use App\Models\Contrato;
 use App\Models\MetodoPago;
@@ -13,10 +14,18 @@ use App\Models\Monitor;
 use App\Models\Empresa;
 use App\Models\Presupuesto;
 use App\Models\Programa;
+use App\Models\User;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use IntlDateFormatter;
+use Carbon\Carbon;
 
 class EditComponent extends Component
 {
@@ -29,6 +38,7 @@ class EditComponent extends Component
 
     public $presupuestos;
     public $presupuesto;
+    public $fechaContrato;
     public $id_presupuesto;
 
     //contrato Servicios
@@ -134,16 +144,16 @@ class EditComponent extends Component
     public $total;
     public $precioBase;
     public $entrega;
-    public $metodosPago;
+    public $packs;
     public $metodoPago;
     public $metodoTransferencia;
-    public $cuentas;
+    public $cliente;
     public $cuentaTransferencia;
 
     //Descuentos
     public $descuento = 0;
     // public $descTotal = 0;
-    public $entregaDiscount;
+    public $firma;
     public $totalDiscount;
 
     //triggers
@@ -155,7 +165,7 @@ class EditComponent extends Component
     public $addObservaciones = false;
 
 
-    public $fechaContrato;
+    public $diaMostrar;
 
     //Consentimiento
     public $authImagen = 0;
@@ -170,29 +180,37 @@ class EditComponent extends Component
     {
         $this->servicios = Servicio::all();
         $this->clientes = Cliente::all();
-
         $this->empresa = Empresa::find("1");
-
         $this->presupuestos = Presupuesto::all();
+        $this->contrato = Contrato::find($this->identificador);
 
-        //Autoincrementa automaticamente el numero del contrato antes de que se cree
-
-        $this->nContrato = Contrato::max("id") + 1;
-        $this->monitores = Monitor::all();
-        $this->metodosPago = MetodoPago::all();
-        $this->cuentas = CuentaBancaria::all();
-
-        $this->metodoTransferencia = $this->metodosPago->where("nombre", "Transferencia")->first()->id;
-
-        $this->listaServicios = [];
-        $this->dia = $this->diaEvento;
-        $this->fechaContrato = now();
-
-        $this->loadContrato();
-        
+        $this->nContrato = $this->contrato->id;
+        $this->dia = $this->contrato->dia;
+        $this->firma = $this->contrato->cuentaTransferencia;
+        $this->observaciones = $this->contrato->observaciones;
+        $this->authImagen = $this->contrato->authImagen;
+        $this->authMenores = $this->contrato->authMenores;
+        $this->metodoPago = $this->contrato->metodoPago;
+        $this->id_presupuesto = $this->contrato->id_presupuesto;
+        $this->diaMostrar = Carbon::now()->locale('es_ES')->isoFormat('D [de] MMMM [de] Y');
     }
 
-    public function loadContrato(){
+
+    public function render()
+    {
+        if ($this->id_presupuesto != 0) {
+            $this->presupuesto = Presupuesto::find($this->id_presupuesto);
+            $this->cliente = Cliente::where('id', Presupuesto::find($this->id_presupuesto)->id_cliente)->first();
+            $this->evento = Evento::where('id', Presupuesto::find($this->id_presupuesto)->id_evento)->first();
+            $this->servicios = $this->presupuesto->servicios()->withPivot('numero_monitores', 'precio_final', 'tiempo', 'hora_inicio', 'hora_finalizacion')->get();
+            $this->packs = $this->presupuesto->packs()->withPivot('numero_monitores', 'precio_final')->get();
+        }
+
+        return view('livewire.contratos.edit-component', ['presupuesto' => $this->presupuesto, 'cliente' => $this->cliente, 'evento' => $this->evento, 'servicios' => $this->servicios, 'packs' => $this->packs]);
+    }
+
+    public function loadContrato()
+    {
         $this->contrato = Contrato::find($this->identificador);
         $this->id_presupuesto = $this->contrato->id_presupuesto;
         $this->loadPresupuesto($this->id_presupuesto);
@@ -206,14 +224,14 @@ class EditComponent extends Component
     {
         $this->emit("refresh");
         $this->loadPrice();
-
     }
 
-    public function loadPrice(){
+    public function loadPrice()
+    {
         $this->total = Presupuesto::find($this->id_presupuesto)->precioFinal;
         // dd($this->total);
     }
-    
+
     public function setupEvento($id)
     {
         $this->evento = Evento::find($id);
@@ -292,7 +310,6 @@ class EditComponent extends Component
         $this->trato = $cliente->trato;
         $this->nombre = $cliente->nombre;
         $this->apellido = $cliente->apellido;
-      
     }
 
 
@@ -376,53 +393,55 @@ class EditComponent extends Component
     }
 
 
-    public function render()
-    {
-        return view('livewire.contratos.edit-component');
-    }
 
     // Al hacer submit en el formulario
-    public function submit()
+    public function update()
     {
-
-        // $servicios = $this->submitServicioList();
-
-        // if ($servicios) {
-
-            // Validación de datos
-            $validatedData = $this->validate(
-                [
-                    "id_presupuesto" => "required",
-                    'metodoPago' => 'required',
-                    'cuentaTransferencia' => $this->isTransferencia ? 'required' : '',
-                    'total' => 'required',
-                    'responsableTratamiento' => 'required',
-                    'authImagen' => 'required',
-                    'authMenores' => 'required',
-                ],
-                // Mensajes de error
-                [
-                    'metodoPago.required' => 'La contraseña es obligatoria.',
-                    'cuentaTransferencia.required' => 'La cuenta es obligatoria',
-                    'total.required' => 'El lugar es obligatorio.',
-                    'responsableTratamiento.required' => 'La localidad es obligatoria.',
-                    'authImagen.required' => 'La localidad es obligatoria.',
-                    'authMenores.required' => 'La localidad es obligatoria.',
-                ]
-            );
+        $firmaRuta = 'firmas/' . Carbon::now()->format('Y-m-d_H-i-s') . '.png';
+        Storage::disk('public')->put($firmaRuta, base64_decode(Str::of($this->firma)->after(',')));
+        $this->cuentaTransferencia = $firmaRuta;
+        // Validación de datos
+        $validatedData = $this->validate(
+            [
+                "id_presupuesto" => "required",
+                'metodoPago' => 'required',
+                'cuentaTransferencia' => 'required',
+                'observaciones' => 'nullable',
+                'authImagen' => 'required',
+                'authMenores' => 'required',
+                'dia' => 'required'
+            ],
+            // Mensajes de error
+            [
+                'metodoPago.required' => 'La contraseña es obligatoria.',
+                'cuentaTransferencia.required' => 'La cuenta es obligatoria',
+            ]
+        );
 
 
 
 
-            // Guardar datos validados
-            $contrato = Contrato::find($this->identificador);
-            $contratoSave = $contrato->update(array_merge($validatedData, ["dia" => $this->fechaContrato]));
+        // Guardar datos validados
+        $contrato = Contrato::find($this->identificador);
+        $contratoSave = $contrato->update($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 15, $this->identificador));
 
 
-            // Alertas de guardado exitoso
-            if ($contratoSave) {
+        // Alertas de guardado exitoso
+        if ($contratoSave) {
 
-                $this->alert('success', '¡Contrato registrado correctamente!', [
+            if ($this->imprimir == 1) {
+                $this->alert('success', '¡Contrato actualizado correctamente!', [
+                    'position' => 'center',
+                    // 'timer' => 1500,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmedImprimir',
+                    'confirmButtonText' => 'Imprimir contrato',
+                    // 'timerProgressBar' => true,
+                ]);
+            } else {
+                $this->alert('success', '¡Contrato actualizado correctamente!', [
                     'position' => 'center',
                     // 'timer' => 1500,
                     'toast' => false,
@@ -431,13 +450,14 @@ class EditComponent extends Component
                     'confirmButtonText' => 'ok',
                     // 'timerProgressBar' => true,
                 ]);
-            } else {
-                $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
-                    'position' => 'center',
-                    'timer' => 3000,
-                    'toast' => false,
-                ]);
             }
+        } else {
+            $this->alert('error', '¡No se ha podido guardar la información del contrato!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
         // } else {
         //     $this->alert('error', 'Se han insertado ' . count($servicios) . ' servicios', [
         //         // 'showConfirmButton' => true,
@@ -452,15 +472,115 @@ class EditComponent extends Component
     public function getListeners()
     {
         return [
+            'submitImprimir',
+            'confirmedImprimir',
+            'update',
             'confirmed',
+            'destroy',
         ];
     }
 
     // Función para cuando se llama a la alerta
     public function confirmed()
     {
-        // Do something
-        // return redirect()->route('eventos.index');
         return redirect()->route('contratos.index');
+    }
+
+    public function submitImprimir()
+    {
+        $this->imprimir = 1;
+        $this->update();
+    }
+    public function destroy()
+    {
+        $contrato = Contrato::find($this->identificador);
+
+        event(new \App\Events\LogEvent(Auth::user(), 16, $contrato->id));
+
+        $deleteContrato = $contrato->delete();
+
+        // Alertas de guardado exitoso
+        if ($deleteContrato) {
+            $this->alert('success', 'Contrato eliminado correctamente!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido actualizar la información del presupuesto!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+    public function confirmedImprimir()
+    {
+
+        $this->diaMostrar = Carbon::now()->locale('es_ES')->isoFormat('D [de] MMMM [de] Y');
+        $presupuesto = Presupuesto::find($this->id_presupuesto);
+        $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
+        $evento = Evento::where('id', $presupuesto->id_evento)->first();
+        $packs = ServicioPack::all();
+        $gestor = User::where('id', $presupuesto->gestor_id)->first();
+
+        foreach ($presupuesto->servicios()->get() as $servicio) {
+            $listaServicios[] = ['id' => $servicio->id, 'nombre' => $servicio->nombre, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
+        }
+
+        foreach ($presupuesto->packs()->get() as $pack) {
+            $listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precio_final' => $pack->pivot->precio_final, 'existente' => 1];
+        }
+
+        $filename = Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
+        $this->ruta = '/contratos/' . $filename;
+
+
+
+        if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) > 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
+                'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) <= 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
+                'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else if (count($presupuesto->packs) <= 0 && count($presupuesto->servicios) > 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
+                'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
+                'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        }
+
+
+        $path = public_path('contratos');
+
+        if (!File::exists($path)) {
+            File::makeDirectory($path, $mode = 0777, true, true);
+        }
+
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+
+        $this->confirmed();
+
+        return response()->streamDownload(
+            fn () => print($pdf),
+            $filename
+        );
     }
 }

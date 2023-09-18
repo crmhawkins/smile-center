@@ -16,7 +16,7 @@
     <!-- end page-title -->
 
     <div class="row">
-        <div class="col-12">
+        <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
                     <form wire:submit.prevent="update">
@@ -40,17 +40,46 @@
                                     </style>
                                 @enderror
                             </div>
-                        </div>
-                
-                        <div class="form-group row mt-3">
-                            <button type="submit" class="btn btn-primary btn-lg waves-effect waves-light">Guardar</button>
-                            <button wire:click="destroy" class="btn btn-danger btn-lg waves-effect waves-light mt-2">Eliminar</button>
-                        </div> 
-                
+                        </div>             
                     </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <h5>Acciones</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
+                                Artículo</button>
+                        </div>
+                        <div class="col-12">
+                            <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Eliminar
+                                Artículo</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+        $("#alertaGuardar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Pulsa el botón de confirmar para guardar los datos nuevos del departamento..',
+                icon: 'warning',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('update');
+                }
+            });
+        });
+    </script>
+@endsection
 

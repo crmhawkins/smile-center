@@ -7,6 +7,8 @@ use App\Models\User;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class CreateComponent extends Component
 {
@@ -20,7 +22,7 @@ class CreateComponent extends Component
     public $despartamentos;
     public $password;
     public $email;
-    public $user_department_id;
+    public $user_department_id = 1;
     public $inactive;
 
 
@@ -36,6 +38,7 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+        $this->password = Hash::make($this->password);
         // Validación de datos
         $validatedData = $this->validate([
             'name' => 'required',
@@ -62,6 +65,7 @@ class CreateComponent extends Component
         // Guardar datos validados
         $validatedData['inactive'] = 0;
         $usuariosSave = User::create($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 26, $usuariosSave->id));
 
         // Alertas de guardado exitoso
         if ($usuariosSave) {
@@ -88,6 +92,7 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
+            'submit'
         ];
     }
 

@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
-@section('content')
+@section('title', 'Editar Contrato {{$id}}')
 
-@section('title', 'Contrato')
+@section('head')
+    @vite(['resources/sass/productos.scss'])
+    @vite(['resources/sass/alumnos.scss'])
+@endsection
 
-
+@section('content-principal')
 <div>
     @livewire('contratos.edit-component', ['identificador'=>$id])
 </div>

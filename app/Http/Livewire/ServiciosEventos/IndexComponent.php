@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Servicios;
+namespace App\Http\Livewire\ServiciosEventos;
 
 use App\Models\Evento;
 use Livewire\Component;

@@ -17,7 +17,7 @@ use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\FacturasController;
+use App\Http\Controllers\GastoController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\EventoController;
@@ -25,6 +25,9 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\IvaController;
 use App\Http\Controllers\ProductosCategoriesController;
 use App\Http\Controllers\DepartamentosUserController;
+use App\Http\Controllers\TipoGastoController;
+use App\Http\Controllers\CategoriaEventoController;
+use App\Http\Controllers\TipoEventoController;
 
 
 use App\Http\Controllers\ServicioController;
@@ -37,10 +40,11 @@ use App\Http\Controllers\ResumenDiaController;
 use App\Http\Controllers\ResumenSemanaController;
 use App\Http\Controllers\ResumenMensualController;
 use App\Http\Controllers\ContratoController;
-
+use App\Http\Controllers\MapKitController;
 use App\Http\Livewire\Facturas\EditComponent;
 use App\Http\Livewire\Facturas\IndexComponent as FacturasIndexComponent;
 use App\Http\Livewire\Productos\IndexComponent;
+use App\Http\Controllers\AgendaController;
 
 use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
@@ -55,12 +59,12 @@ use FontLib\Table\Type\name;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Auth::routes();
 
 Route::name('inicio')->get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
-Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 //Route::get('/clients', [App\Http\Controllers\ClientController::class, 'index'])->name('clients.index');
@@ -69,7 +73,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
-    
+
 
     /* --------------------------------------- */
     // Budgets
@@ -103,7 +107,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('alumnos', [AlumnoController::class, 'index'])->name('alumnos.index');
     Route::get('alumnos-create', [AlumnoController::class, 'create'])->name('alumnos.create');
     Route::get('alumnos-edit/{id}', [AlumnoController::class, 'edit'])->name('alumnos.edit');
-    
+
     // Calendario
     Route::get('calendario', [CalendarioController::class, 'index'])->name('calendario.index');
     Route::get('calendario-create', [CalendarioController::class, 'create'])->name('calendario.create');
@@ -219,8 +223,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::get('settings/create', [SettingsController::class, 'create'])->name('settings.create');
-    Route::get('settings/edit', [SettingsController::class, 'edit'])->name('settings.edit');
+    Route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');
+
 
     // Settings
     Route::get('clients', [ClientsController::class, 'index'])->name('clients.index');
@@ -246,20 +250,21 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
      Route::get('/servicios-packs', [ServicioPackController::class, 'index'])->name('servicios-packs.index');
      Route::get('/servicios-packs-create', [ServicioPackController::class, 'create'])->name('servicios-packs.create');
      Route::get('/servicios-packs-edit/{id}', [ServicioPackController::class, 'edit'])->name('servicios-packs.edit');
-    
+
      // Monitores
      Route::get('/monitores', [MonitorController::class, 'index'])->name('monitor.index');
      Route::get('/monitores-create', [MonitorController::class, 'create'])->name('monitor.create');
      Route::get('/monitores-edit/{id}', [MonitorController::class, 'edit'])->name('monitor.edit');
-    
+
      // Programas
      Route::get('/programas', [ProgramaController::class, 'index'])->name('programas.index');
      Route::get('/programas-create', [ProgramaController::class, 'create'])->name('programas.create');
      Route::get('/programas-edit/{id}', [ProgramaController::class, 'edit'])->name('programas.edit');
-    
+
      // Clientes
      Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
      Route::get('/clientes-create', [ClienteController::class, 'create'])->name('clientes.create');
+     Route::get('/clientes-create-from-budget', [ClienteController::class, 'createFromBudget'])->name('clientes.create-from-budget');
      Route::get('/clientes-edit/{id}', [ClienteController::class, 'edit'])->name('clientes.edit');
 
      // Clientes
@@ -268,9 +273,32 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
      Route::get('/contratos-edit/{id}', [ContratoController::class, 'edit'])->name('contratos.edit');
 
      // Resumen Dia
-     Route::get('/resumen-dias', [ResumenDiaController::class, 'show'])->name('resumen-dias.show');
-     Route::get('/resumen-semanas', [ResumenSemanaController::class, 'show'])->name('resumen-semanas.show');
-     Route::get('/resumen-mensual/current', [ResumenMensualController::class, 'show'])->name('resumen-mensual.show');
-     Route::get('/resumen-mensual-edit/{identificador}', [ResumenMensualController::class, 'edit'])->name('resumen-mensual.edit');
-     Route::get('/resumen-mensual', [ResumenMensualController::class, 'index'])->name('resumen-mensual.index');
+     Route::get('/cuadrante-dias', [ResumenDiaController::class, 'show'])->name('resumen-dias.show');
+     Route::get('/cuadrante-semanas', [ResumenSemanaController::class, 'show'])->name('resumen-semanas.show');
+     Route::get('/cuadrante-mensual/current', [ResumenMensualController::class, 'show'])->name('resumen-mensual.show');
+     Route::get('/cuadrante-mensual-edit/{identificador}', [ResumenMensualController::class, 'edit'])->name('resumen-mensual.edit');
+     Route::get('/cuadrante-mensual', [ResumenMensualController::class, 'index'])->name('resumen-mensual.index');
+
+     //Gastos
+     Route::get('gastos', [GastoController::class, 'index'])->name('gastos.index');
+     Route::get('gastos-create', [GastoController::class, 'create'])->name('gastos.create');
+     Route::get('gastos-edit/{id}', [GastoController::class, 'edit'])->name('gastos.edit');
+
+     Route::get('tipo-gasto', [TipoGastoController::class, 'index'])->name('tipo-gasto.index');
+     Route::get('tipo-gasto-create', [TipoGastoController::class, 'create'])->name('tipo-gasto.create');
+     Route::get('tipo-gasto-edit/{id}', [TipoGastoController::class, 'edit'])->name('tipo-gasto.edit');
+
+	 Route::get('tipo-evento', [TipoEventoController::class, 'index'])->name('tipo-evento.index');
+     Route::get('tipo-evento-create', [TipoEventoController::class, 'create'])->name('tipo-evento.create');
+     Route::get('/tipo-evento-create-from-budget', [TipoEventoController::class, 'createFromBudget'])->name('tipo-evento.create-from-budget');
+     Route::get('tipo-evento-edit/{id}', [TipoEventoController::class, 'edit'])->name('tipo-evento.edit');
+
+
+     Route::get('categoria-contrato', [CategoriaEventoController::class, 'index'])->name('categoria-evento.index');
+     Route::get('categoria-contrato-create', [CategoriaEventoController::class, 'create'])->name('categoria-evento.create');
+     Route::get('categoria-contrato-edit/{id}', [CategoriaEventoController::class, 'edit'])->name('categoria-evento.edit');
+
+
+     Route::get('/service/jwt', [MapKitController::class, 'getJwt']);
+
 });

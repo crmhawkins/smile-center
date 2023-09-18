@@ -113,7 +113,7 @@
                             <div class="col-md-6">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Fecha de emisión</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model.defer="fecha_emision" class="form-control"
+                                    <input type="date" wire:model.defer="fecha_emision" class="form-control"
                                         placeholder="15/02/2023" id="datepicker">
                                     @error('fecha_emision')
                                         <span class="text-danger">{{ $message }}</span>
@@ -125,7 +125,7 @@
                                 <label for="fecha_vencimiento" class="col-sm-12 col-form-label">Fecha de
                                     vencimiento</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model.defer="fecha_vencimiento" class="form-control"
+                                    <input type="date" wire:model.defer="fecha_vencimiento" class="form-control"
                                         placeholder="18/02/2023" id="datepicker2">
                                     @error('fecha_vencimiento')
                                         <span class="text-danger">{{ $message }}</span>

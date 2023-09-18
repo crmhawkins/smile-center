@@ -10,6 +10,7 @@ use App\Models\ServicioEvento;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
 {
@@ -108,6 +109,7 @@ class EditComponent extends Component
             'localidad' => $this->localidad,
             'telefono'=>$this->telefono,
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 21, $monitor->id));
 
         if ($monitorSave) {
             $this->alert('success', 'Monitor actualizado correctamente!', [
@@ -154,7 +156,9 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
-            'confirmDelete'
+            'confirmDelete',
+            'update',
+            'destroy'
         ];
     }
 
@@ -169,6 +173,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $monitor = Monitor::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 22, $monitor->id));
         $monitor->delete();
         return redirect()->route('monitor.index');
 

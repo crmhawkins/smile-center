@@ -17,9 +17,17 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+            LogEventListener::class,
+            AlertEventListener::class,
+            'Illuminate\Auth\Events\Login' => [
+                'App\Listeners\LogSuccessfulLogin',
+            ],
+
+            'Illuminate\Auth\Events\Logout' => [
+                'App\Listeners\LogSuccessfulLogout',
+            ],
         ],
     ];
-
     /**
      * Register any events for your application.
      *
@@ -37,6 +45,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function shouldDiscoverEvents()
     {
-        return false;
+        return true;
     }
 }

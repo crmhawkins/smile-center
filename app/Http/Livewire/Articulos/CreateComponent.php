@@ -3,6 +3,8 @@
 namespace App\Http\Livewire\Articulos;
 
 use App\Models\Articulos;
+use App\Models\ServicioCategoria;
+use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
@@ -12,6 +14,13 @@ class CreateComponent extends Component
 
     public $name;
     public $stock;
+    public $id_categoria;
+    public $servicioCategorias;
+
+    public function mount()
+    {
+        $this->servicioCategorias = ServicioCategoria::all();
+    }
 
     public function render()
     {
@@ -25,11 +34,13 @@ class CreateComponent extends Component
             [
                 'name' => 'required',
                 'stock' => 'required',
+                'id_categoria' => 'required',
             ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre del articulo es obligatorio.',
                 'stock.required' => 'El stock del articulo es obligatorio.',
+                'id_categoria.required' => 'El stock del articulo es obligatorio.',
             ]
         );
 
@@ -44,6 +55,7 @@ class CreateComponent extends Component
         }
 
         $departamentoSave = Articulos::create($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 23, $departamentoSave->id));
 
         // Alertas de guardado exitoso
         if ($departamentoSave) {
@@ -71,6 +83,7 @@ class CreateComponent extends Component
      {
          return [
              'confirmed',
+             'submit'
          ];
      }
  

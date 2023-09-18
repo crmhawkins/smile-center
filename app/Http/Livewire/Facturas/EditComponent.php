@@ -13,6 +13,7 @@ use App\Models\ServicioPack;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -104,6 +105,7 @@ class EditComponent extends Component
             'metodo_pago' => $this->metodo_pago,
 
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 18, $factura->id));
 
         if ($facturasSave) {
             $this->alert('success', 'Factura actualizada correctamente!', [
@@ -160,6 +162,10 @@ class EditComponent extends Component
     }
     public function aceptarFactura()
     {
+        $presupuesto = $this->presupuestos->where('id', $this->facturas->id_presupuesto)->first();
+
+        $presupuestoSave = $presupuesto->update(['estado' => 'Facturado']);
+
         $presupuesosSave = $this->facturas->update(['estado' => 'Facturada']);
 
         // Alertas de guardado exitoso
@@ -223,6 +229,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $factura = Facturas::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 19, $factura->id));
         $factura->delete();
         return redirect()->route('facturas.index');
     }

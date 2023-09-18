@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Settings;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +32,8 @@ class AppServiceProvider extends ServiceProvider
         // $empresa = Settings::whereNull('deleted_at')->first();
         // View::share('empresa', $empresa);
         Schema::defaultStringLength(191);
+        setlocale(LC_TIME, 'es_ES');
+        Carbon::setlocale('es');
+        Carbon::setUTF8(true);
     }
 }

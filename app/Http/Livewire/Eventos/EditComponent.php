@@ -2,12 +2,13 @@
 
 namespace App\Http\Livewire\Eventos;
 
-use App\Models\evento;
+use App\Models\Evento;
 use App\Models\Servicio;
 use App\Models\Cliente;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
 {
@@ -124,6 +125,7 @@ class EditComponent extends Component
             'diaEvento'=>$this->diaEvento,
             'diaFinal'=>$this->diaFinal,
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 12, $evento->id));
 
         if ($eventoSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
@@ -177,7 +179,8 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
-            'confirmDelete'
+            'confirmDelete',
+            'update'
         ];
     }
 
@@ -192,6 +195,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $evento = Evento::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 13, $evento->id));
         $evento->delete();
         return redirect()->route('eventos.index');
 

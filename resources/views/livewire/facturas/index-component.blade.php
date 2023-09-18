@@ -37,7 +37,7 @@
                                 @foreach ($facturas as $fact)
                                     <tr>
                                         <td>{{ $fact->numero_factura }}</td>
-                                        @if ($fact->id_presupuesto == 0)
+                                        @if ($fact->id_presupuesto == 0 || $presupuestos->where('id', $fact->id_presupuesto) == null)
                                             <td>Sin presupuesto</td>
                                         @else
                                             <td><a href="{{ route('presupuestos.edit', ['id' => $fact->id_presupuesto]) }}"

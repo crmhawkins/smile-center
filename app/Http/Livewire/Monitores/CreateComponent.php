@@ -7,6 +7,7 @@ use App\Models\Monitor;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class CreateComponent extends Component
 {
@@ -61,6 +62,7 @@ class CreateComponent extends Component
 
         // Guardar datos validados
         $monitorSave = Monitor::create($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 20, $monitorSave->id));
 
         // Alertas de guardado exitoso
         if ($monitorSave) {
@@ -87,6 +89,7 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
+            'submit'
         ];
     }
 

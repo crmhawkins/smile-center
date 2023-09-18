@@ -9,6 +9,7 @@ use App\Models\Programa;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Type\Integer;
 
 class CreateComponent extends Component
@@ -167,6 +168,8 @@ class CreateComponent extends Component
         // Guardar datos validados
         $usuariosSave = Evento::create($validatedData);
 
+        event(new \App\Events\LogEvent(Auth::user(), 11, $usuariosSave->id));
+
         // dd($usuariosSave);
         // Alertas de guardado exitoso
         if ($usuariosSave) {
@@ -201,6 +204,7 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
+            'submit'
         ];
     }
 

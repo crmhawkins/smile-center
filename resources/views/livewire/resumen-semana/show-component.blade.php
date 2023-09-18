@@ -1,170 +1,115 @@
-@section('head')
-    @vite(['resources/sass/productos.scss'])
-    @vite(['resources/sass/alumnos.scss'])
-    <style>
-        h2 {
-            display: inline-block;
-            margin-right: 5%;
-
-        }
-
-        h3,
-        .editar,
-        .guardar {
-            margin-right: 5%;
-
-        }
-    </style>
-@endsection
-
-
-
-<div class="container mx-auto">
-    <h1>Semana X</h1>
-    <h2>Resumen Semanal</h2>
-    <br>
-
-    <form wire:submit.prevent="submit">
-        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-        <input type="hidden" name="id" value="{{ csrf_token() }}">
-
-
-        <div class="container-md ">
-
-
-
-
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">Selecciona un dia</span>
-                <input type="text" name="dia" class="form-control" placeholder="15/02/2023" id="dia"
-                    wire:change="loadMonth">
-
+<div class="container-fluid">
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <div class="page-title-box">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h4 class="page-title">CUADRANTE SEMANAL</span></h4>
             </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Cuadrante</a></li>
+                    <li class="breadcrumb-item active">Cuadrante semanal</li>
+                </ol>
+            </div>
+        </div> <!-- end row -->
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    @foreach($dias as $diaIndex => $dia)
+                    <div class="form-group col-md-12">
+                        <h5 class="ms-3" style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">{{$dia}}</h5>
+                    </div>
+                    <div class="form-group col-md-12">
+                        @if($eventos->where('diaEvento', $fechas[$diaIndex])->count() > 0)
+                        @foreach($eventos->where('diaEvento', $fechas[$diaIndex]) as $evento)
+                        <table class="table table-striped table-bordered nowrap">
+                            <tr>
+                                <th colspan="1">#{{$presupuestos->where('id_evento', $evento->id)->first()->nPresupuesto}}</th>
+                                <td colspan="7">{{$evento->eventoNombre}}</th>
+                            </tr>
+                            <tr>
+                                <th>{{$presupuestos->where('id_evento', $evento->id)->first()->precioFinal}} €</th>
+                                <th>{{$evento->eventoNiños}} niños</th>
+                                <th>{{$evento->eventoAdulto}} adultos</th>
+                                <th>FOTOS?</th>
+                                <th></th>
+                                <th>{{$evento->eventoLugar}}</th>
+                                <th></th>
+                                <th>{{$evento->eventoLocalidad}}</th>
 
-
-
-            <select class="form-control" name="i_semana" required id="i_semana" wire:model="i_semana">
-                <option value="">Semana</option>
-                @foreach ($semanas as $index => $semana)
-                    <option value="{{ $index }}">
-                        {{ $index }}</option>
-                @endforeach
-
-            </select>
-            @if ($i_semana != null)
-
-
-                    @if ($semana != null)
-                        <div class="container-fluid">
-
-                            <div>
-                                {{-- {{ dd($semanas[$i_semana]) }} --}}
-                                @foreach ($semanas[$i_semana] as $i => $dia)
-                                    <div>
-                                        @livewire('resumen-semanas.show-dia-component', ['dia' => $i], key($i))
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-            @endif
+                            </tr>
+                            <tr>
+                                <th>Servicio</th>
+                                <th>Hora de montaje</th>
+                                <th>Hora de inicio</th>
+                                <th>Duración</th>
+                                <th>Tiempo de desmontaje</th>
+                                <th>Monitor</th>
+                                <th>Sueldo</th>
+                                <th>Gasoil</th>
+                            </tr>
+                            @foreach($presupuestos->where('id_evento', $evento->id)->first()->servicios()->get() as $servicio)
+                            @foreach(json_decode($servicio->pivot->id_monitores, true) as $monitoresIndex => $monitores)
+                            <tr>
+                                <td>{{$servicio->nombre}}</td>
+                                <td>{{$servicio->pivot->hora_montaje}}</td>
+                                <td>{{$servicio->pivot->hora_inicio}}</td>
+                                <td>{{$servicio->pivot->tiempo}}</td>
+                                <td>{{$servicio->pivot->tiempo_desmontaje}}</td>
+                                <td>{{$monitores_datos->firstWhere('id', $monitores)->nombre}} {{$monitores_datos->firstWhere('id', $monitores)->apellidos}}</td>
+                                <td>{{json_decode($servicio->pivot->sueldo_monitores, true)[$monitoresIndex]}} €</td>
+                                <td>{{$servicio->pivot->hora_montaje}}</td>
+                            </tr>
+                            @endforeach
+                            @endforeach
+                            @foreach($presupuestos->where('id_evento', $evento->id)->first()->packs()->get() as $pack)
+                            @foreach($pack->servicios()->get() as $servicioIndex => $servicio)
+                            @foreach(json_decode($pack->pivot->id_monitores, true)[$servicioIndex] as $monitoresIndex => $monitores)
+                            <tr>
+                                <td>@if($monitoresIndex == 0) {{$servicio->nombre}} @endif</td>
+                                <td>@if($evento->eventoMontaje == 1) {{json_decode($pack->pivot->horas_montaje, true)[$servicioIndex]}} @endif</td>
+                                <td>{{json_decode($pack->pivot->horas_inicio, true)[$servicioIndex]}}</td>
+                                <td>{{json_decode($pack->pivot->tiempos, true)[$servicioIndex]}} h</td>
+                                <td>@if($evento->eventoMontaje == 1){{json_decode($pack->pivot->tiempos_desmontaje, true)[$servicioIndex]}} h @endif</td>
+                                <td>{{$monitores_datos->firstWhere('id', $monitores)->nombre}} {{$monitores_datos->firstWhere('id', $monitores)->apellidos}}</td>
+                                <td>{{json_decode($pack->pivot->sueldos_monitores, true)[$servicioIndex][$monitoresIndex]}} €</td>
+                                <td>0 €</td>
+                            </tr>
+                            @endforeach
+                            @endforeach
+                            @endforeach
+                            <tr>
+                                <th colspan="7">Observaciones</th>
+                                <th>Fin del servicio</th>
+                            </tr>
+                            <tr>
+                                <th colspan="7">{{$presupuestos->where('id_evento', $evento->id)->first()->observaciones}}</th>
+                                <th>Fin del servicio</th>
+                            </tr>
+                        </table>
+                        @endforeach
+                        @else
+                        <h6 class="text-center">No hay eventos para este día.</h6>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
-
-        <br>
-        <br>
-
-
-
-    </form>
-
-
+        <div class="col-md-3">
+            <div class="card m-b-30 position-fixed">
+                <div class="card-body">
+                    <h5>Elige una semana para resumir</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <input type="week" class="form-control" wire:model="semana" wire:change="cambioSemana">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-
-
-
-</div>
-
-</tbody>
-</table>
-@section('scripts')
-    {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> --}}
-    {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
-    <script>
-        $.datepicker.regional['es'] = {
-            closeText: 'Cerrar',
-            prevText: '< Ant',
-            nextText: 'Sig >',
-            currentText: 'Hoy',
-            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-                'Octubre', 'Noviembre', 'Diciembre'
-            ],
-            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb'],
-            dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
-            weekHeader: 'Sm',
-            dateFormat: 'yy-mm-dd',
-            firstDay: 1,
-            isRTL: false,
-            showMonthAfterYear: false,
-            yearSuffix: ''
-        };
-        $.datepicker.setDefaults($.datepicker.regional['es']);
-        document.addEventListener('livewire:load', function() {
-
-
-        })
-
-        $(document).ready(function() {
-
-        });
-        console.log('select2')
-        $('.form-control select').select2();
-
-
-        $("#dia").datepicker();
-
-
-        $("#dia").on('change', function(e) {
-            @this.set('day', $('#dia').val());
-            @this.emit("loadMonth");
-        });
-
-
-
-        function togglePasswordVisibility() {
-            var passwordInput = document.getElementById("password");
-            var eyeIcon = document.getElementById("eye-icon");
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                eyeIcon.className = "fas fa-eye-slash";
-            } else {
-                passwordInput.type = "password";
-                eyeIcon.className = "fas fa-eye";
-            }
-        }
-
-        //observer para aplicar el datepicker de evento
-        const observer = new MutationObserver((mutations, observer) => {
-            console.log(mutations, observer);
-        });
-        observer.observe(document, {
-            subtree: true,
-            attributes: true
-        });
-
-
-
-        document.addEventListener('DOMSubtreeModified', (e) => {
-
-        })
-    </script>
-@endsection

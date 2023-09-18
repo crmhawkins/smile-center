@@ -19,20 +19,31 @@ class CreateComponent extends Component
     public $servicio;
     public $serviciosPack = [];
 
+    public $serviciosPackIDs = [];
 
-    public function mount(){
+
+    public function mount()
+    {
         $this->servicios = Servicio::all();
     }
 
-    public function removeServ($key){
+    public function removeServ($key)
+    {
         unset($this->serviciosPack[$key]);
     }
 
-    public function addServ(){
-        $servicio = Servicio::where('id', $this->servicio)->first()->toArray();
-        $this->serviciosPack[count($this->serviciosPack)] = $servicio;
-        if(count($this->serviciosPack) > 1)
-        dd($this->serviciosPack);
+    public function addServ()
+    {
+        if (!in_array($this->servicio, $this->serviciosPackIDs)) {
+            $servicio = Servicio::where('id', $this->servicio)->first();
+            $this->serviciosPack[count($this->serviciosPack)] = $servicio;
+            $this->serviciosPackIDs[count($this->serviciosPack)] = $this->servicio;
+        } else {
+            $this->alert('warning', 'Este servicio ya se encuentra en este pack', [
+                'position' => 'center',
+                'timer' => 1000,
+            ]);
+        }
     }
     public function render()
     {
@@ -43,14 +54,16 @@ class CreateComponent extends Component
     public function submit()
     {
         // Validación de datos
-        $validatedData = $this->validate([
-            'nombre' => 'required',
+        $validatedData = $this->validate(
+            [
+                'nombre' => 'required',
 
-        ],
+            ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
-            ]);
+            ]
+        );
 
         // Guardar datos validados
         $packSave = ServicioPack::create($validatedData);
@@ -58,7 +71,7 @@ class CreateComponent extends Component
         // Alertas de guardado exitoso
         if ($packSave) {
 
-            foreach($this->serviciosPack as $servicio){
+            foreach ($this->serviciosPack as $servicio) {
                 Servicio::where('id', $servicio["id"])->update(["id_pack" => $packSave->id]);
             }
 
@@ -85,6 +98,7 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
+            'submit'
         ];
     }
 
@@ -93,6 +107,5 @@ class CreateComponent extends Component
     {
         // Do something
         return redirect()->route('servicios-packs.index');
-
     }
 }

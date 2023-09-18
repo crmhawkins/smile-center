@@ -87,31 +87,41 @@
                 },
                 events: [
                     @foreach ($eventos as $evento)
-                        {
-                            title: '{{ $evento->eventoNombre }} ',
-                            start: '{{ $evento->diaEvento }}',
-                            end: '{{ $evento->diaFinal }}',
-                            description: '<br> <b>Protagonista:</b> {{ $evento->eventoProtagonista }} <br> <b>Niños:</b> {{ $evento->eventoNiños }}<br> <b>Adultos:</b> {{ $evento->eventoAdultos }}',
-                            id: '{{ $evento->id }}',
-                            html: true,
-                            @if (Carbon::parse($evento->diaEvento)->gt(Carbon::now()->endOfWeek()))
-                                color: '#fac900',
-                            @elseif (Carbon::parse($evento->diaEvento)->between(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()))
-                                @if ($presupuestos->contains('id_evento', $evento->id))
-                                    @if ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Aceptado')
-                                        color: '#17dc26',
-                                    @else
-                                        color: '#cb5100',
-                                    @endif
-                                @else
-                                    color: '#cb5100',
+                        @if ($presupuestos->where('id_evento', $evento->id)->first()->estado != 'Cancelado')
+                            {
+                                title: '{{ $this->categorias->where('id', $evento->eventoNombre)->first()->nombre }} ',
+                                start: '{{ $evento->diaEvento }}',
+                                end: '{{ $evento->diaFinal }}',
+                                description: '<br> <b>Protagonista:</b> {{ $evento->eventoProtagonista }} <br> <b>Niños:</b> {{ $evento->eventoNiños }}<br> <b>Adultos:</b> {{ $evento->eventoAdulto }}',
+                                id: '{{ $evento->id }}',
+                                html: true,
+                                @if ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Pendiente')
+                                    color: '#f39200',
+                                    presupuestoId: '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
+                                @elseif ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Aceptado')
+                                    color: '#30419b',
+                                        presupuestoId:
+                                        '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
+                                @elseif ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Completado')
+                                    color: '#009e4e',
+                                        presupuestoId:
+                                        '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
+                                @elseif ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Facturado')
+                                    color: '#991b7a',
+                                        presupuestoId:
+                                        '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
                                 @endif
-                            @elseif (Carbon::parse($evento->diaEvento)->lt(Carbon::now()->startOfWeek()))
-                                color: '#8b8b8b',
-                            @endif
-                        },
+                            },
+                        @endif
                     @endforeach
                 ],
+                eventClick: function(info) {
+                    if (info.event.extendedProps.presupuestoId != undefined) {
+                        console.log('hola');
+                        window.open('https://crm.fabricandoeventosjerez.com/admin/presupuestos-edit/' +
+                            info.event.extendedProps.presupuestoId);
+                    }
+                },
                 eventDidMount: function(info) {
                     var tooltip = new bootstrap.Tooltip(info.el, {
                         title: '<h5>' + info.event.title + '</h5>' + info.event.extendedProps

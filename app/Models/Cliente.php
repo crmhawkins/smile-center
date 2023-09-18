@@ -34,6 +34,10 @@ class Cliente extends Model
         "confPostal",
         "confEmail",
         "confSms",
+        'tipoCliente',
+        'codigo_organo_gestor',
+        'codigo_unidad_tramitadora',
+        'codigo_oficina_contable'
     ];
 
     public function eventos(){

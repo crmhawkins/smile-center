@@ -60,8 +60,12 @@
                                     @foreach ($clientes as $cliente)
                                         <tr>
                                             {{-- <td>{{ $cliente->trato }}</td> --}}
+                                            @if($cliente->tipo_cliente != 1)
                                             <td>{{ $cliente->nombre }}</td>
                                             <td>{{ $cliente->apellido }}</td>
+                                            @else
+                                            <td colspan="2">{{ $cliente->nombre }}</td>
+                                            @endif
                                             {{-- <td>{{ $cliente->tipoCalle}}</td>
                                             <td>{{ $cliente->calle }}</td>
                                             <td>{{ $cliente->numero }}</td>

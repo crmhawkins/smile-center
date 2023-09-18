@@ -9,6 +9,8 @@ use App\Models\MetodoPago;
 use App\Models\Presupuesto;
 use App\Models\ServicioEvento;
 use Livewire\Component;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class IndexComponent extends Component
 {
@@ -21,6 +23,10 @@ class IndexComponent extends Component
 
     public function mount()
     {
+        if(session()->has('descarga')){
+            return response()->download(public_path() . session('descarga'));
+        }
+
         $this->contratos = Contrato::all();
         $this->eventos = Evento::all();
         $this->clientes = Cliente::all();
@@ -33,6 +39,10 @@ class IndexComponent extends Component
        
 
         return $this->eventos->find($presupuesto->id_evento)->eventoNombre;
+    }
+
+    public function descargarPDF($ruta){
+        return response()->download(public_path() . $ruta);
     }
     public function nombreApellidoCliente ($id){
         $presupuesto = $this->presupuestos->find($id);
@@ -69,7 +79,6 @@ class IndexComponent extends Component
 
     public function render()
     {
-
         return view('livewire.contratos.index-component');
     }
 

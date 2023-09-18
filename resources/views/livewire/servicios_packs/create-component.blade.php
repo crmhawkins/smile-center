@@ -1,8 +1,8 @@
 @section('head')
-    @vite(['resources/sass/productos.scss'])
+@vite(['resources/sass/productos.scss'])
 @endsection
 
-<div class="container mx-auto">
+<div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -19,57 +19,95 @@
     </div>
     <!-- end page-title -->
     <div class="row">
-        <div class="col-12">
+        <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                        <div class="container text-center">
-                            <div class="mb-3 row d-flex align-items-center">
-                                <label for="nombre" class="col-sm-2 col-form-label">Nombre </label>
-                                <div class="col-sm-5">
-                                    <input type="text" wire:model="nombre" class="form-control" name="nombre" id="nombre"
-                                        placeholder="Pack">
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <label for="nombre" class="col-sm-12 col-form-label">Nombre </label>
+                                <div class="col-sm-11">
+                                    <input type="text" wire:model="nombre" class="form-control" name="nombre" id="nombre" placeholder="Pack">
                                     @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
+                                    <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="mb-3 row d-flex align-items-center">
-                                <label for="servicio" class="col-sm-2 col-form-label">Servicio </label>
-                                <select class="col-sm-2 input-group-text" name="servicio" id="servicio" wire:model="servicio">
-                                    <option class="dropdown-item" value="">Servicio</option>
-                                    @foreach ($servicios as $i => $servicio)
-                                        <option class="dropdown-item"  value="{{ $servicio->id }}">
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-11">
+                                <label for="servicio" class="col-sm-12 col-form-label">Servicio </label>
+                                <div class="col-sm-11">
+                                    <select class="w-100 input-group-text" name="servicio" id="servicio" wire:model="servicio">
+                                        <option class="dropdown-item" value="">Servicio</option>
+                                        @foreach ($servicios as $i => $servicio)
+                                        <option class="dropdown-item" value="{{ $servicio->id }}">
                                             {{ $servicio->nombre }}
                                         </option>
-                                    @endforeach
-                                </select>
-                                <button type="button" wire:click="addServ" class="col-sm-1 btn btn-primary">Añadir</button>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                
-                            <div class="mb-3 row d-flex align-items-center">
-                                @foreach ($serviciosPack as $key => $servicio)
-                                    <div class="mb-3 row d-flex align-items-center">
-                                        <h4 for="servicio.{{ $key }}" class="col-sm-1 col-form-label">Servicio</h4>
-                                        <h4 for="servicio.{{ $key }}" class="col-sm-3 col-form-label">{{ $servicio["nombre"] }}
-                                        </h4>
-                                        <button type="button" wire:click="removeServ({{ $key }})" class="col-sm-1 btn btn-outline-danger">Eliminar</button>
-                                    </div>
-                                @endforeach
+                            <div class="col-sm-1">
+                                <label for="servicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                                <button type="button" wire:click="addServ" class="btn btn-primary">Añadir</button>
                             </div>
-                            <div class="mb-3 row d-flex align-items-center">
-                                <button type="submit" class="btn btn-primary btn-lg waves-effect waves-light">Guardar</button>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                @if(count($serviciosPack) >= 1) <h5> Servicios añadidos </h5> @endif
+                                <div class="col-sm-11">
+                                    <ul class="list-style">
+                                        @foreach ($serviciosPack as $key => $servicio)
+                                        <li for="servicio.{{ $key }}" class="row">
+                                            <div class="col-sm-2">{{($key + 1)}} -
+                                                {{ $servicio["nombre"] }}
+                                            </div>
+                                            <div class="col-sm-1">&nbsp;</div>
+                                            <div class="col-sm-2 me-auto">
+                                                <button type="button" wire:click="removeServ({{ $key }})" class="btn btn-outline-danger">Eliminar</button>
+                                            </div>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+
                             </div>
-                                            
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <h5>Acciones</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar nuevo pack de servicios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-
-
-
 </div>
+
+@section('scripts')
+<script>
+    $("#alertaGuardar").on("click", () => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            icon: 'info',
+            showConfirmButton: true,
+            showCancelButton: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.livewire.emit('submit');
+            }
+        });
+    });
+</script>
+@endsection

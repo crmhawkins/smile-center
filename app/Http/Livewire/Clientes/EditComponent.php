@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
 {
@@ -17,6 +18,10 @@ class EditComponent extends Component
     public $nombre;
     public $apellido;
     public $tipoCalle; 
+    public $tipo_cliente; 
+    public $codigo_organo_gestor;
+    public $codigo_unidad_tramitadora;
+    public $codigo_oficina_contable;
     public $calle;
     public $numero;
     public $direccionAdicional1;
@@ -42,8 +47,15 @@ class EditComponent extends Component
 
         $this->trato = $cliente->trato;
         $this->nombre = $cliente->nombre;
-        $this->apellido = $cliente->apellido;
         $this->tipoCalle = $cliente->tipoCalle;
+        $this->tipo_cliente = $cliente->tipo_cliente;
+        if($this->tipo_cliente != 0){
+            $this->codigo_organo_gestor = $cliente->codigo_organo_gestor;
+            $this->codigo_unidad_tramitadora = $cliente->codigo_unidad_tramitadora;
+            $this->codigo_oficina_contable = $cliente->codigo_oficina_contable;
+        }else{
+            $this->apellido = $cliente->apellido;
+        }
         $this->calle = $cliente->calle;
         $this->numero = $cliente->numero;
         $this->direccionAdicional1 = $cliente->direccionAdicional1;
@@ -58,7 +70,9 @@ class EditComponent extends Component
         $this->email1 = $cliente->email1;
         $this->email2 = $cliente->email2;
         $this->email3 = $cliente->email3;
-
+        $this->confPostal = $cliente->confPostal;
+        $this->confEmail = $cliente->confEmail;
+        $this->confSms = $cliente->confSms ;
     }
 
     
@@ -74,15 +88,22 @@ class EditComponent extends Component
         // Validación de datos
         $this->validate([
             'nombre' => 'required',
-            'apellido' => 'required',
+            'apellido' => 'nullable',
             'tipoCalle' => 'required',
+            'tipo_cliente' => 'required',
             'calle' => 'required',
             'numero' => 'required',
+            'codigo_organo_gestor' => 'nullable',
+            'codigo_unidad_tramitadora' => 'nullable',
+            'codigo_oficina_contable' => 'nullable',
             'codigoPostal'=> 'required',
             'ciudad' => 'required',
             'nif' => 'required',
             'tlf1' => 'required',
             'email1' => 'required',
+            "confPostal" => 'nullable',
+            "confEmail" =>'nullable',
+            "confSms" => 'nullable',
         ],
             // Mensajes de error
             [
@@ -109,6 +130,9 @@ class EditComponent extends Component
             'tipoCalle' => $this->tipoCalle,
             'calle' => $this->calle,
             'numero' => $this->numero,
+            'codigo_organo_gestor' => $this->codigo_organo_gestor,
+            'codigo_unidad_tramitadora' => $this->codigo_unidad_tramitadora,
+            'codigo_oficina_contable' => $this->codigo_oficina_contable,
             'direccionAdicional1' => $this->direccionAdicional1,
             'direccionAdicional2' => $this->direccionAdicional2,
             'direccionAdicional3' => $this->direccionAdicional3,
@@ -121,7 +145,11 @@ class EditComponent extends Component
             'email1'=>$this->email1,
             'email2'=>$this->email2,
             'email3'=>$this->email3,
+            "confPostal"=>$this->confPostal,
+            "confEmail"=>$this->confEmail,
+            "confSms"=>$this->confSms,
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
         if ($clienteSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
@@ -168,6 +196,8 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
+            'update',
+            'destroy',
             'confirmDelete'
         ];
     }
@@ -183,6 +213,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $cliente = Cliente::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
         $cliente->delete();
         return redirect()->route('clientes.index');
 

@@ -4,9 +4,12 @@ namespace App\Http\Livewire\Presupuestos;
 
 use App\Models\Cliente;
 use App\Models\Evento;
+use App\Models\TipoEvento;
+use App\Models\CategoriaEvento;
 use App\Models\ServicioEvento;
 use App\Models\Monitor;
 use App\Models\Presupuesto;
+use App\Models\Contrato;
 use App\Models\Programa;
 use App\Models\Servicio;
 use App\Models\ServicioPack;
@@ -17,6 +20,10 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class EditComponent extends Component
 {
@@ -28,8 +35,12 @@ class EditComponent extends Component
     public $currentStep = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $nPresupuesto; // Numero de presupusto
     public $fechaEmision; // Fecha del presupuesto
+    public $fechaVencimiento; // Fecha del presupuesto
     public $clienteSeleccionado; // Cliente seleccionado
-
+    public $categoria_evento_id = 0;
+    public $preciosBasePack = [];
+    public $tipos_evento;
+    public $categorias_evento;
     //cliente
     public $id_evento = 0; // 0 por defecto por si no se selecciona ninguna
     public $id_cliente = 0; // 0 por defecto por si no se selecciona ninguna
@@ -73,7 +84,7 @@ class EditComponent extends Component
     public $eventoNombre;
     public $eventoProtagonista;
     public $eventoNiños;
-    public $eventoAdultos;
+    public $eventoAdulto;
     public $eventoContacto;
     public $eventoParentesco;
     public $eventoTelefono;
@@ -98,6 +109,10 @@ class EditComponent extends Component
     public $id_pack;
 
     public $preciosMonitores = [];
+    public $tiemposPack = [];
+    public $horasInicioPack = [];
+    public $horasFinalizacionPack = [];
+
     public $numero_monitores = 0;
 
     public $precioFinalPack = 0;
@@ -107,8 +122,9 @@ class EditComponent extends Component
     // Servicios
     public $id_servicio;
     public $comienzoMontaje;
-    public $tiempo;
-    public $horaInicio;
+    public $tiempo = 0;
+    public $hora_inicio = 0;
+    public $hora_finalizacion = 0;
     public $tiempodDesmontaje;
     public $precioMonitor;
     public $costoDesplazamiento;
@@ -176,6 +192,20 @@ class EditComponent extends Component
     public $clienteNuevo = false;
     public $mensajeCliente = false;
     public $presupuesto;
+    public $tiemposMontajePack = [];
+    public $tiemposDesmontajePack = [];
+
+
+    public $horasMontajePack = [];
+    public $idMonitoresPack = [];
+    public $sueldoMonitoresPack = [];
+    public $gastosGasoilPack = [];
+    public $pagosPendientesPack = [];
+
+    public $idMonitores = [];
+    public $sueldoMonitores = [];
+    public $gastosGasoil = [];
+    public $pagosPendientes = [];
 
 
     public function mount()
@@ -191,6 +221,7 @@ class EditComponent extends Component
         $this->addDiscount = $this->descuento > 0;
         $this->adelanto = $this->presupuesto->adelanto;
         $this->estado = $this->presupuesto->estado;
+        $this->fechaVencimiento = $this->presupuesto->fechaVencimiento;
 
 
         //Cliente
@@ -204,7 +235,7 @@ class EditComponent extends Component
         $this->eventoNombre = $this->evento->eventoNombre;
         $this->eventoProtagonista = $this->evento->eventoProtagonista;
         $this->eventoNiños = $this->evento->eventoNiños;
-        $this->eventoAdultos = $this->evento->eventoAdultos;
+        $this->eventoAdulto = $this->evento->eventoAdulto;
         $this->eventoContacto = $this->evento->eventoContacto;
         $this->eventoParentesco = $this->evento->eventoParentesco;
         $this->eventoTelefono = $this->evento->eventoTelefono;
@@ -215,16 +246,47 @@ class EditComponent extends Component
         $this->diaEvento = $this->evento->diaEvento;
 
         foreach ($this->presupuesto->servicios()->get() as $servicio) {
-            $this->listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'existente' => 1];
+            $this->listaServicios[] = [
+                'id' => $servicio->id,
+                'numero_monitores' => $servicio->pivot->numero_monitores,
+                'precioFinal' => $servicio->pivot->precio_final,
+                'tiempo' => $servicio->pivot->tiempo,
+                'hora_inicio' => $servicio->pivot->hora_inicio,
+                'hora_finalizacion' => $servicio->pivot->hora_finalizacion,
+                'id_monitores' => json_decode($servicio->pivot->id_monitores, true),
+                'sueldo_monitores' => json_decode($servicio->pivot->sueldo_monitores, true),
+                'gasto_gasoil' => json_decode($servicio->pivot->gasto_gasoil, true),
+                'pago_pendiente' => json_decode($servicio->pivot->pago_pendiente, true),
+                'hora_montaje' => $servicio->pivot->hora_montaje,
+                'tiempo_montaje' => $servicio->pivot->tiempo_montaje,
+                'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje,
+                'existente' => 1
+            ];
         }
 
         foreach ($this->presupuesto->packs()->get() as $pack) {
-            $this->listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precioFinal' => $pack->pivot->precio_final, 'existente' => 1];
+            $this->listaPacks[] = [
+                'id' => $pack->id,
+                'numero_monitores' => json_decode($pack->pivot->numero_monitores, true),
+                'precioFinal' => $pack->pivot->precio_final,
+                'tiempos' => json_decode($pack->pivot->tiempos, true),
+                'horas_inicio' => json_decode($pack->pivot->horas_inicio, true),
+                'horas_finalizacion' => json_decode($pack->pivot->horas_finalizacion, true),
+                'id_monitores' => json_decode($pack->pivot->id_monitores, true),
+                'sueldos_monitores' => json_decode($pack->pivot->sueldos_monitores, true),
+                'gastos_gasoil' => json_decode($pack->pivot->gastos_gasoil, true),
+                'horas_montaje' => json_decode($pack->pivot->horas_montaje, true),
+                'tiempos_montaje' => json_decode($pack->pivot->tiempos_montaje, true),
+                'tiempos_desmontaje' => json_decode($pack->pivot->tiempos_desmontaje, true),
+                'pagos_pendientes' => json_decode($pack->pivot->pagos_pendientes, true),
+                'existente' => 1
+            ];
         }
         // $this->servicioEventoList = ServicioEvento::where("id_evento", $this->evento->id)->get()->toArray();
 
         $this->programas = Programa::all();
-
+        $this->tipos_evento = TipoEvento::all();
+        $this->categorias_evento = CategoriaEvento::all();
         $this->monitores = Monitor::all();
         $this->servicios = Servicio::all();
 
@@ -267,14 +329,12 @@ class EditComponent extends Component
         if ($this->diaEvento == null) {
             return $this->alert('error', '¡No se ha selccionado ningun dia de comienzo del evento!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
         if ($this->diaFinal == null) {
             return $this->alert('error', '¡No se ha selccionado ningun dia de finalizacion del evento!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -282,7 +342,6 @@ class EditComponent extends Component
         if ($this->eventoNombre == null) {
             return $this->alert('error', '¡El campo de Evento no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -290,14 +349,12 @@ class EditComponent extends Component
         if ($this->eventoProtagonista == null) {
             return $this->alert('error', '¡El campo de Protagonistas no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
         if ($this->eventoNiños == null) {
             return $this->alert('error', '¡El campo de Numero de niños no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -305,7 +362,6 @@ class EditComponent extends Component
         if ($this->eventoContacto == null) {
             return $this->alert('error', '¡El campo de Contacto no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -313,7 +369,6 @@ class EditComponent extends Component
         if ($this->eventoParentesco == null) {
             return $this->alert('error', '¡El campo de Parentesco no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -321,7 +376,6 @@ class EditComponent extends Component
         if ($this->eventoLugar == null) {
             return $this->alert('error', '¡El campo de Lugar no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -329,7 +383,6 @@ class EditComponent extends Component
         if ($this->eventoTelefono == null) {
             return $this->alert('error', '¡El campo de Telefono no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -337,7 +390,6 @@ class EditComponent extends Component
         if ($this->eventoLocalidad == null) {
             return $this->alert('error', '¡El campo de Localidad no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -430,8 +482,6 @@ class EditComponent extends Component
             }
         }
     }
-
-
 
     //Selecciona un cliente y rellena los campos con los datos del mismo
     public function selectClient($solicitante)
@@ -541,7 +591,6 @@ class EditComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido actualizar la información del usuario!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -569,6 +618,7 @@ class EditComponent extends Component
                 'eventoLocalidad' => 'required',
                 'diaEvento' => 'required',
                 'diaFinal' => 'required',
+                'eventoMontaje' => 'nullable'
 
             ],
             // Mensajes de error
@@ -587,13 +637,13 @@ class EditComponent extends Component
         );
 
         $this->eventoIsSave = $this->evento->update($eventValidate);
+        event(new \App\Events\LogEvent(Auth::user(), 12, $this->evento->id));
 
         if ($this->eventoIsSave) {
             $this->update();
         } else {
             $this->alert('error', '¡No se ha podido actualizar la información del evento!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -1197,7 +1247,9 @@ class EditComponent extends Component
         $validatedData = $this->validate(
             [
                 'fechaEmision' => 'required',
+                'fechaVencimiento' => 'nullable',
                 'id_evento' => 'required',
+                'estado' => 'required',
                 'id_cliente' => 'required',
                 'precioBase' => 'required',
                 'precioFinal' => 'required',
@@ -1208,7 +1260,7 @@ class EditComponent extends Component
             ],
             // Mensajes de error
             [
-                'fechaEmision' => 'El número de presupuesto es obligatorio.',
+                'fechaEmision.required' => 'La fecha de emision es obligatoria.',
                 'id_evento.required' => 'La fecha de emision es obligatoria.',
                 'id_cliente.required' => 'El alumno es obligatorio.',
                 'precioBase.required' => 'El curso es obligatorio.',
@@ -1220,24 +1272,78 @@ class EditComponent extends Component
 
         // Guardar datos validados
         $presupuesosSave = $this->presupuesto->update($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 4, $this->presupuesto->id));
 
         foreach ($this->listaServiciosEliminar as $servicio) {
-            $this->presupuesto->servicios()->wherePivot('numero_monitores',  $servicio['numero_monitores'])->wherePivot('precio_final', $servicio['precioFinal'])->detach($servicio['id']);
+            $this->presupuesto->servicios()->wherePivot('numero_monitores',  $servicio['numero_monitores'])
+                ->wherePivot('precio_final', $servicio['precioFinal'])
+                ->wherePivot('tiempo', $servicio['tiempo'])
+                ->wherePivot('tiempo_montaje', $servicio['tiempo_montaje'])
+                ->wherePivot('tiempo_desmontaje', $servicio['tiempo_desmontaje'])
+                ->wherePivot('hora_inicio', $servicio['hora_inicio'])
+                ->wherePivot('hora_finalizacion', $servicio['hora_finalizacion'])
+                ->wherePivot('hora_montaje', $servicio['hora_montaje'])
+                ->wherePivot('sueldo_monitores', json_encode($servicio['sueldo_monitores']))
+                ->wherePivot('id_monitores', json_encode($servicio['id_monitores']))
+                ->wherePivot('gasto_gasoil', json_encode($servicio['gasto_gasoil']))
+                ->wherePivot('pago_pendiente', json_encode($servicio['pago_pendiente']))
+                ->detach($servicio['id']);
         }
 
         foreach ($this->listaPacksEliminar as $pack) {
-            $this->presupuesto->packs()->wherePivot('numero_monitores',  json_encode($pack['numero_monitores']))->wherePivot('precio_final', $pack['precioFinal'])->detach($pack['id']);
+            $this->presupuesto->packs()->wherePivot('numero_monitores', json_encode($pack['numero_monitores']))
+                ->wherePivot('precioFinal', $pack['precioFinal'])
+                ->wherePivot('tiempos', json_encode($pack['tiempos']))
+                ->wherePivot('horas_inicio', json_encode($pack['horas_inicio']))
+                ->wherePivot('horas_finalizacion', json_encode($pack['horas_finalizacion']))
+                ->wherePivot('tiempos_montaje', json_encode($pack['tiempos_montaje']))
+                ->wherePivot('tiempos_desmontaje', json_encode($pack['tiempos_desmontaje']))
+                ->wherePivot('horas_montaje', json_encode($pack['horas_montaje']))
+                ->wherePivot('sueldos_monitores', json_encode($pack['sueldos_monitores']))
+                ->wherePivot('id_monitores', json_encode($pack['id_monitores']))
+                ->wherePivot('gastos_gasoil', json_encode($pack['gastos_gasoil']))
+                ->wherePivot('pagos_pendientes', json_encode($pack['pagos_pendientes']))
+                ->detach($pack['id']);
         }
 
         foreach ($this->listaServicios as $servicio) {
             if ($servicio['existente'] == 0) {
-                $this->presupuesto->servicios()->attach($servicio['id'], ['numero_monitores' => $servicio['numero_monitores'], 'precio_final' => $servicio['precioFinal']]);
+                $this->presupuesto->servicios()->attach(
+                    $servicio['id'],
+                    [
+                        'numero_monitores' => $servicio['numero_monitores'],
+                        'precio_final' => $servicio['precioFinal'],
+                        'tiempo' => $servicio['tiempo'],
+                        'tiempo_montaje' => $servicio['tiempo_montaje'],
+                        'tiempo_desmontaje' => $servicio['tiempo_desmontaje'],
+                        'hora_inicio' => $servicio['hora_inicio'],
+                        'hora_finalizacion' => $servicio['hora_finalizacion'],
+                        'hora_montaje' => $servicio['hora_montaje'],
+                        'sueldo_monitores' => json_encode($servicio['sueldo_monitores']),
+                        'id_monitores' => json_encode($servicio['id_monitores']),
+                        'gasto_gasoil' => json_encode($servicio['gasto_gasoil']),
+                        'pago_pendiente' => json_encode($servicio['pago_pendiente']),
+                    ]
+                );
             }
         }
 
         foreach ($this->listaPacks as $pack) {
             if ($pack['existente'] == 0) {
-                $this->presupuesto->packs()->attach($pack['id'], ['numero_monitores' => json_encode($pack['numero_monitores']), 'precio_final' => $pack['precioFinal']]);
+                $this->presupuesto->packs()->attach($pack['id'], [
+                    'numero_monitores' => json_encode($pack['numero_monitores']),
+                    'precio_final' => $pack['precioFinal'],
+                    'tiempos' => json_encode($pack['tiempos']),
+                    'horas_inicio' => json_encode($pack['horas_inicio']),
+                    'horas_finalizacion' => json_encode($pack['horas_finalizacion']),
+                    'tiempos_montaje' => json_encode($pack['tiempos_montaje']),
+                    'tiempos_desmontaje' => json_encode($pack['tiempos_desmontaje']),
+                    'horas_montaje' => json_encode($pack['horas_montaje']),
+                    'sueldos_monitores' => json_encode($pack['sueldos_monitores']),
+                    'id_monitores' => json_encode($pack['id_monitores']),
+                    'gastos_gasoil' => json_encode($pack['gastos_gasoil']),
+                    'pagos_pendientes' => json_encode($pack['pagos_pendientes']),
+                ]);
             }
         }
 
@@ -1245,7 +1351,6 @@ class EditComponent extends Component
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -1255,7 +1360,6 @@ class EditComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido actualizar la información del presupuesto!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -1271,6 +1375,8 @@ class EditComponent extends Component
         foreach ($this->listaPacks as $pack) {
             $this->presupuesto->packs()->detach($pack['id']);
         }
+        event(new \App\Events\LogEvent(Auth::user(), 5, $this->presupuesto->id));
+        event(new \App\Events\LogEvent(Auth::user(), 13, $this->evento->id));
 
         $this->evento->delete();
         // Guardar datos validados
@@ -1282,7 +1388,6 @@ class EditComponent extends Component
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto eliminado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -1292,13 +1397,13 @@ class EditComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido actualizar la información del presupuesto!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
     }
 
-    public function facturarPresupuesto(){
+    public function facturarPresupuesto()
+    {
         session()->flash('presupuesto', $this->identificador);
         return redirect()->route('facturas.create');
     }
@@ -1307,10 +1412,9 @@ class EditComponent extends Component
         $presupuesosSave = $this->presupuesto->update(['estado' => 'Aceptado']);
 
         // Alertas de guardado exitoso
-        if($presupuesosSave) {
+        if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto aceptado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -1320,7 +1424,6 @@ class EditComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido aceptar el presupuesto!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -1332,10 +1435,9 @@ class EditComponent extends Component
 
 
         // Alertas de guardado exitoso
-        if($presupuesosSave) {
+        if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto cancelado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -1345,7 +1447,6 @@ class EditComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido cancelar el presupuesto!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -1363,10 +1464,26 @@ class EditComponent extends Component
             'imprimirPresupuesto',
             'updatePresupuestoValidacion',
             'updateEvento',
+            'confirmedImprimir'
         ];
     }
 
+    public function sumarTiempos($id)
+    {
+        $totalMinutos = 0;
 
+        foreach ($this->listaPacks[$id]['tiempos'] as $tiempo) {
+            $partes = explode(':', $tiempo);
+            $horas = $partes[0];
+            $minutos = $partes[1];
+            $totalMinutos += ($horas * 60) + $minutos;
+        }
+
+        $horasResultado = floor($totalMinutos / 60);
+        $minutosResultado = $totalMinutos % 60;
+
+        return sprintf('%02d:%02d', $horasResultado, $minutosResultado);
+    }
     public function cambioPrecioPack()
     {
         $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
@@ -1379,24 +1496,150 @@ class EditComponent extends Component
         }
     }
 
+    public function cambioTiempoPack()
+    {
+        $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+        $this->precioFinalPack = 0;
+        foreach ($pack as $keyPack => $servicio) {
+            if (isset($this->horasInicioPack[$keyPack]) && isset($this->horasFinalizacionPack[$keyPack]) &&  $this->horasInicioPack[$keyPack] != 0 && $this->horasFinalizacionPack[$keyPack] != 0) {
+                $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                $fin = Carbon::createFromFormat('H:i', $this->horasFinalizacionPack[$keyPack]);
+                $this->tiemposPack[$keyPack] = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
+                $this->emit('refresh');
+            }
+        }
+    }
+
     public function cambioPrecioServicio()
     {
-        $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
-        $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
+        if ($this->servicio_seleccionado != 0) {
+            $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
+            $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
+        } else {
+            $this->alert('error', 'Selecciona un servicio.');
+            $this->numero_monitores = 0;
+            $this->tiempo = 0;
+            $this->hora_inicio = 0;
+            $this->hora_finalizacion = 0;
+            $this->precioFinalServicio = 0;
+        }
+    }
+
+    public function cambioTiempoServicio()
+    {
+        if ($this->servicio_seleccionado != 0) {
+            if ($this->hora_inicio && $this->hora_finalizacion != 0) {
+                $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                $fin = Carbon::createFromFormat('H:i', $this->hora_finalizacion);
+                $this->tiempo = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
+                $this->emit('refresh');
+            }
+            if ($this->hora_inicio && $this->horaMontaje != 0) {
+                $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
+                $fin = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                $this->tiempoMontaje = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
+                $this->emit('refresh');
+            }
+        } else {
+            $this->alert('error', 'Selecciona un servicio.', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+            $this->numero_monitores = 0;
+            $this->tiempo = 0;
+            $this->hora_inicio = 0;
+            $this->hora_finalizacion = 0;
+            $this->precioFinalServicio = 0;
+        }
     }
 
     public function addPack()
     {
         if ($this->pack_seleccionado != 0) {
-            $this->listaPacks[] = ['id' => $this->pack_seleccionado, 'numero_monitores' => $this->preciosMonitores, 'precioFinal' => $this->precioFinalPack, 'existente' => 0];
-            $this->pack_seleccionado = 0;
-            $this->preciosMonitores = [];
-            $this->precioFinal += $this->precioFinalPack;
-            $this->precioFinalPack = 0;
+            $packId = $this->pack_seleccionado;
+            $existe = Presupuesto::whereHas('packs', function ($query) use ($packId) {
+                $query->where('servicio_packs.id', $packId);
+            })
+                ->where('fechaEmision', $this->diaEvento)
+                ->exists();
+
+            $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
+            // Variable para rastrear si el stock se supera
+            $stockSeSupera = false;
+            // Obtener los artículos relacionados con el servicio
+            foreach ($this->packs->where('id', $packId)->first()->servicios()->get() as $servicio) {
+                $servicioId = $servicio->id;
+                $articulosDelServicio = DB::table('servicio_articulo')
+                    ->where('servicio_id', $servicioId)
+                    ->get();
+                // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+                foreach ($articulosDelServicio as $articuloDelServicio) {
+                    $articuloId = $articuloDelServicio->articulo_id;
+
+                    // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+                    $cantidadTotalUtilizada = DB::table('presupuestos')
+                        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                        ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                        ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                        ->where('presupuestos.fechaEmision', $fechaEvento)
+                        ->where('servicio_articulo.articulo_id', $articuloId)
+                        ->sum('servicio_articulo.stock_usado');
+                    // Obtener el stock total fijo del artículo
+                    $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
+
+                    // Obtener la cantidad de stock usado por el servicio que deseas agregar
+                    $cantidadStockUsadoNuevoServicio = $articuloDelServicio->stock_usado;
+
+                    // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+                    $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+
+                    if ($nuevaCantidadTotal > $stockTotal) {
+                        // El stock se superaría para al menos uno de los artículos
+                        $stockSeSupera = true;
+                        break; // Salir del bucle, ya que no es necesario verificar los otros artículos
+                    }
+                }
+            }
+
+            if ($existe) {
+                $this->alert('error', 'Este pack ya está asignado a otro evento en esta fecha.');
+            } else if ($stockSeSupera == true) {
+                $this->alert('error', 'Todo el stock de un artículo dado de este pack está en uso en esta fecha.');
+            } else {
+                $this->listaPacks[] = [
+                    'id' => $this->pack_seleccionado,
+                    'numero_monitores' => $this->preciosMonitores,
+                    'precioFinal' => $this->precioFinalPack,
+                    'tiempos' => $this->tiemposPack,
+                    'horas_inicio' => $this->horasInicioPack,
+                    'horas_finalizacion' => $this->horasFinalizacionPack,
+                    'tiempos_montaje' => $this->tiemposMontajePack,
+                    'tiempos_desmontaje' => $this->tiemposDesmontajePack,
+                    'horas_montaje' => $this->horasMontajePack,
+                    'id_monitores' => $this->idMonitoresPack,
+                    'sueldos_monitores' => $this->sueldoMonitoresPack,
+                    'gastos_gasoil' => $this->gastosGasoilPack,
+                    'checks_gasoil' => $this->gastosGasoilPack,
+                    'pagos_pendientes' => $this->sueldoMonitoresPack,
+
+                ];
+                $this->pack_seleccionado = 0;
+                $this->preciosMonitores = [];
+                $this->tiemposPack = [];
+                $this->horasInicioPack = [];
+                $this->horasFinalizacionPack = [];
+                $this->tiemposMontajePack = [];
+                $this->tiemposDesmontajePack = [];
+                $this->horasMontajePack = [];
+                $this->precioFinal += $this->precioFinalPack;
+                $this->precioFinalPack = 0;
+            }
         } else {
             $this->alert('error', '¡Selecciona un pack de servicios!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'confirmButtonText' => 'ok',
@@ -1408,51 +1651,62 @@ class EditComponent extends Component
     public function addServicio()
     {
         if ($this->servicio_seleccionado != 0) {
-            $this->listaServicios[] = ['id' => $this->servicio_seleccionado, 'numero_monitores' => $this->numero_monitores, 'precioFinal' => $this->precioFinalServicio, 'existente' => 0];
-            $this->servicio_seleccionado = 0;
-            $this->numero_monitores = 0;
-            $this->precioFinal += $this->precioFinalServicio;
-            $this->precioFinalServicio = 0;
-        } else {
-            $this->alert('error', '¡Selecciona un servicio!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
-            ]);
+            $servicioId = $this->servicio_seleccionado;
+            $existe = Presupuesto::whereHas('servicios', function ($query) use ($servicioId) {
+                $query->where('servicios.id', $servicioId);
+            })
+                ->where('fechaEmision', $this->diaEvento)
+                ->exists();
+            $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
+            // Obtener los artículos relacionados con el servicio
+            $articulosDelServicio = DB::table('servicio_articulo')
+                ->where('servicio_id', $servicioId)
+                ->get();
+
+            // Variable para rastrear si el stock se supera
+            $stockSeSupera = false;
+            // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+            foreach ($articulosDelServicio as $articuloDelServicio) {
+                $articuloId = $articuloDelServicio->articulo_id;
+
+                // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+                $cantidadTotalUtilizada = DB::table('presupuestos')
+                    ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                    ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                    ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                    ->where('presupuestos.fechaEmision', $fechaEvento)
+                    ->where('servicio_articulo.articulo_id', $articuloId)
+                    ->sum('servicio_articulo.stock_usado');
+                // Obtener el stock total fijo del artículo
+                $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
+
+                // Obtener la cantidad de stock usado por el servicio que deseas agregar
+                $cantidadStockUsadoNuevoServicio = $articuloDelServicio->stock_usado;
+
+                // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+                $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+
+                if ($nuevaCantidadTotal > $stockTotal) {
+                    // El stock se superaría para al menos uno de los artículos
+                    $stockSeSupera = true;
+                    break; // Salir del bucle, ya que no es necesario verificar los otros artículos
+                }
+            }
+
+
+            if ($existe) {
+                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
+            } else if ($stockSeSupera == true) {
+                $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
+                $this->alert('error', '¡Selecciona un servicio!', [
+                    'position' => 'center',
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'ok',
+                    'timerProgressBar' => true,
+                ]);
+            }
         }
-    }
-
-    public function alertaGuardar()
-    {
-        $this->alert('warning', '¿Quieres guardar? Revisa todos los datos antes de hacer ningún cambio.', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => false,
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'onConfirmed' => 'updateEvento',
-            'confirmButtonText' => 'Guardar',
-            'cancelButtonText' => 'Seguir editando',
-            'timerProgressBar' => true,
-        ]);
-    }
-
-    public function alertaEliminar()
-    {
-        $this->alert('warning', '¿Estás seguro de que quieres eliminar el presupuesto? Los datos guardados no podrán recuperarse.', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => false,
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'onConfirmed' => 'destroy',
-            'confirmButtonText' => 'Eliminar',
-            'cancelButtonText' => 'Cancelar y volver',
-            'timerProgressBar' => true,
-        ]);
     }
 
     public function deletePack($indice)
@@ -1482,17 +1736,106 @@ class EditComponent extends Component
         return redirect()->route('presupuestos.index');
     }
 
+
+    public function alertaGuardar()
+    {
+        $this->alert('warning', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'updatePresupuestoValidacion',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+            'timer' => null
+        ]);
+    }
+
+    public function alertaAceptar()
+    {
+        $this->alert('info', '¿Seguro que desea imprimir el presupuesto?', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'imprimirPresupuesto',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+            'timer' => null
+        ]);
+    }
+
+    public function alertaCancelar()
+    {
+        $this->alert('info', '¿Seguro que desea imprimir el contrato?', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmedImprimir',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+            'timer' => null
+        ]);
+    }
+
+    public function alertaImprimir()
+    {
+        $this->alert('info', '¿Desea descargar el presupuesto en PDF?', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'imprimirPresupuesto',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ]);
+    }
+
+    public function alertaFacturar()
+    {
+        $this->alert('error', '¿Seguro que desea facturar el presupuesto? No se puede revertir este proceso.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ]);
+    }
+
+    public function alertaEliminar()
+    {
+        $this->alert('error', '¿Seguro que desea eliminar el presupuesto? No se puede revertir este proceso.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'destroy',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+            'timer' => null
+        ]);
+    }
+
     public function imprimirPresupuesto()
     {
         $presupuesto = Presupuesto::find($this->identificador);
         $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
-        $evento = Evento::where('id', $presupuesto->id_evento)->get();
+        $evento = Evento::where('id', $presupuesto->id_evento)->first();
         $listaServicios = [];
         $listaPacks = [];
         $packs = ServicioPack::all();
 
         foreach ($presupuesto->servicios()->get() as $servicio) {
-            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'existente' => 1];
+            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
         }
 
         foreach ($presupuesto->packs()->get() as $pack) {
@@ -1501,8 +1844,8 @@ class EditComponent extends Component
 
 
         $datos =  [
-            'presupuesto' => $presupuesto, 'cliente' => $cliente,
-            'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs,
+            'presupuesto' => $presupuesto, 'cliente' => $cliente, 'id_presupuesto' => $presupuesto->id, 'fechaEmision' => $this->fechaEmision, 'fechaVencimiento' => $this->fechaVencimiento,
+            'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'servicios' => Servicio::all(),
         ];
 
         $pdf = Pdf::loadView('livewire.presupuestos.contract-component', $datos)->setPaper('a4', 'vertical')->output(); //
@@ -1512,4 +1855,126 @@ class EditComponent extends Component
         );
     }
 
+    public function guardarContrato()
+    {
+        $validatedData = $this->validate(
+            [
+                "id_presupuesto" => "required",
+                'metodoPago' => 'required',
+                'cuentaTransferencia' => 'required',
+                'observaciones' => 'nullable',
+                'authImagen' => 'required',
+                'authMenores' => 'required',
+                'dia' => 'required'
+            ],
+            // Mensajes de error
+            [
+                'metodoPago.required' => 'La contraseña es obligatoria.',
+                'cuentaTransferencia.required' => 'La cuenta es obligatoria',
+            ]
+        );
+
+
+
+
+        // Guardar datos validados
+        $contratoSave = Contrato::create($validatedData);
+
+        event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
+
+
+        // Alertas de guardado exitoso
+        if ($contratoSave) {
+            if ($this->imprimir == 1) {
+                $this->alert('success', '¡Contrato registrado correctamente!', [
+                    'position' => 'center',
+                    // 'timer' => 1500,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmedImprimir',
+                    'confirmButtonText' => 'Imprimir contrato',
+                    // 'timerProgressBar' => true,
+                ]);
+            } else {
+                $this->alert('success', '¡Contrato registrado correctamente!', [
+                    'position' => 'center',
+                    // 'timer' => 1500,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmed',
+                    'confirmButtonText' => 'ok',
+                    // 'timerProgressBar' => true,
+                ]);
+            }
+        } else {
+            $this->alert('error', '¡No se ha podido guardar la información del contrato!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+    public function confirmedImprimir()
+    {
+
+        $this->diaMostrar = Carbon::now()->locale('es_ES')->isoFormat('D [de] MMMM [de] Y');
+        $presupuesto = Presupuesto::find($this->identificador);
+        $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
+        $evento = Evento::where('id', $presupuesto->id_evento)->first();
+        $packs = ServicioPack::all();
+        foreach ($presupuesto->servicios()->get() as $servicio) {
+            $listaServicios[] = ['id' => $servicio->id, 'nombre' => $servicio->nombre, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
+        }
+
+        foreach ($presupuesto->packs()->get() as $pack) {
+            $listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precio_final' => $pack->pivot->precio_final, 'existente' => 1];
+        }
+
+        $filename = Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
+        $this->ruta = '/contratos/' . $filename;
+
+
+
+        if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) > 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) <= 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else if (count($presupuesto->packs) <= 0 && count($presupuesto->servicios) > 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        }
+
+
+        $path = public_path('contratos');
+
+        if (!File::exists($path)) {
+            File::makeDirectory($path, $mode = 0777, true, true);
+        }
+
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+
+        $this->confirmed();
+
+        return response()->streamDownload(
+            fn () => print($pdf),
+            $filename
+        );
+    }
 }

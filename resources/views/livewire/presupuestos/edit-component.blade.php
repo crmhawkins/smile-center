@@ -1,4 +1,5 @@
 <div class="container-fluid">
+    <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -14,1125 +15,1387 @@
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
-
     <div class="row">
-
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h5>Presupuesto Servicios</h5>
-                    <div class="form-row mb-4">
-                        <div class="form-group col-md-3">
+                    <div class="form-row mb-4 justify-content-center">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
+                                básicos del presupuesto</h5>
+                        </div>
+                        <div class="form-group col-md-4">
                             <label for="nPresupuesto">Presupuesto Nº</label>
-                            <input type="text" wire:model.defer="nPresupuesto" class="form-control"
-                                name="nPresupuesto" id="nPresupuesto" placeholder="X" disabled>
+                            <input type="text" wire:model="nPresupuesto" class="form-control" name="nPresupuesto"
+                                placeholder="X" disabled>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="fechaEmision">Fecha presupuesto</label>
-                            <input type="text" wire:model.defer="fechaEmision" class="form-control"
-                                name="fechaEmision" id="fechaEmision" placeholder="X">
+                            <label for="fechaEmision">Fecha de emisión</label>
+                            <input type="date" wire:model.defer="fechaEmision" class="form-control"
+                                wire:change='cambiarPresupuesto' name="fechaEmision" id="fechaEmision" placeholder="X">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="fechaVencimiento">Fecha de vencimiento</label>
+                            <input type="date" wire:model.defer="fechaVencimiento" class="form-control"
+                                min="{{ $fechaEmision }}" name="fechaVencimiento" id="fechaVencimiento" placeholder="X">
                         </div>
                     </div>
+                    <div class="form-row mb-4 justify-content-center">
+                        <div class="form-group col-md-4" wire:ignore>
+                            <div x-data="" x-init="$('#select2-estado').select2();
+                            $('#select2-estado').on('change', function(e) {
+                                var data = $('#select2-estado').select2('val');
+                                @this.set('estado', data);
+                            });">
+                                <label for="fechaVencimiento">Estado</label>
+                                <select class="form-control" name="estado" id="select2-estado"
+                                    value="{{ $estado }}">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Aceptado">Aceptado</option>
+                                    <option value="Completado">Completado</option>
+                                    <option value="Facturado">Facturado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3" wire:ignore>
+                            <div x-data="" x-init="$('#select2-cat').select2();
+                            $('#select2-cat').on('change', function(e) {
+                                var data = $('#select2-cat').select2('val');
+                                @this.set('categoria_evento_id', data);
+                            });">
+                                <label for="fechaVencimiento">Categoría</label>
+                                <select class="form-control" name="estado" id="select2-cat"
+                                    wire:model="categoria_evento_id">
+                                    @foreach ($categorias_evento as $categoria)
+                                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="nPresupuesto">Gestor</label>
+                            <input type="text" class="form-control" wire:model="nombreGestor" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <div class="form-row mt-3">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
+                                del solicitante</h5>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-1" wire:ignore>
+                                <br>
+                                <span class="col-md-2">Selecciona un cliente existente</span>
+                                <div class="col-md-8" x-data="" x-init="$('#select2-cliente').select2();
+                                $('#select2-cliente').on('change', function(e) {
+                                    var data = $('#select2-cliente').select2('val');
+                                    @this.set('id_cliente', data);
+                                });">
+                                    <select class="form-control" name="id_cliente" id="select2-cliente">
+                                        <option value="0">-- ELIGE UN CLIENTE --</option>
+                                        @foreach ($clientes as $cliente)
+                                            <option value="{{ $cliente->id }}"
+                                                @if ($this->id_cliente == $cliente->id) selected @endif>>
+                                                {{ $cliente->nombre }} {{ $cliente->apellidos }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="{{ route('clientes.create') }}" class="btn btn-success w-100"
+                                        target="_blank">
+                                        &nbsp;Cliente nuevo</a>
+                                    {{-- <button type="button" class="btn btn-success waves-effect waves-light w-100" data-toggle="modal" data-target="#myModal">Standard Modal</button> --}}
 
-                    <div class="stepwizard">
-                        <div class="stepwizard-row setup-panel">
-                            <div class="stepwizard-step">
-                                <a href="#step-1" type="button"
-                                    class="btn btn-circle {{ $currentStep != 1 ? 'btn-default' : 'btn-primary' }}"
-                                    wire:click.prevent="$set('currentStep', 1)">1</a>
-                                <p>Cliente</p>
-                            </div>
-                            <div class="stepwizard-step">
-                                <a href="#step-2" type="button"
-                                    class="btn btn-circle {{ $currentStep != 2 ? 'btn-default' : 'btn-primary' }}"
-                                    wire:click.prevent="$set('currentStep', 2)">2</a>
-                                <p>Evento</p>
-                            </div>
-                            <div class="stepwizard-step">
-                                <a href="#step-3" type="button"
-                                    class="btn btn-circle {{ $currentStep != 3 ? 'btn-default' : 'btn-primary' }}"
-                                    wire:click.prevent="$set('currentStep', 3)">3</a>
-                                <p>Más Info</p>
+                                    <div id="myModal" class="modal fade w-100 h-100" tabindex="-1" role="dialog"
+                                        aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog w-100 my-0 "
+                                            style="height: 100vh !important;max-width: 100% !important">
+                                            <div class="modal-content" style="height: 100vh">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title mt-0" id="myModalLabel">Modal Heading
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <livewire:clientes.create-component :wire:key="$currentStep" />
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary waves-effect"
+                                                        data-dismiss="modal">Close</button>
+                                                    <button type="button"
+                                                        class="btn btn-primary waves-effect waves-light">Save
+                                                        changes</button>
+                                                </div>
+                                            </div><!-- /.modal-content -->
+                                        </div><!-- /.modal-dialog -->
+                                    </div><!-- /.modal -->
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <form action="">
-                        <div class="row setup-content {{ $currentStep != 1 ? 'displayNone' : '' }}" id="step-1">
-                            {{-- <h5>Datos del solicitante</h5> --}}
-                            <div class="form-row mt-3">
-                                <h6>Seleccione el Cliente</h6>
-                                <div class="form-group col-md-12">
-                                    <div class="input-group mb-1">
-                                        <br>
-                                        <span class="col-md-2">Selecciona DNI/NIF de un cliente existente</span>
-                                        <div class="col-md-8">
-                                            <select class="form-control select js-example-basic-single"
-                                                name="id_cliente" id="id_cliente" wire:model="id_cliente">
-                                                <option value="0">NIF/DNI</option>
-                                                @foreach ($clientes as $cliente)
-                                                    <option value="{{ $cliente->id }}">
-                                                        {{ $cliente->nif }}
-                                                    </option>
-                                                @endforeach
+                    <div class="form-row">
+                        @if ($id_cliente != 0 || $id_cliente != null)
+                            <div class="form-row">
+                                <!-- Tratamiento -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input"
+                                        class="col-sm-12 col-form-label">Tratamiento</label>
+                                    <div class="col-sm-10">
+                                        <select class="input-group-text" name="trato" required disabled>
+                                            <option class="dropdown-item" value="" disabled>Trato
+                                            </option>
+                                            <option class="dropdown-item" value="M">M</option>
+                                            <option class="dropdown-item" value="Melle">Melle</option>
+                                            <option class="dropdown-item" value="Mme">Mme</option>
+                                        </select>
+                                        @error('trato')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
 
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <a href="{{ route('clientes.create') }}" class="btn btn-success w-100"
-                                                target="_blank"> &nbsp;Cliente nuevo</a>
-                                            {{-- <button type="button" class="btn btn-success waves-effect waves-light w-100" data-toggle="modal" data-target="#myModal">Standard Modal</button> --}}
+                                <!-- Nombre -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>Nombre</label>
+                                    <div class="col-sm-10">
+                                        {{-- <input class="form-control" type="text" value="Artisanal kale" id="example-text-input"> --}}
+                                        <input type="text" value="{{ $clienteSeleccionado->nombre }}"
+                                            class="form-control" name="nombre" aria-label="Nombre"
+                                            placeholder="Nombre" disabled>
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
 
-                                            <div id="myModal" class="modal fade w-100 h-100" tabindex="-1"
-                                                role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog w-100 my-0 "
-                                                    style="height: 100vh !important;max-width: 100% !important">
-                                                    <div class="modal-content" style="height: 100vh">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title mt-0" id="myModalLabel">Modal Heading
-                                                            </h5>
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <livewire:clientes.create-component
-                                                                :wire:key="$currentStep" />
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button"
-                                                                class="btn btn-secondary waves-effect"
-                                                                data-dismiss="modal">Close</button>
-                                                            <button type="button"
-                                                                class="btn btn-primary waves-effect waves-light">Save
-                                                                changes</button>
-                                                        </div>
-                                                    </div><!-- /.modal-content -->
-                                                </div><!-- /.modal-dialog -->
-                                            </div><!-- /.modal -->
-                                        </div>
+                                <!-- Apellido -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Apellido</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->apellido }}"
+                                            class="form-control" name="apellido" placeholder="Apellido" disabled>
+                                        @error('apellido')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
+
                             <div class="form-row">
-                                @if ($id_cliente != 0 || $id_cliente != null)
-                                    <div class="form-row">
-                                        <!-- Tratamiento -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input"
-                                                class="col-sm-12 col-form-label">Tratamiento</label>
-                                            <div class="col-sm-10">
-                                                <select class="input-group-text" name="trato" required disabled>
-                                                    <option class="dropdown-item" value="" disabled>Trato
-                                                    </option>
-                                                    <option class="dropdown-item" value="M">M</option>
-                                                    <option class="dropdown-item" value="Melle">Melle</option>
-                                                    <option class="dropdown-item" value="Mme">Mme</option>
-                                                </select>
-                                                @error('trato')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Nombre -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Nombre</label>
-                                            <div class="col-sm-10">
-                                                {{-- <input class="form-control" type="text" value="Artisanal kale" id="example-text-input"> --}}
-                                                <input type="text" value="{{ $clienteSeleccionado->nombre }}"
-                                                    class="form-control" name="nombre" aria-label="Nombre"
-                                                    placeholder="Nombre" disabled>
-                                                @error('nombre')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Apellido -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input"
-                                                class="col-sm-12 col-form-label">Apellido</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->apellido }}"
-                                                    class="form-control" name="apellido" placeholder="Apellido"
-                                                    disabled>
-                                                @error('apellido')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
+                                <!-- NIF/DNI -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>NIF/DNI</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->nif }}"
+                                            class="form-control" name="nif" placeholder="Nif" disabled>
+                                        @error('nif')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
+                                </div>
 
-                                    <div class="form-row">
-                                        <!-- NIF/DNI -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>NIF/DNI</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->nif }}"
-                                                    class="form-control" name="nif" placeholder="Nif" disabled>
-                                                @error('nif')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Tipo de Calle -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Tipo de Calle</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->tipoCalle }}"
-                                                    class="form-control" name="tipoCalle"
-                                                    placeholder="Avenida/Plaza/Calle..." disabled>
-                                                @error('tipoCalle')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <!-- Via -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Via</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->calle }}"
-                                                    class="form-control" name="calle" placeholder="Calle" disabled>
-                                                @error('calle')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <!-- Nº -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Nº</label>
-                                            <div class="col-sm-10">
-                                                <input type="number" value="{{ $clienteSeleccionado->numero }}"
-                                                    class="form-control" name="numero" placeholder="1" disabled>
-                                                @error('numero')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Dir Adi 1 -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Dir Adi 1</label>
-                                            <div class="col-sm-10">
-                                                <input type="text"
-                                                    value="{{ $clienteSeleccionado->direccionAdicional1 }}"
-                                                    class="form-control" name="direccionAdicional1"
-                                                    placeholder="Bloque/Letra..." disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Dir Adi 2 -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Dir Adi 2</label>
-                                            <div class="col-sm-10">
-                                                <input type="text"
-                                                    value="{{ $clienteSeleccionado->direccionAdicional2 }}"
-                                                    class="form-control" name="direccionAdicional2"
-                                                    placeholder="Bloque/Letra..." disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Dir Adi 3 -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Dir Adi 3</label>
-                                            <div class="col-sm-10">
-                                                <input type="text"
-                                                    value="{{ $clienteSeleccionado->direccionAdicional3 }}"
-                                                    class="form-control" name="direccionAdicional3"
-                                                    placeholder="Bloque/Letra..." disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- CP -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>CP</label>
-                                            <div class="col-sm-10">
-                                                <input type="number"
-                                                    value="{{ $clienteSeleccionado->codigoPostal }}"
-                                                    class="form-control" name="codigoPostal" placeholder="XXXXX"
-                                                    disabled>
-                                                @error('codigoPostal')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Ciudad -->
-                                        <div class="form-group col-md-4">
-                                            <label for="example-text-input" class="col-sm-12 col-form-label"
-                                                disabled>Ciudad</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->ciudad }}"
-                                                    class="form-control" name="ciudad" placeholder="Ciudad"
-                                                    disabled>
-                                                @error('ciudad')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Confirmacion Postal -->
-                                        <div class="form-group col-md-4">
-                                            <label for="confPostal" class="col-sm-12 col-form-label"
-                                                disabled>Confirmacion Postal</label>
-                                            <div class="col-sm-10">
-                                                <input class="form-check-input mt-0"
-                                                    @if ($clienteSeleccionado->confPostal == 1) checked @endif type="checkbox"
-                                                    value="" name="confPostal"
-                                                    aria-label="Checkbox for following text input" disabled>
-                                                {{-- <span class="input-group-text">Confirmacion Postal</span> --}}
-                                            </div>
-                                        </div>
-
-                                        <!-- Telefono -->
-                                        <div class="form-group col-md-4">
-                                            <label for="tlf1" class="col-sm-12 col-form-label"
-                                                disabled>Telefono</label>
-                                            <div class="col-sm-10">
-                                                <input type="number" value="{{ $clienteSeleccionado->tlf1 }}"
-                                                    class="form-control" name="tlf1" placeholder="XXXXXXXXX"
-                                                    disabled>
-                                                @error('tlf1')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Telefono Secundario -->
-                                        <div class="form-group col-md-4">
-                                            <label for="tlf2" class="col-sm-12 col-form-label" disabled>Telefono
-                                                Secundario</label>
-                                            <div class="col-sm-10">
-                                                <input type="number" value="{{ $clienteSeleccionado->tlf2 }}"
-                                                    class="form-control" name="tlf2" placeholder="Opcional"
-                                                    disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Telefono Adicional -->
-                                        <div class="form-group col-md-4">
-                                            <label for="tlf3" class="col-sm-12 col-form-label" disabled>Telefono
-                                                Adicional</label>
-                                            <div class="col-sm-10">
-                                                <input type="number" value="{{ $clienteSeleccionado->tlf3 }}"
-                                                    class="form-control" name="tlf3" placeholder="Opcional"
-                                                    disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Confirmacion SMS -->
-                                        <div class="form-group col-md-4">
-                                            <label for="confSms" class="col-sm-12 col-form-label"
-                                                disabled>Confirmacion SMS</label>
-                                            <div class="col-sm-10">
-                                                <input class="form-check-input mt-0"
-                                                    @if ($clienteSeleccionado->confSms == 1) checked @endif type="checkbox"
-                                                    value="" aria-label="Checkbox for following text input"
-                                                    disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Email -->
-                                        <div class="form-group col-md-4">
-                                            <label for="email1" class="col-sm-12 col-form-label"
-                                                disabled>Email</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->email1 }}"
-                                                    class="form-control" name="email1" placeholder="Email@email.com"
-                                                    disabled>
-                                                @error('email1')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Email Secundario -->
-                                        <div class="form-group col-md-4">
-                                            <label for="email1" class="col-sm-12 col-form-label" disabled>Email
-                                                Secundario</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->email2 }}"
-                                                    class="form-control" name="email2" placeholder="email@email.com"
-                                                    disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Email Adicional -->
-                                        <div class="form-group col-md-4">
-                                            <label for="email1" class="col-sm-12 col-form-label" disabled>Email
-                                                Adicional</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" value="{{ $clienteSeleccionado->email3 }}"
-                                                    class="form-control" name="email3" placeholder="Email@email.com"
-                                                    disabled>
-                                            </div>
-                                        </div>
-
-                                        <!-- Confirmacion Email -->
-                                        <div class="form-group col-md-4">
-                                            <label for="confEmail" class="col-sm-12 col-form-label"
-                                                disabled>Confirmacion Email</label>
-                                            <div class="col-sm-10">
-                                                <input class="form-check-input mt-0"
-                                                    @if ($clienteSeleccionado->confEmail == 1) checked @endif type="checkbox"
-                                                    value="" aria-label="Checkbox for following text input"
-                                                    disabled>
-                                            </div>
-                                        </div>
+                                <!-- Tipo de Calle -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label" disabled>Tipo de
+                                        Calle</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->tipoCalle }}"
+                                            class="form-control" name="tipoCalle"
+                                            placeholder="Avenida/Plaza/Calle..." disabled>
+                                        @error('tipoCalle')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    {{-- {{var_dump($clienteSeleccionado)}} --}}
+                                </div>
+                                <!-- Via -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>Via</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->calle }}"
+                                            class="form-control" name="calle" placeholder="Calle" disabled>
+                                        @error('calle')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <!-- Nº -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>Nº</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" value="{{ $clienteSeleccionado->numero }}"
+                                            class="form-control" name="numero" placeholder="1" disabled>
+                                        @error('numero')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Dir Adi 1 -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label" disabled>Dir Adi
+                                        1</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->direccionAdicional1 }}"
+                                            class="form-control" name="direccionAdicional1"
+                                            placeholder="Bloque/Letra..." disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Dir Adi 2 -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label" disabled>Dir Adi
+                                        2</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->direccionAdicional2 }}"
+                                            class="form-control" name="direccionAdicional2"
+                                            placeholder="Bloque/Letra..." disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Dir Adi 3 -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label" disabled>Dir Adi
+                                        3</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->direccionAdicional3 }}"
+                                            class="form-control" name="direccionAdicional3"
+                                            placeholder="Bloque/Letra..." disabled>
+                                    </div>
+                                </div>
+
+                                <!-- CP -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>CP</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" value="{{ $clienteSeleccionado->codigoPostal }}"
+                                            class="form-control" name="codigoPostal" placeholder="XXXXX" disabled>
+                                        @error('codigoPostal')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Ciudad -->
+                                <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>Ciudad</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->ciudad }}"
+                                            class="form-control" name="ciudad" placeholder="Ciudad" disabled>
+                                        @error('ciudad')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Confirmacion Postal -->
+                                <div class="form-group col-md-4">
+                                    <label for="confPostal" class="col-sm-12 col-form-label" disabled>Confirmacion
+                                        Postal</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-check-input mt-0"
+                                            @if ($clienteSeleccionado->confPostal == 1) checked @endif type="checkbox"
+                                            value="" name="confPostal"
+                                            aria-label="Checkbox for following text input" disabled>
+                                        {{-- <span class="input-group-text">Confirmacion Postal</span> --}}
+                                    </div>
+                                </div>
+
+                                <!-- Telefono -->
+                                <div class="form-group col-md-4">
+                                    <label for="tlf1" class="col-sm-12 col-form-label" disabled>Telefono</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" value="{{ $clienteSeleccionado->tlf1 }}"
+                                            class="form-control" name="tlf1" placeholder="XXXXXXXXX" disabled>
+                                        @error('tlf1')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Telefono Secundario -->
+                                <div class="form-group col-md-4">
+                                    <label for="tlf2" class="col-sm-12 col-form-label" disabled>Telefono
+                                        Secundario</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" value="{{ $clienteSeleccionado->tlf2 }}"
+                                            class="form-control" name="tlf2" placeholder="Opcional" disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Telefono Adicional -->
+                                <div class="form-group col-md-4">
+                                    <label for="tlf3" class="col-sm-12 col-form-label" disabled>Telefono
+                                        Adicional</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" value="{{ $clienteSeleccionado->tlf3 }}"
+                                            class="form-control" name="tlf3" placeholder="Opcional" disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Confirmacion SMS -->
+                                <div class="form-group col-md-4">
+                                    <label for="confSms" class="col-sm-12 col-form-label" disabled>Confirmacion
+                                        SMS</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-check-input mt-0"
+                                            @if ($clienteSeleccionado->confSms == 1) checked @endif type="checkbox"
+                                            value="" aria-label="Checkbox for following text input" disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="form-group col-md-4">
+                                    <label for="email1" class="col-sm-12 col-form-label" disabled>Email</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->email1 }}"
+                                            class="form-control" name="email1" placeholder="Email@email.com"
+                                            disabled>
+                                        @error('email1')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Email Secundario -->
+                                <div class="form-group col-md-4">
+                                    <label for="email1" class="col-sm-12 col-form-label" disabled>Email
+                                        Secundario</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->email2 }}"
+                                            class="form-control" name="email2" placeholder="email@email.com"
+                                            disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Email Adicional -->
+                                <div class="form-group col-md-4">
+                                    <label for="email1" class="col-sm-12 col-form-label" disabled>Email
+                                        Adicional</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->email3 }}"
+                                            class="form-control" name="email3" placeholder="Email@email.com"
+                                            disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Confirmacion Email -->
+                                <div class="form-group col-md-4">
+                                    <label for="confEmail" class="col-sm-12 col-form-label" disabled>Confirmacion
+                                        Email</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-check-input mt-0"
+                                            @if ($clienteSeleccionado->confEmail == 1) checked @endif type="checkbox"
+                                            value="" aria-label="Checkbox for following text input" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- {{var_dump($clienteSeleccionado)}} --}}
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                                Datos del evento</h5>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-1">
+                                <br>
+                                <span class="col-md-2">Selecciona un tipo de evento</span>
+                                <div class="col-md-8" x-data="" x-init="$('#select2-evento').select2();
+                                $('#select2-evento').on('change', function(e) {
+                                    var data = $('#select2-evento').select2('val');
+                                    @this.set('eventoNombre', data);
+                                });" wire:ignore>
+                                    <select class="form-control" name="id_cliente" id="select2-evento">
+                                        <option value="0">-- ELIGE UN TIPO DE EVENTO --</option>
+                                        @foreach ($tipos_evento as $tipo)
+                                            <option value="{{ $tipo->id }}">
+                                                {{ $tipo->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @if ($eventoNombre == 0)
+                                    <div class="col-md-2">
+                                        <a href="{{ route('eventos.create') }}" class="btn btn-success w-100"
+                                            target="_blank"> &nbsp;Tipo de evento nuevo</a>
+                                        {{-- <button type="button" class="btn btn-success waves-effect waves-light w-100" data-toggle="modal" data-target="#myModal">Standard Modal</button> --}}
+                                    </div>
+                                @elseif($eventoNombre != 0)
+                                    <div class="col-md-2">
+                                        <a href="{{ route('eventos.edit', $eventoNombre) }}"
+                                            class="btn btn-success w-100" target="_blank"> &nbsp;Editar tipo de
+                                            evento</a>
+                                        {{-- <button type="button" class="btn btn-success waves-effect waves-light w-100" data-toggle="modal" data-target="#myModal">Standard Modal</button> --}}
+                                    </div>
                                 @endif
                             </div>
                         </div>
-                        <div class="row setup-content {{ $currentStep != 2 ? 'displayNone' : '' }}" id="step-2">
-                            {{-- <h3>Paso 2</h3> --}}
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="diaEvento" class="col-sm-12 col-form-label">Dia del evento</label>
-                                    <div class="col-sm-10">
-                                        <input type="date" wire:model="diaEvento" class="form-control"
-                                            name="diaEvento" id="diaEvento" placeholder="X">
-                                    </div>
+                        @if ($eventoNombre != 0)
+                            <div class="form-group col-md-4">
+                                <label for="diaEvento" class="col-sm-12 col-form-label">Dia del evento</label>
+                                <div class="col-sm-10">
+                                    <input type="date" wire:model.lazy="diaEvento" class="form-control"
+                                        name="diaEvento" id="diaEvento" placeholder="X">
                                 </div>
-                                <div class="form-group col-md-4">
-                                    <label for="diaFinal" class="col-sm-12 col-form-label">Dia final del
-                                        evento</label>
-                                    <div class="col-sm-10">
-                                        <input type="date" wire:model="diaFinal" class="form-control"
-                                            name="diaFinal" id="diaFinal" placeholder="X">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="eventoNombre" class="col-sm-12 col-form-label">Evento</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model="eventoNombre" class="form-control"
-                                            name="eventoNombre" id="eventoNombre" placeholder="Evento">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoProtagonista"
-                                        class="col-sm-12 col-form-label">Protagonistas</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model.lazy="eventoProtagonista"
-                                            class="form-control" name="eventoProtagonista" id="eventoProtagonista"
-                                            placeholder="Protagonistas">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoNiños" class="col-sm-12 col-form-label">Nº Niños</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" wire:model.lazy="eventoNiños" class="form-control"
-                                            name="eventoNiños" id="eventoNiños" placeholder="0">
-                                    </div>
-                                </div>
-
-                                <div class="form-group col-md-4">
-                                    <label for="eventoAdultos" class="col-sm-12 col-form-label">Nº Adultos</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" wire:model.lazy="eventoAdultos" class="form-control"
-                                            name="eventoAdultos" id="eventoAdultos" placeholder="0">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoContacto" class="col-sm-12 col-form-label">Contacto</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model.lazy="eventoContacto" class="form-control"
-                                            name="eventoContacto" id="eventoContacto" placeholder="Contacto">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoParentesco" class="col-sm-12 col-form-label">Parentesco</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model.lazy="eventoParentesco" class="form-control"
-                                            name="eventoParentesco" id="eventoParentesco" placeholder="Parentesco">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoTelefono" class="col-sm-12 col-form-label">Telefono</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model.lazy="eventoTelefono" class="form-control"
-                                            name="eventoTelefono" id="eventoTelefono" placeholder="Telefono">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoLugar" class="col-sm-12 col-form-label">Lugar</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model.lazy="eventoLugar" class="form-control"
-                                            name="eventoLugar" id="eventoLugar" placeholder="Lugar">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="eventoLocalidad" class="col-sm-12 col-form-label">Localidad</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model.lazy="eventoLocalidad" class="form-control"
-                                            name="eventoLocalidad" id="eventoLocalidad" placeholder="Localidad">
-                                    </div>
-                                </div>
-                                <!-- Confirmacion Email -->
-                                <div class="form-group col-md-4">
-                                    <label for="eventoMontaje" class="col-sm-12 col-form-label" disabled>Posibilidad
-                                        de Montaje</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-check-input mt-0" wire:model="eventoMontaje"
-                                            type="checkbox" value="" id="eventoMontaje"
-                                            aria-label="Checkbox for following text input" disabled>
-                                    </div>
-                                </div>
-                                {{-- <div class="form-group col-md-12">
-                                    <button type="button" id="guardar-evento" class="btn btn-info guardar w-100 mt-3"
-                                        wire:click="submitEvento">Guardar Evento</button>
-                                    <button type="button" class="btn btn-danger guardar evento w-100 mt-3"
-                                        wire:click="uncheckEvent">Cancelar Edición</button>
-                                </div> --}}
-
                             </div>
-                            <button type="button" wire:click="segundoPaso()"
-                                class="btn btn-secondary">Siguiente</button>
+                            <div class="form-group col-md-4">
+                                <label for="diaFinal" class="col-sm-12 col-form-label">Dia final del
+                                    evento</label>
+                                <div class="col-sm-10">
+                                    <input type="date" wire:model.lazy="diaFinal" class="form-control"
+                                        name="diaFinal" id="diaFinal" placeholder="X">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoProtagonista" class="col-sm-12 col-form-label">Protagonistas</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model.lazy="eventoProtagonista" class="form-control"
+                                        name="eventoProtagonista" id="eventoProtagonista"
+                                        placeholder="Protagonistas">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoNiños" class="col-sm-12 col-form-label">Nº Niños</label>
+                                <div class="col-sm-10">
+                                    <input type="number" wire:model.lazy="eventoNiños" class="form-control"
+                                        name="eventoNiños" id="eventoNiños" placeholder="0">
+                                </div>
+                            </div>
 
+                            <div class="form-group col-md-4">
+                                <label for="eventoAdulto" class="col-sm-12 col-form-label">Nº Adultos</label>
+                                <div class="col-sm-10">
+                                    <input type="number" wire:model.lazy="eventoAdulto" class="form-control"
+                                        name="eventoAdulto" id="eventoAdulto" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoContacto" class="col-sm-12 col-form-label">Contacto</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model.lazy="eventoContacto" class="form-control"
+                                        name="eventoContacto" id="eventoContacto" placeholder="Contacto">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoParentesco" class="col-sm-12 col-form-label">Parentesco</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model.lazy="eventoParentesco" class="form-control"
+                                        name="eventoParentesco" id="eventoParentesco" placeholder="Parentesco">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoTelefono" class="col-sm-12 col-form-label">Telefono</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model.lazy="eventoTelefono" class="form-control"
+                                        name="eventoTelefono" id="eventoTelefono" placeholder="Telefono">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoLugar" class="col-sm-12 col-form-label">Lugar</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model.lazy="eventoLugar" class="form-control"
+                                        name="eventoLugar" id="eventoLugar" placeholder="Lugar">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="eventoLocalidad" class="col-sm-12 col-form-label">Localidad</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model.lazy="eventoLocalidad" class="form-control"
+                                        name="eventoLocalidad" id="eventoLocalidad" placeholder="Localidad">
+                                </div>
+                            </div>
+                            <!-- Confirmacion Email -->
+                            <div class="form-group col-md-4">
+                                <label for="eventoMontaje" class="col-sm-12 col-form-label">Posibilidad
+                                    de Montaje</label>
+                                <div class="col-sm-10">
+                                    <textarea wire:model.lazy="eventoMontaje" id="eventoMontaje"></textarea>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Tipo
+                                de servicio a contratar</h5>
                         </div>
-
-                        {{-- <div class="row setup-content {{ $currentStep != 4 ? 'displayNone' : '' }}" id="step-4">
-                            <select class="input-group-text" name="diasSelect" id="diasSelect"
-                                wire:model.defer="dia">
-                                <option class="dropdown-item" value="">Servicio</option>
-                                @foreach ($dias as $i => $day)
-                                    <option class="dropdown-item" wire:click="setUpServiceForm({{ $i }})"
-                                        value="{{ $day }}">{{ "Dia $i $day" }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <select class="input-group-text" name="packSelect" id="packSelect"
-                                wire:model.defer="pack">
-                                <option class="dropdown-item" value="">Paquete</option>
-                                @foreach ($packs as $i => $pack)
-                                    <option class="dropdown-item" value="{{ $pack->id }}">
-                                        {{ "Paquete $pack->nombre" }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn btn-primary"
-                                wire:click="addServiceFieldFromPack">+Paquete</button>
-                            @if (count($serviciosListDia))
-                                @foreach ($serviciosListDia[$dia] as $key => $servicioEvento)
-                                    <br>
-                                    <style>
-                                        .servicio {
-                                            padding: 5px;
-                                            background-color: rgb(184, 245, 184)
-                                        }
-
-                                        .programa {
-                                            background-color: rgb(204, 233, 243);
-                                            padding: 5px;
-                                        }
-                                    </style>
-
-                                    <div class="servicio">
-
-                                        <div class="input-group mb-3 servicio">
-
-                                            <select class="input-group-text"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.id_servicio"
-                                                id="serviciosListDia{{ $dia }}.{{ $key }}.id_servicio"
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.id_servicio">
-                                                <option class="dropdown-item" value="">Servicio</option>
-                                                @foreach ($servicios as $servicio)
-                                                    <option class="dropdown-item"
-                                                        wire:click="setDefaultServicios({{ $key }}, {{ $servicio->id }}, {{ $dia }})"
-                                                        value="{{ $servicio->id }}">{{ $servicio->nombre }}
-                                                    </option>
-                                                @endforeach
-                                                <option class="dropdown-item" value=""
-                                                    wire:click.prevetn="crearServicio">
-                                                    Crear
-                                                    Servicio</option>
-                                            </select>
-
-
-                                            <span class="input-group-text">Importe Base:
-                                                {{ $servicioEvento['importeBase'] }}€</span>
-
-                                            <span class="input-group-text">Descuento </span>
-                                            <input type="number"
-                                                wire:change="applyServiceDiscount({{ $key }})"
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.descuento"
-                                                class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.descuento"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.descuento"
-                                                placeholder="0">
-                                            <span class="input-group-text">% </span>
-
-                                            <span class="input-group-text">Total:
-                                                {{ $servicioEvento['importe'] }}€</span>
-
-                                            <span class="input-group-text">Comienzo Montaje </span>
-                                            <input type="time"
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.comienzoMontaje"
-                                                class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.comienzoMontaje"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.comienzoMontaje"
-                                                {{-- wire:change="refreshEndTime({{ $key }})"  --}} {{-- placeholder="00:00">
-
-                                            <span class="input-group-text">Tiempo Montaje </span>
-                                            <input type="number" required
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.tiempoMontaje"
-                                                wire:change="refreshEndTime({{ $key }})"
-                                                class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.tiempoMontaje"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.tiempoMontaje"
-                                                placeholder="0">
-                                            <span class="input-group-text">Minutos </span>
-
-                                        </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">Hora Inicio </span>
-                                            <input type="time"
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.horaInicio"
-                                                class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.horaInicio"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.horaInicio"
-                                                wire:change="refreshEndTime({{ $key }})"
-                                                placeholder="00:00">
-
-                                            <span class="input-group-text">Duración </span>
-                                            <input type="number" required
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.tiempo"
-                                                wire:change="refreshEndTime({{ $key }})"
-                                                class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.tiempo"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.tiempo"
-                                                placeholder="0">
-                                            <span class="input-group-text">Horas </span>
-
-                                            <span class="input-group-text">
-                                                Hora final:
-                                                {{ substr($servicioEvento['horaFin'], 0, 5) }}
-                                            </span>
-
-                                            <span class="input-group-text">Tiempo Desmontaje </span>
-                                            <input type="number" required
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.tiempoDesmontaje"
-                                                {{-- wire:change="refreshEndTime({{ $key }})"   --}} {{-- class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.tiempoDesmontaje"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.tiempoDesmontaje"
-                                                placeholder="0">
-                                            <span class="input-group-text">Minutos </span>
-
-                                            <span class="input-group-text">Monitores </span>
-                                            <input type="number"
-                                                wire:change="refreshNumMonitores({{ $key }})"
-                                                wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.numMonitores"
-                                                class="form-control"
-                                                name="serviciosListDia.{{ $dia }}.{{ $key }}.numMonitores"
-                                                id="serviciosListDia.{{ $dia }}.{{ $key }}.numMonitores"
-                                                placeholder="1">
-
-
-
-
-                                        </div>
-                                        <div class="input-group mb-3">
-                                            <button type="button" class="btn btn-primary"
-                                                @if ($serviciosListDia[$dia][$key]['id_servicio'] == 0) disabled @endif
-                                                wire:click="addServiceField({{ $dia }})">+Servicio</button>
-
-
-                                            <button type="button" class="btn btn-danger"
-                                                @if (count($serviciosListDia[$dia]) <= 1) disabled @endif
-                                                wire:click="removeServicio({{ $key }})">Eliminar</button>
-                                        </div>
-                                    </div>
-                                    @if ($serviciosListDia[$dia][$key]['numMonitores'] > 0)
-                                        <div class="programa" style="width: 100%">
-                                            <div class="container-md text-center">
-                                                <h4>Monitores:</h4>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    @foreach ($serviciosListDia[$dia][$key]['programas'] as $i => $programaServicio)
-                                        <div class="programa">
-
-
-                                            <div class="input-group mb-3">
-                                                <select class="input-group-text" required
-                                                    name="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.'id_monitor'"
-                                                    id="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.'id_monitor'"
-                                                    wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.id_monitor">
-                                                    <option class="dropdown-item" value="">Monitor
-                                                        {{ $i + 1 }}</option>
-                                                    @foreach ($monitores as $monitor)
-                                                        <option class="dropdown-item" value="{{ $monitor->id }}">
-                                                            {{ $this->nombreMonitor($monitor->id) }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <span class="input-group-text">Horas</span>
-                                                <input type="number" required
-                                                    wire:change="checkTime({{ $key }}, {{ $i }})"
-                                                    wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.horas"
-                                                    class="form-control"
-                                                    name="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.horas"
-                                                    id="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.horas"
-                                                    placeholder="1">
-
-                                                <span class="input-group-text">Sueldo</span>
-
-
-                                                <input type="number" required
-                                                    wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.precioMonitor"
-                                                    wire:change="sumarCostoMonitor({{ $servicioEvento['id_servicio'] }}, {{ $key }}, {{ $i }})"
-                                                    class="form-control"
-                                                    name="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.precioMonitor"
-                                                    id="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.precioMonitor">
-                                                <span class="input-group-text">€</span>
-
-
-                                                <span class="input-group-text">Desplazamiento</span>
-
-
-                                                <input type="number" required
-                                                    wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.costoDesplazamiento"
-                                                    class="form-control"
-                                                    name="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.costoDesplazamiento"
-                                                    id="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.costoDesplazamiento"
-                                                    wire:change="sumarCostoMonitor({{ $servicioEvento['id_servicio'] }}, {{ $key }}, {{ $i }})"
-                                                    placeholder="1">
-                                                <span class="input-group-text">€</span>
-
-                                                <span class="input-group-text">Inicio</span>
-                                                <input type="time" required
-                                                    wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.comienzoEvento"
-                                                    class="form-control"
-                                                    name="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.comienzoEvento"
-                                                    id="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.comienzoEvento"
-                                                    placeholder="1">
-                                                <span class="input-group-text">Comienzo Montaje</span>
-                                                <input type="time" required
-                                                    wire:model.defer="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.comienzoMontaje"
-                                                    class="form-control"
-                                                    name="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.comienzoMontaje"
-                                                    id="serviciosListDia.{{ $dia }}.{{ $key }}.programas.{{ $i }}.comienzoMontaje"
-                                                    placeholder="1">
-
-
-                                            </div>
-
-                                        </div>
-                                    @endforeach
-                                @endforeach
-                            @endif
-
-
-                            @if (count($serviciosListDia) > 0)
-                                <div class="container text-center">
-                                    <br>
-                                    <br>
-                                    @if ($addObservaciones)
-                                        <h2>Observaciones</h2>
-                                        <textarea class="form-control" wire:model="observaciones" id="observaciones" rows="5"></textarea>
-                                    @else
-                                        <button type="button" wire:click="allowObs"
-                                            class="btn btn-outline-info">Añadir
-                                            observaciones</button>
-                                    @endif
-                                    <br>
-                                    <br>
+                        <div class="col-md-12 ms-1" style="margin-top: -10px !important;">
+                            <fieldset class="row ms-1 scheduler-border justify-content-center">
+                                <div class="col-sm-6 d-inline-flex align-items-center ms-1"
+                                    style="margin-top: 20px !important;">
+                                    <input class="form-check-input mt-0" wire:model="tipo_seleccionado"
+                                        type="radio" value="pack" id="check1">
+                                    <label for="check1" class="col-form-label">Pack de servicio</label>
                                 </div>
-                            @endif
-
-                            @if (count($serviciosListDia) > 0)
-
-                                <div class="container-md ">
-                                    <div class="container-md text-center">
-                                        <h2>RESERVA SERVICIOS CONTRATADOS</h2>
-                                    </div>
-                                    <br>
-                                    <div class="input-group ms">
-
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            wire:click="allowDisabDisc"">
-                                            @if ($addDiscount)
-                                                Eliminar descuento
-                                            @else
-                                                Añadir descuento
-                                            @endif
-                                        </button>
-                                        @if ($addDiscount)
-                                            <span class="input-group-text">Descuento</span>
-                                            <input type="number" wire:change="getTotalPrice"
-                                                wire:model.defer="descuento" class="form-control" name="descuento"
-                                                id="descuento" placeholder="0">
-                                            <span class="input-group-text">%</span>
-
-                                            <span class="input-group-text">Total Servicios Contratados:</span>
-                                            <span
-                                                class="input-group-text">{{ number_format($precioFinal, 2, ',', '.') }}€</span>
-                                            <span class="input-group-text">Entrega:</span>
-                                            <input type="number" wire:change="getTotalPrice"
-                                                wire:model.defer="adelanto" class="form-control" name="adelanto"
-                                                id="adelanto" placeholder="0">
-                                            <span class="input-group-text">%</span>
-                                            <span
-                                                class="input-group-text">{{ number_format($entregaDiscount, 2, ',', '.') }}€</span>
-                                        @else
-                                            <span class="input-group-text">Total Servicios Contratados:</span>
-                                            <span
-                                                class="input-group-text">{{ number_format($precioBase, 2, ',', '.') }}€</span>
-                                            <span class="input-group-text">Entrega:</span>
-                                            <input type="number" wire:change="getTotalPrice"
-                                                wire:model.defer="adelanto" class="form-control" name="adelanto"
-                                                id="adelanto" placeholder="0">
-                                            <span class="input-group-text">%</span>
-                                            <span
-                                                class="input-group-text">{{ number_format($entrega, 2, ',', '.') }}€</span>
-                                        @endif
-                                    </div>
-
-                            @endif
-                        </div> --}}
-
-                        <div class="row setup-content {{ $currentStep != 3 ? 'displayNone' : '' }}" id="step-3">
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <h5><label for="tipo_seleccionado" class="col-sm-12 col-form-label">¿Qué se va a
-                                            añadir?</label></h5>
+                                <div class="col-sm-2 d-inline-flex align-items-center ms-auto"
+                                    style="margin-top: 20px !important;">
+                                    <input class="form-check-input mt-0" wire:model="tipo_seleccionado"
+                                        type="radio" value="individual" id="check2">
+                                    <label for="check2" class="col-form-label">Servicio individual</label>
                                 </div>
-                                <div class="col-md-6" style="margin-top: -50px !important;">
-                                    <div class="col-md-1">
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                                Datos
+                                del servicio a contratar</h5>
+                        </div>
+                        @if ($tipo_seleccionado == 'individual')
+                            <div class="form-group col-md-6">
+                                <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
+                                <div class="col-md-12">
+                                    <Select wire:model="servicio_seleccionado" class="form-control"
+                                        wire:change='cambioPrecioServicio()' name="servicio_seleccionado"
+                                        id="servicios">
+                                        <option value="0">Selecciona un servicio.</option>
+                                        @foreach ($servicios as $keys => $servicio)
+                                            <option class="dropdown-item" value="{{ $servicio->id }}">
+                                                {{ $servicio->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </Select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
+                                <div class="col-md-12">
+                                    <input type="text" wire:model.lazy="precioFinalServicio"
+                                        wire:change="cambioTiempoServicio()" class="form-control"
+                                        name="precioFinalServicio" id="precioFinalServicio"
+                                        placeholder="Precio final">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
+                                <div class="col-md-12">
+                                    <input type="number" wire:model.lazy="numero_monitores"
+                                        min="{{ $servicio->minMonitor }}" wire:change="cambioPrecioServicio()"
+                                        class="form-control" name="numero_monitores" id="numero_monitores"
+                                        placeholder="Número de monitores">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2 text-center">
+                                <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                                <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
+                                <div class="col-md-12">
+                                    <input type="time" wire:model="tiempo" wire:change="cambioTiempoServicio()"
+                                        class="form-control" name="tiempo" placeholder="00:00:00">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="tiempo_montaje" class="col-sm-12 col-form-label">Tiempo
+                                    montaje</label>
+                                <div class="col-md-12">
+                                    <input type="time" wire:model="tiempoMontaje"
+                                        wire:change="cambioTiempoServicio()" class="form-control" name="tiempo"
+                                        placeholder="00:00:00">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="hora_finalizacion" class="col-sm-12 col-form-label">Tiempo
+                                    desmontaje</label>
+                                <div class="col-md-12">
+                                    <input type="time" wire:model="tiempoDesmontaje"
+                                        wire:change="cambioTiempoServicio()" class="form-control"
+                                        name="hora_finalizacion" placeholder="00:00:00">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="hora_montaje" class="col-sm-12 col-form-label">Hora
+                                    montaje</label>
+                                <div class="col-md-12">
+                                    <input type="time" wire:model="horaMontaje"
+                                        wire:change="cambioTiempoServicio()" class="form-control" name="hora_inicio"
+                                        placeholder="00:00:00">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="hora_inicio" class="col-sm-12 col-form-label">Hora
+                                    inicio</label>
+                                <div class="col-md-12">
+                                    <input type="time" wire:model="hora_inicio"
+                                        wire:change="cambioTiempoServicio()" class="form-control" name="hora_inicio"
+                                        placeholder="00:00:00">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                                    finalización</label>
+                                <div class="col-md-12">
+                                    <input type="time" wire:model="hora_finalizacion"
+                                        wire:change="cambioTiempoServicio()" class="form-control"
+                                        name="hora_finalizacion" placeholder="00:00:00">
+                                </div>
+                            </div>
+                        @elseif($tipo_seleccionado == 'pack')
+                            <div class="form-group col-md-10">
+                                <label for="diaEvento" class="col-sm-12 col-form-label">Packs de
+                                    servicios</label>
+                                <div class="col-md-12">
+                                    <Select wire:model="pack_seleccionado" class="form-control"
+                                        name="pack_seleccionado" id="pack_seleccionado">
+                                        <option value="0">Selecciona un paquete de servicios.</option>
+                                        @foreach ($packs as $keys => $pack)
+                                            <option class="dropdown-item" value="{{ $pack->id }}" selected>
+                                                {{ $pack->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </Select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2 text-center">
+                                <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+
+                                <button class="btn btn-primary w-100" wire:click.prevent="addPack()">Añadir</button>
+                            </div>
+                            @if ($pack_seleccionado != null)
+                                @foreach ($packs->where('id', $pack_seleccionado)->first()->servicios()->get() as $keyPack => $servicio)
+                                    <div class="form-group col-md-1">
                                         &nbsp;
                                     </div>
-                                    <h6>
-                                        <div class="col-md-11">
-                                            <input wire:model="tipo_seleccionado" name="tipo_seleccionado"
-                                                type="radio" value="pack" /> Packs de servicios
-                                            &nbsp;
-                                            &nbsp;
-                                            &nbsp;
-
-                                            <input wire:model="tipo_seleccionado" name="tipo_seleccionado"
-                                                type="radio" value="individual" /> Servicio individual
-                                        </div>
-                                    </h6>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                @if ($tipo_seleccionado == 'individual')
-                                    <div class="form-group col-md-6">
-                                        <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
+                                    <div class="form-group col-md-5">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Servicio</label>
                                         <div class="col-md-12">
-                                            <Select wire:model="servicio_seleccionado" class="form-control"
-                                                name="servicio_seleccionado" id="servicios">
-                                                <option value="0">Selecciona un servicio.</option>
-                                                @foreach ($servicios as $keys => $servicio)
-                                                    <option class="dropdown-item" value="{{ $servicio->id }}">
-                                                        {{ $servicio->nombre }}
-                                                    </option>
-                                                @endforeach
-                                            </Select>
+                                            <input type="text" value="{{ $servicio->nombre }}"
+                                                class="form-control" name="precioServicio" placeholder="Evento">
                                         </div>
                                     </div>
                                     <div class="form-group col-md-2">
                                         <label for="precioServicio" class="col-sm-12 col-form-label">Monitores</label>
                                         <div class="col-md-12">
-                                            <input type="number" wire:model.lazy="numero_monitores"
+                                            <input type="number" wire:model="preciosMonitores.{{ $keyPack }}"
                                                 min="{{ $servicio->minMonitor }}"
-                                                wire:change="cambioPrecioServicio()" class="form-control"
-                                                name="numero_monitores" id="numero_monitores"
-                                                placeholder="Número de monitores">
+                                                wire:init="asignarValorInicial('{{ $keyPack }}', '{{ $servicio->minMonitor }}')"
+                                                wire:change='cambioPrecioPack' class="form-control"
+                                                name="preciosMonitores.{{ $keyPack }}"
+                                                placeholder="Número de monitores" required>
                                         </div>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Precio</label>
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Precio
+                                            base</label>
                                         <div class="col-md-12">
-                                            <input type="text" wire:model.lazy="precioFinalServicio"
-                                                class="form-control" name="precioFinalServicio"
-                                                id="precioFinalServicio" placeholder="Precio final">
+                                            <input type="number" class="form-control" name="precioServicio"
+                                                wire:change='cambioTiempoPack'
+                                                wire:change='cambioPrecioPack("{{ $keyPack }}")'
+                                                placeholder="Dias">
                                         </div>
                                     </div>
-                                    <div class="form-group col-md-2 text-center">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                                        <button class="btn btn-primary w-100"
-                                            wire:click.prevent="addServicio">Añadir</button>
-                                    </div>
-                                @elseif($tipo_seleccionado == 'pack')
-                                    <div class="form-group col-md-10">
-                                        <label for="diaEvento" class="col-sm-12 col-form-label">Packs de
-                                            servicios</label>
+                                    <div class="form-group col-md-2">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
                                         <div class="col-md-12">
-                                            <Select wire:model="pack_seleccionado" class="form-control"
-                                                name="pack_seleccionado" id="pack_seleccionado">
-                                                <option value="0">Selecciona un paquete de servicios.</option>
-                                                @foreach ($packs as $keys => $pack)
-                                                    <option class="dropdown-item" value="{{ $pack->id }}"
-                                                        selected>
-                                                        {{ $pack->nombre }}
-                                                    </option>
-                                                @endforeach
-                                            </Select>
+                                            <input type="time" wire:model="tiemposPack.{{ $keyPack }}"
+                                                wire:change="cambioTiempoPack()" class="form-control" name="tiempo"
+                                                placeholder="00:00:00">
                                         </div>
                                     </div>
-                                    <div class="form-group col-md-2 text-center">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-
-                                        <button class="btn btn-primary w-100"
-                                            wire:click.prevent="addPack()">Añadir</button>
+                                    <div class="form-group col-md-1">
+                                        <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
+                                            class="btn btn-circle btn-primary"
+                                            target="_blank">{{ $keyPack + 1 }}</a>
                                     </div>
-                                    @if ($pack_seleccionado != null)
-                                        @foreach ($packs->where('id', 1)->first()->servicios()->get() as $keyPack => $servicio)
-                                            <div class="form-group col-md-4">
-                                                <label for="precioServicio"
-                                                    class="col-sm-12 col-form-label">Servicio</label>
-                                                <div class="col-md-12">
-                                                    <input type="text" value="{{ $servicio->nombre }}"
-                                                        class="form-control" name="precioServicio"
-                                                        placeholder="Evento">
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label for="precioServicio"
-                                                    class="col-sm-12 col-form-label">Monitores</label>
-                                                <div class="col-md-12">
-                                                    <input type="number"
-                                                        wire:model="preciosMonitores.{{ $keyPack }}"
-                                                        min="{{ $servicio->minMonitor }}"
-                                                        wire:change='cambioPrecioPack' class="form-control"
-                                                        name="precioServicio" placeholder="Número de monitores"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label for="precioServicio" class="col-sm-12 col-form-label">Precio
-                                                    base</label>
-                                                <div class="col-md-12">
-                                                    <input type="text" class="form-control" name="precioServicio"
-                                                        wire:change='cambioPrecioPack'
-                                                        @if (isset($preciosMonitores[$keyPack])) value="{{ $servicio->precioBase + $preciosMonitores[$keyPack] * $servicio->precioMonitor }} "
-                                                       @else
-                                                       value="{{ $servicio->precioBase }}" @endif
-                                                        placeholder="Dias" disabled>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                        <div class="form-group col-md-12">
-                                            <label for="precioServicio" class="col-sm-12 col-form-label">Precio final
-                                                del pack</label>
-                                            <div class="col-md-12">
-                                                <input type="number" class="form-control"
-                                                    wire:model="precioFinalPack" placeholder="Evento">
-                                            </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
+                                            montaje</label>
+                                        <div class="col-md-12">
+                                            <input type="time" wire:model="tiemposMontajePack.{{ $keyPack }}"
+                                                wire:change="cambioTiempoPack()" class="form-control" name="tiempo"
+                                                placeholder="00:00:00">
                                         </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
+                                            desmontaje</label>
+                                        <div class="col-md-12">
+                                            <input type="time"
+                                                wire:model="tiemposDesmontajePack.{{ $keyPack }}"
+                                                wire:change="cambioTiempoPack()" class="form-control"
+                                                name="hora_finalizacion" placeholder="00:00:00">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                                            montaje</label>
+                                        <div class="col-md-12">
+                                            <input type="time" wire:model="horasMontajePack.{{ $keyPack }}"
+                                                wire:change="cambioTiempoPack()" class="form-control"
+                                                name="hora_inicio" placeholder="00:00:00">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                                            inicio</label>
+                                        <div class="col-md-12">
+                                            <input type="time" wire:model="horasInicioPack.{{ $keyPack }}"
+                                                wire:change="cambioTiempoPack()" class="form-control"
+                                                name="hora_inicio" placeholder="00:00:00">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                                            finalización</label>
+                                        <div class="col-md-12">
+                                            <input type="time"
+                                                wire:model="horasFinalizacionPack.{{ $keyPack }}"
+                                                wire:change="cambioTiempoPack()" class="form-control"
+                                                name="hora_finalizacion" placeholder="00:00:00">
+                                        </div>
+                                    </div>
+                                @endforeach
+                                <div class="form-group col-md-12">
+                                    <label for="precioServicio" class="col-sm-12 col-form-label">Precio final
+                                        del pack</label>
+                                    <div class="col-md-12">
+                                        <input type="number" class="form-control" wire:model="precioFinalPack"
+                                            placeholder="Evento">
+                                    </div>
+                                </div>
+                            @endif
+                        @else
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <div class="form-group col-md-12">
+                        <h5 class="ms-3"
+                            style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                            Servicios contratados</h5>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <h6 class="ms-3"
+                            style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                            Packs de servicio</h6>
+                        @if ($eventoMontaje != 1)
+                            <table class="table table-striped table-bordered nowrap">
+                                @foreach ($listaPacks as $packIndex => $pack)
+                                    @if ($packIndex == 0)
+                                        <tr>
+                                            <th>Pack de servicio</th>
+                                            <th>Precio final</th>
+                                            <th>Monitores contratados</th>
+                                            <th>Tiempo total</th>
+                                            <th>Eliminar</th>
+                                        </tr>
+                                    @else
+                                        <tr>
+                                            <th class="header">Pack de servicio</th>
+                                            <th class="header">Precio final</th>
+                                            <th class="header">Monitores contratados</th>
+                                            <th class="header">Tiempo total</th>
+                                            <th class="header">Eliminar</th>
+                                        </tr>
                                     @endif
-                                @endif
-                                <div class="form-group col-md-12">
-                                    <h4>Listado de packs y servicios seleccionados</h4>
-                                    <h5> Packs seleccionados </h5>
-                                    <ul>
-                                        @foreach ($listaPacks as $packIndex => $pack)
-                                            <li>
-                                                <h6>{{ $packs->where('id', $pack['id'])->first()->nombre }} -
-                                                    {{ $pack['precioFinal'] }} € -
-                                                    {{ array_sum($pack['numero_monitores']) }} monitores <button
-                                                        type="button" class="btn btn-sm btn-danger"
-                                                        wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
-                                                </h6>
-
-                                                <ul>
-                                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                                        <li> {{ $servicioPack->nombre }} -
-                                                            {{ $pack['numero_monitores'][$keyPack] }} monitores
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                    <h5> Servicios individuales seleccionados </h5>
-                                    <ul>
-                                        @foreach ($listaServicios as $servicioIndex => $itemServicio)
-                                            <li>
-                                                <h6>{{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                                    -
-                                                    {{ $itemServicio['precioFinal'] }} € -
-                                                    {{ $itemServicio['numero_monitores'] }} monitores <button
-                                                        type="button" class="btn btn-sm btn-danger"
-                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                                </h6>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-
-
-                                <div class="form-group col-md-4">
-                                    <label for="precioServicio" class="col-sm-12 col-form-label">Subtotal</label>
-                                    <div class="col-md-12">
-                                        <input type="text" wire:model.lazy="precioFinal" class="form-control"
-                                            name="precioFinal" id="precioFinal" disabled placeholder="Precio final">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="precioServicio" class="col-sm-12 col-form-label">Descuento</label>
-                                    <div class="col-md-12">
-                                        <input type="number" wire:model.lazy="descuento" class="form-control"
-                                            name="descuento" id="descuento" max="{{ $this->precioFinal }}"
-                                            placeholder="Precio final">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="precioServicio" class="col-sm-12 col-form-label">Adelanto</label>
-                                    <div class="col-md-12">
-                                        <input type="number" wire:model.lazy="adelanto" class="form-control"
-                                            name="adelanto  " id="adelanto"
-                                            max="{{ $this->precioFinal - $this->descuento }}"
-                                            placeholder="Precio final">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                                    <h4>Total: {{ $this->precioFinal - $this->descuento }} € @if ($adelanto > 0 || $adelanto != null)
-                                            ( {{ $this->adelanto }} € pagado por adelantado. )
+                                    <tr>
+                                        <td class="izquierda">{{ $packs->where('id', $pack['id'])->first()->nombre }}
+                                        </td>
+                                        <td>{{ $pack['precioFinal'] }} € </td>
+                                        <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
+                                        <td> {{ $this->sumarTiempos($packIndex) }} h </td>
+                                        <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
+                                                wire:click.prevent="deletePack('{{ $packIndex }}')">X</button></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="header">Servicio contratado</th>
+                                        <th class="header">Monitores contratados</th>
+                                        <th class="header">Duración</th>
+                                        <th class="header">Hora de inicio</th>
+                                        <th class="header">Hora de finalización</th>
+                                    </tr>
+                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                                        @if (
+                                            $keyPack + 1 !=
+                                                $packs->where('id', $pack['id'])->first()->servicios()->count())
+                                            <tr>
+                                                <td class="izquierda"> {{ $servicioPack->nombre }} </td>
+                                                <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                                <td> {{ $pack['tiempos'][$keyPack] }} h </td>
+                                                <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                                <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }}) </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td class="izquierda"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    {{ $servicioPack->nombre }} </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $pack['tiempos'][$keyPack] }} h </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    ({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                                <td class="derecha"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    {{ $pack['horas_finalizacion'][$keyPack] }})
+                                                </td>
+                                            </tr>
                                         @endif
-                                    </h4>
-                                </div>
-                                {{-- <div class="form-group col-md-12">
-                                    <button type="button" id="guardar-evento" class="btn btn-info guardar w-100 mt-3"
-                                        wire:click="submitEvento">Guardar Evento</button>
-                                    <button type="button" class="btn btn-danger guardar evento w-100 mt-3"
-                                        wire:click="uncheckEvent">Cancelar Edición</button>
-                                </div> --}}
+                                    @endforeach
+                                @endforeach
+                            </table>
+                            <h6 class="ms-3"
+                                style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                                Servicios individuales</h6>
+                            @if (count($listaServicios) > 0)
+                                <table class="table table-striped table-bordered nowrap">
+                                    <tr>
+                                        <th class="header">Servicio contratado</th>
+                                        <th class="header">Monitores contratados</th>
+                                        <th class="header">Precio</th>
+                                        <th class="header">Duración</th>
+                                        <th class="header">Hora de inicio</th>
+                                        <th class="header">Hora de finalización</th>
+                                        <th class="header">Eliminar</th>
+                                    </tr>
+                                    @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                                        @if ($servicioIndex + 1 == count($listaServicios))
+                                            <tr>
+                                                <td class="izquierda">
+                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                                </td>
+                                                <td>{{ $itemServicio['numero_monitores'] }}</td>
+                                                <td> {{ $itemServicio['precioFinal'] }} €</td>
+                                                <td> {{ $itemServicio['tiempo'] }} h</td>
+                                                <td> {{ $itemServicio['hora_inicio'] }} h</td>
+                                                <td> {{ $itemServicio['hora_finalizacion'] }} h</td>
+                                                <td class="derecha"><button type="button"
+                                                        class="btn btn-sm btn-danger"
+                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td class="izquierda"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                                </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['numero_monitores'] }}</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['precioFinal'] }} €</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['tiempo'] }} h</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['hora_inicio'] }} h</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['hora_finalizacion'] }} h</td>
+                                                <td class="derecha"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    <button type="button" class="btn btn-sm btn-danger"
+                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </table>
+                            @endif
+                        @else
+                            <table class="table table-striped table-bordered nowrap">
+                                @foreach ($listaPacks as $packIndex => $pack)
+                                    @if ($packIndex == 0)
+                                        <tr>
+                                            <th>Pack de servicio</th>
+                                            <th>Precio final</th>
+                                            <th>Monitores contratados</th>
+                                            <th>Tiempo total</th>
+                                            <th>Eliminar</th>
+                                        </tr>
+                                    @else
+                                        <tr>
+                                            <th colspan="3" class="header">Pack de servicio</th>
+                                            <th class="header">Precio final</th>
+                                            <th class="header">Monitores contratados</th>
+                                            <th colspan="2" class="header">Tiempo total</th>
+                                            <th class="header">Eliminar</th>
+                                        </tr>
+                                    @endif
+                                    <tr>
+                                        <td class="izquierda" colspan="3">
+                                            {{ $packs->where('id', $pack['id'])->first()->nombre }}
+                                        </td>
+                                        <td>{{ $pack['precioFinal'] }} € </td>
+                                        <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
+                                        <td colspan="2"> {{ $this->sumarTiempos($packIndex) }} h </td>
+                                        <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
+                                                wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="header">Servicio contratado</th>
+                                        <th class="header">Monitores contratados</th>
+                                        <th class="header">Duración</th>
+                                        <th class="header">Duración del montaje</th>
+                                        <th class="header">Duración del desmontaje</th>
+                                        <th class="header">Hora de montaje</th>
+                                        <th class="header">Hora de inicio</th>
+                                        <th class="header">Hora de finalización</th>
+                                    </tr>
+                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                                        @if (
+                                            $keyPack + 1 !=
+                                                $packs->where('id', $pack['id'])->first()->servicios()->count())
+                                            <tr>
+                                                <td class="izquierda"> {{ $servicioPack->nombre }} </td>
+                                                <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                                <td> {{ $pack['tiempos'][$keyPack] }} h </td>
+                                                <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
+                                                <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
+                                                <td> {{ $pack['horas_desmontaje'][$keyPack] }} h </td>
+                                                <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                                <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td class="izquierda"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    {{ $servicioPack->nombre }} </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $pack['tiempos'][$keyPack] }} h </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    ({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                                <td class="derecha"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    {{ $pack['horas_finalizacion'][$keyPack] }})
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                @endforeach
+                            </table>
+                            <h6 class="ms-3"
+                                style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                                Servicios individuales</h6>
+                            @if (count($listaServicios) > 0)
+                                <table class="table table-striped table-bordered nowrap">
+                                    <tr>
+                                        <th class="header">Servicio contratado</th>
+                                        <th class="header">Monitores contratados</th>
+                                        <th class="header">Precio</th>
+                                        <th class="header">Duración</th>
+                                        <th class="header">Duración del montaje</th>
+                                        <th class="header">Duración del desmontaje</th>
+                                        <th class="header">Hora de montaje</th>
+                                        <th class="header">Hora de inicio</th>
+                                        <th class="header">Hora de finalización</th>
+                                        <th class="header">Eliminar</th>
+                                    </tr>
+                                    @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                                        @if ($servicioIndex + 1 == count($listaServicios))
+                                            <tr>
+                                                <td class="izquierda">
+                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                                </td>
+                                                <td>{{ $itemServicio['numero_monitores'] }}</td>
+                                                <td> {{ $itemServicio['precioFinal'] }} €</td>
+                                                <td> {{ $itemServicio['tiempo'] }} h</td>
+                                                <td> {{ $itemServicio['tiempo_montaje'] }} h</td>
+                                                <td> {{ $itemServicio['tiempo_desmontaje'] }} h</td>
+                                                <td> {{ $itemServicio['hora_montaje'] }}</td>
+                                                <td> {{ $itemServicio['hora_inicio'] }}</td>
+                                                <td> {{ $itemServicio['hora_finalizacion'] }}</td>
+                                                <td class="derecha"><button type="button"
+                                                        class="btn btn-sm btn-danger"
+                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td class="izquierda"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                                </td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['numero_monitores'] }}</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['precioFinal'] }} €</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['tiempo'] }} h</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['tiempo_montaje'] }} h</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['tiempo_desmontaje'] }} h</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['hora_montaje'] }}</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['hora_inicio'] }} h</td>
+                                                <td style="border-bottom: 1px solid black !important;">
+                                                    {{ $itemServicio['hora_finalizacion'] }} h</td>
+                                                <td class="derecha"
+                                                    style="border-bottom: 1px solid black !important;">
+                                                    <button type="button" class="btn btn-sm btn-danger"
+                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </table>
+                            @endif
+                        @endif
+                    </div>
+                    <div class="form-row justify-content-center">
+                        <div class="form-group col-md-3">
+                            <label for="precioServicio" class="col-sm-12 col-form-label">Subtotal</label>
+                            <div class="col-md-12">
+                                <input type="text" wire:model.lazy="precioFinal" class="form-control"
+                                    name="precioFinal" id="precioFinal" disabled placeholder="Precio final">
                             </div>
                         </div>
-                    </form>
-                    {{-- <div class="mb-3 row d-flex align-items-center">
-                        <button type="submit" class="btn btn-primary w-100">Guardar Presupuesto</button>
-                    </div>  --}}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Opciones de guardado</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
-                                Presupuesto</button>
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
-                                Presupuesto</button>
+                        <div class="form-group col-md-3">
+                            <label for="precioServicio" class="col-sm-12 col-form-label">Descuento</label>
+                            <div class="col-md-12">
+                                <input type="number" wire:model.lazy="descuento" class="form-control"
+                                    name="descuento" id="descuento" max="{{ $this->precioFinal }}"
+                                    placeholder="Precio final">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="precioServicio" class="col-sm-12 col-form-label">Adelanto</label>
+                            <div class="col-md-12">
+                                <input type="number" wire:model.lazy="adelanto" class="form-control"
+                                    name="adelanto" id="adelanto"
+                                    max="{{ $this->precioFinal - $this->descuento }}" placeholder="Precio final">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            @if ($estado != 'Cancelado')
-                                @if ($estado == 'Pendiente')
-                                    <button class="w-100 btn btn-success mb-2"
-                                    id="alertaAceptar">Aceptar
-                                        Presupuesto</button>
-                                    <button class="w-100 btn btn-danger mb-2"
-                                    id="alertaCancelar">Cancelar
-                                        Presupuesto</button>
-                                @else
-                                    <button class="w-100 btn btn-primary mb-2"
-                                        id="alertaFacturar">Facturar
-                                        Presupuesto</button>
-                                    <button class="w-100 btn btn-warning mb-2"
-                                        wire:click.prevent="alertaGuardar">Enviar
-                                        Presupuesto</button>
-                                    <button class="w-100 btn btn-info mb-2"
-                                        id="alertaImprimir">Descargar
-                                        PDF</button>
-                                @endif
+                    <div class="form-group col-md-12">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                        <h4>Total: {{ $this->precioFinal - $this->descuento }} € @if ($adelanto > 0 || $adelanto != null)
+                                ( {{ $this->adelanto }} € pagado por adelantado. )
                             @endif
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                                Sueldos de monitores y gasoil</h5>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="row">
+                                @foreach ($listaPacks as $packIndex => $pack)
+                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                                        <div class="row text-center">
+                                            <div class="col-md-12">
+                                                <label for="adelantoResumen"
+                                                    class="col-sm-12 col-form-label">Servicio</label>
+                                                <input type="text" id="adelantoResumen"
+                                                    class="form-control text-center"
+                                                    value="{{ $servicioPack->nombre }}" disabled>
+                                            </div>
+                                            @for ($i = 0; $i < $pack['numero_monitores'][$keyPack]; $i++)
+                                                <div class="col-md-6">
+                                                    <label for="adelantoResumen"
+                                                        class="col-sm-12 col-form-label">Monitor</label>
+                                                    <select class="form-control text-center"
+                                                        wire:model="listaPacks.{{ $packIndex }}.id_monitores.{{ $keyPack }}.{{ $i }}"
+                                                        name="servicio_seleccionado" id="monitores">
+                                                        <option value="0">Selecciona un monitor.</option>
+                                                        @foreach ($monitores as $keys => $monitor)
+                                                            <option class="dropdown-item"
+                                                                value="{{ $monitor->id }}">
+                                                                {{ $monitor->nombre }}
+                                                            </option>
+                                                        @endforeach
+                                                    </Select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="adelantoResumen"
+                                                        class="col-sm-12 col-form-label">Sueldo</label>
+                                                    <input type="number" id="adelantoResumen"
+                                                        wire:model="listaPacks.{{ $packIndex }}.sueldos_monitores.{{ $keyPack }}.{{ $i }}"
+                                                        class="form-control text-center">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="adelantoResumen"
+                                                        class="col-sm-12 col-form-label">Pendiente</label>
+                                                    <input type="number"
+                                                        wire:model="listaPacks.{{ $packIndex }}.pagos_pendientes.{{ $keyPack }}.{{ $i }}"
+                                                        class="form-control text-center">
+                                                </div>
+                                            @endfor
+                                        </div>
+                                    @endforeach
+                                @endforeach
+                                @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                                    <div class="row text-center">
+                                        <div class="col-md-12">
+                                            <label for="adelantoResumen"
+                                                class="col-sm-12 col-form-label">Servicio</label>
+                                            <input type="text" id="adelantoResumen"
+                                                class="form-control text-center"
+                                                value="{{ $servicios->find($itemServicio['id'])->nombre }}" disabled>
+                                        </div>
+                                        @for ($i = 0; $i < $itemServicio['numero_monitores']; $i++)
+                                            <div class="col-md-6">
+                                                <label for="adelantoResumen"
+                                                    class="col-sm-12 col-form-label">Monitor</label>
+                                                <select class="form-control text-center"
+                                                    wire:model="listaServicios.{{ $servicioIndex }}.id_monitores.{{ $i }}"
+                                                    name="servicio_seleccionado" id="monitores">
+                                                    <option value="0">Selecciona un monitor.</option>
+                                                    @foreach ($monitores as $keys => $monitor)
+                                                        <option class="dropdown-item" value="{{ $monitor->id }}">
+                                                            {{ $monitor->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="adelantoResumen"
+                                                    class="col-sm-12 col-form-label">Sueldo</label>
+                                                <input type="number" id="adelantoResumen"
+                                                    wire:model='listaServicios.{{ $servicioIndex }}.sueldo_monitores.{{ $i }}'
+                                                    value="{{ $servicios->find($itemServicio['id'])->precioMonitor }}"
+                                                    class="form-control text-center">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="adelantoResumen"
+                                                    class="col-sm-12 col-form-label">Pendiente de
+                                                    pago</label>
+                                                <input type="number" id="adelantoResumen"
+                                                    wire:model='listaServicios.{{ $servicioIndex }}.pago_pendiente.{{ $i }}'
+                                                    class="form-control text-center">
+                                            </div>
+                                        @endfor
+                                    </div>
+                                @endforeach
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                                Datos para la creación del contrato</h5>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-10 d-inline-flex align-items-center ms-5">
+                                <input class="form-check-input mt-0" wire:model="authImagen" type="checkbox"
+                                    id="authImagen">
+                                <label for="confEmail" class=" col-form-label">Autorizo la captación y difusión de
+                                    imágenes en medios propios.</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-10 d-inline-flex align-items-center ms-5">
+                                <input class="form-check-input mt-0" wire:model="authMenores" type="checkbox"
+                                    id="authMenores">
+                                <label for="confEmail" class=" col-form-label">En caso afirmativo, deseo que se
+                                    muestren los rostros de los menores. </label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-3 justify-content-center">
+            <div class="position-fixed">
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Opciones de guardado</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
+                                    presupuesto</button>
+                                <button class="w-100 btn btn-danger mb-2" wire:click.prevent="alertaEliminar">Eliminar
+                                    presupuesto</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Opciones de impresión</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Imprimir
+                                    datos de
+                                    presupuesto</button>
+                                <button class="w-100 btn btn-danger mb-2" wire:click.prevent="alertaCancelar">Imprimir
+                                    contrato</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            fieldset.scheduler-border {
+                border: 1px groove #ddd !important;
+                padding: 0 1.4em 1.4em 1.4em !important;
+                margin: 0 0 1.5em 0 !important;
+                -webkit-box-shadow: 0px 0px 0px 0px #000;
+                box-shadow: 0px 0px 0px 0px #000;
+            }
+
+            table {
+                border: 1px black solid !important;
+            }
+
+            th {
+                border-bottom: 1px black solid !important;
+                border: 1px black solid !important;
+                border-top: 1px black solid !important;
+            }
+
+            th.header {
+                border-bottom: 1px black solid !important;
+                border: 1px black solid !important;
+                border-top: 2px black solid !important;
+            }
+
+            td.izquierda {
+                border-left: 1px black solid !important;
+
+            }
+
+            td.derecha {
+                border-right: 1px black solid !important;
+
+            }
+
+            td.suelo {}
+        </style>
     </div>
-    <style>
-        .stepwizard-step p {
-            margin-top: 10px;
-        }
-
-        .stepwizard-row {
-            display: table-row;
-        }
-
-        .stepwizard {
-            display: table;
-            width: 100%;
-            position: relative;
-        }
-
-        .stepwizard-step button[disabled] {
-            opacity: 1 !important;
-            filter: alpha(opacity=100) !important;
-        }
-
-        .stepwizard-row:before {
-            top: 14px;
-            bottom: 0;
-            position: absolute;
-            content: " ";
-            width: 100%;
-            height: 1px;
-            background-color: #ccc;
-            z-order: 0;
-        }
-
-        .stepwizard-step {
-            display: table-cell;
-            text-align: center;
-            position: relative;
-        }
-
-        .btn-circle {
-            width: 30px;
-            height: 30px;
-            text-align: center;
-            padding: 6px 0;
-            font-size: 12px;
-            line-height: 1.428571429;
-            border-radius: 15px;
-        }
-
-        .displayNone {
-            display: none;
-        }
-    </style>
-
 </div>
 
+
 @section('scripts')
-    {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> --}}
-    {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
     <script>
-        // In your Javascript (external .js resource or <script> tag)
+        $("#alertaAceptar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro? Comprueba que todo está en orden.',
+                icon: 'warning',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para imprimir el presupuesto.',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('imprimirPresupuesto');
+                }
+            });
+        });
+
+        $("#alertaCancelar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                icon: 'error',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para imprimir contrato.',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('confirmedImprimir');
+                }
+            });
+        });
+
+        $("#alertaEliminar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro? No se podrá revertir la acción.',
+                icon: 'error',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para eliminar el presupuesto.',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('destroy');
+                }
+            });
+        });
 
 
+        $("#alertaGuardar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro? Comprueba que todo está en orden.',
+                icon: 'warning',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para guardar el presupuesto.',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('updateEvento');
+                }
+            });
+        });
+
+        $("#alertaImprimir").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro? Comprueba que todo está en orden.',
+                icon: 'warning',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para descargar el PDF del presupuesto.',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('imprimirPresupuesto');
+                }
+            });
+        });
+
+        $("#alertaFacturar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro? Comprueba que todo está en orden.',
+                icon: 'info',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para crear una factura para este presupuesto.',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('facturarPresupuesto');
+                }
+            });
+        });
         $.datepicker.regional['es'] = {
             closeText: 'Cerrar',
             prevText: '< Ant',
@@ -1172,90 +1435,7 @@
 
 
         $(document).ready(function() {
-            $("#alertaAceptar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro? Comprueba que todo está en orden.',
-                    icon: 'warning',
-                    text: 'Si estás seguro, pulsa el botón de "Confirmar" para aceptar el presupuesto.',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('aceptarPresupuesto');
-                    }
-                });
-            });
 
-            $("#alertaCancelar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro? No se podrá revertir la acción.',
-                    icon: 'error',
-                    text: 'Si estás seguro, pulsa el botón de "Confirmar" para cancelar el presupuesto.',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('cancelarPresupuesto');
-                    }
-                });
-            });
-
-            $("#alertaEliminar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro? No se podrá revertir la acción.',
-                    icon: 'error',
-                    text: 'Si estás seguro, pulsa el botón de "Confirmar" para eliminar el presupuesto.',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('destroy');
-                    }
-                });
-            });
-
-
-            $("#alertaGuardar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro? Comprueba que todo está en orden.',
-                    icon: 'warning',
-                    text: 'Si estás seguro, pulsa el botón de "Confirmar" para guardar el presupuesto.',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('updatePresupuestoValidacion');
-                    }
-                });
-            });
-
-            $("#alertaImprimir").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro? Comprueba que todo está en orden.',
-                    icon: 'warning',
-                    text: 'Si estás seguro, pulsa el botón de "Confirmar" para descargar el PDF del presupuesto.',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('imprimirPresupuesto');
-                    }
-                });
-            });
-
-            $("#alertaFacturar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro? Comprueba que todo está en orden.',
-                    icon: 'info',
-                    text: 'Si estás seguro, pulsa el botón de "Confirmar" para crear una factura para este presupuesto.',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('facturarPresupuesto');
-                    }
-                });
-            });
             $('.js-example-basic-single').select2();
             // $('.js-example-basic-single').on('change', function (e) {
             // console.log('change')

@@ -32,12 +32,12 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
       <!--Morris Chart CSS -->
-      <link rel="stylesheet" href="http://127.0.0.1:8000/plugins/morris/morris.css">
+      <link rel="stylesheet" href="{{env('app_url')}}plugins/morris/morris.css">
 
-      <link href="http://127.0.0.1:8000/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-      <link href="http://127.0.0.1:8000/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
-      <link href="http://127.0.0.1:8000/assets/css/icons.css" rel="stylesheet" type="text/css">
-      <link href="http://127.0.0.1:8000/assets/css/style.css" rel="stylesheet" type="text/css">
+      <link href="{{env('APP_URL')}}assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+      <link href="{{env('APP_URL')}}assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
+      <link href="{{env('APP_URL')}}assets/css/icons.css" rel="stylesheet" type="text/css">
+      <link href="{{env('APP_URL')}}assets/css/style.css" rel="stylesheet" type="text/css">
     {{-- <link rel="stylesheet" href="../css/metismenu.min.css"> --}}
     @yield('head')
 
@@ -96,7 +96,7 @@
 
         </div>
     </div>
-    <script src="../assets/js/jquery.min.js"></script>
+    <script src="{{env('app_url')}}assets/js/jquery.min.js"></script>
 
   <script src="https://code.jquery.com/jquery-3.6.1.min.js"
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
@@ -110,19 +110,19 @@
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>--}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="http://127.0.0.1:8000/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="http://127.0.0.1:8000/assets/js/metismenu.min.js"></script>
-    <script src="http://127.0.0.1:8000/assets/js/jquery.slimscroll.js"></script>
-    <script src="http://127.0.0.1:8000/assets/js/waves.min.js"></script>
+    <script src="{{env('app_url')}}assets/js/bootstrap.bundle.min.js"></script>
+    <script src="{{env('app_url')}}assets/js/metismenu.min.js"></script>
+    <script src="{{env('app_url')}}assets/js/jquery.slimscroll.js"></script>
+    <script src="{{env('APP_URL')}}assets/js/waves.min.js"></script>
 
     <!--Morris Chart-->
     {{-- <script src="../plugins/morris/morris.min.js"></script> --}}
-    <script src="http://127.0.0.1:8000/plugins/raphael/raphael.min.js"></script>
+    <script src="{{env('app_url')}}plugins/raphael/raphael.min.js"></script>
 
     {{-- <script src="../assets/pages/dashboard.init.js"></script> --}}
 
     <!-- App js -->
-    <script src="http://127.0.0.1:8000/assets/js/app.js"></script>
+    <script src="{{env('app_url')}}assets/js/app.js"></script>
 
     @livewireScripts
     @yield('scripts')

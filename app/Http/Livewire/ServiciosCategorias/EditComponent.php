@@ -5,6 +5,7 @@ namespace App\Http\Livewire\ServiciosCategorias;
 use App\Models\ServicioCategoria;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
 {
@@ -48,6 +49,7 @@ class EditComponent extends Component
         $servicioSave = $servicioCategoria->update([
             'nombre' => $this->nombre
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 33, $servicioCategoria->id));
 
         if ($servicioSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
@@ -75,7 +77,7 @@ class EditComponent extends Component
       // Eliminación
       public function destroy(){
 
-        $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
+        $this->alert('warning', '¿Seguro que desea borrar la categoría? No hay vuelta atrás', [
             'position' => 'center',
             'timer' => 3000,
             'toast' => false,
@@ -94,7 +96,8 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
-            'confirmDelete'
+            'confirmDelete',
+            'update'
         ];
     }
 
@@ -109,6 +112,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $servicio = ServicioCategoria::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 34, $servicio->id));
         $servicio->delete();
         return redirect()->route('servicios-categorias.index');
 

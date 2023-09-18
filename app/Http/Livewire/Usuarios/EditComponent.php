@@ -3,8 +3,10 @@
 namespace App\Http\Livewire\Usuarios;
 
 use App\Models\User;
+use App\Models\DepartamentosUser;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
 {
@@ -23,6 +25,7 @@ class EditComponent extends Component
     public function mount()
     {
         $usuarios = User::find($this->identificador);
+        $this->despartamentos = DepartamentosUser::all();
 
         $this->name = $usuarios->name;
         $this->surname = $usuarios->surname;
@@ -76,6 +79,7 @@ class EditComponent extends Component
             'email' => $this->email,
             'incative'=>$this->inactive,
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 27, $usuarios->id));
 
         if ($usuariosSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
@@ -122,7 +126,9 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
-            'confirmDelete'
+            'confirmDelete',
+            'destroy',
+            'update'
         ];
     }
 
@@ -137,6 +143,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $usuarios = User::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 28, $usuarios->id));
         $usuarios->delete();
         return redirect()->route('usuarios.index');
 

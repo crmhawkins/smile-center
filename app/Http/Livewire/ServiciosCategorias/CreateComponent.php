@@ -6,6 +6,7 @@ use App\Models\ServicioCategoria;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class CreateComponent extends Component
 {
@@ -41,6 +42,7 @@ class CreateComponent extends Component
 
         // Guardar datos validados
         $usuariosSave = ServicioCategoria::create($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 32, $usuariosSave->id));
 
         // Alertas de guardado exitoso
         if ($usuariosSave) {
@@ -67,6 +69,7 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
+            'submit'
         ];
     }
 

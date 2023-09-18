@@ -5,6 +5,7 @@ namespace App\Http\Livewire\DepartamentosUser;
 use App\Models\DepartamentosUser;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
 
@@ -52,6 +53,7 @@ class EditComponent extends Component
             'name' => $this->name,
             
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 42, $departamentoFind->id));
 
         if ($departamentoSave) {
             $this->alert('success', 'Departamento actualizado correctamente!', [
@@ -96,6 +98,7 @@ class EditComponent extends Component
      {
          return [
              'confirmed',
+             'update'
          ];
      }
  
@@ -109,6 +112,7 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $departamento = DepartamentosUser::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 43, $departamento->id));
         $departamento->delete();
         return redirect()->route('departamentos.index');
 

@@ -1,13 +1,15 @@
 @extends('layouts.app')
 
-@section('content')
+@section('title', 'Crear Departamento')
 
-@section('title', 'Empresas')
+@section('head')
+@vite(['resources/sass/productos.scss'])
+@vite(['resources/sass/alumnos.scss'])
+@endsection
 
-
+@section('content-principal')
 <div>
     @livewire('programas.create-component')
 </div>
 
 @endsection
-

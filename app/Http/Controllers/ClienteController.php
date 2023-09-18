@@ -29,6 +29,13 @@ class ClienteController extends Controller
         return view('cliente.create');
 
     }
+    public function createFromBudget()
+    {
+        //
+        return view('cliente.create-from-budget');
+
+    }
+
 
     /**
      * Store a newly created resource in storage.

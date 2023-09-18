@@ -3,6 +3,9 @@
 namespace App\Http\Livewire\Presupuestos;
 
 use App\Models\Cliente;
+use App\Models\Contrato;
+use App\Models\TipoEvento;
+use App\Models\CategoriaEvento;
 use App\Models\Evento;
 use App\Models\ServicioEvento;
 use App\Models\Monitor;
@@ -10,12 +13,18 @@ use App\Models\Presupuesto;
 use App\Models\Programa;
 use App\Models\Servicio;
 use App\Models\ServicioPack;
+use App\Models\Settings;
 use Illuminate\Support\Arr;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
+
+
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -24,12 +33,21 @@ class CreateComponent extends Component
 
     use LivewireAlert;
 
+
+    public $cuentaTransferencia;
+    public $metodoPago;
+    public $authMenores;
+    public $authImagen;
+
     public $currentStep = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $nPresupuesto; // Numero de presupusto
     public $fechaEmision; // Fecha del presupuesto
+    public $fechaVencimiento; // Fecha del presupuesto
     public $clienteSeleccionado; // Cliente seleccionado
 
-
+    public $preciosBasePack = [];
+    public $tipos_evento;
+    public $categorias_evento;
 
 
     public $id_evento = 0; // 0 por defecto por si no se selecciona ninguna
@@ -75,13 +93,13 @@ class CreateComponent extends Component
     public $eventoNombre;
     public $eventoProtagonista;
     public $eventoNiños;
-    public $eventoAdultos;
+    public $eventoAdulto;
     public $eventoContacto;
     public $eventoParentesco;
     public $eventoTelefono;
     public $eventoLugar;
     public $eventoLocalidad;
-    public $eventoMontaje = false;
+    public $eventoMontaje;
     public $diaFinal;
     public $diaEvento;
     public $dias = [];
@@ -106,10 +124,14 @@ class CreateComponent extends Component
     public $precioFinalServicio = 0;
 
 
+    public $tiempo = 0;
+    public $hora_inicio = 0;
+    public $hora_finalizacion = 0;
+
+
     // Servicios
     public $id_servicio;
     public $comienzoMontaje;
-    public $tiempo;
     public $horaInicio;
     public $tiempodDesmontaje;
     public $precioMonitor;
@@ -142,6 +164,28 @@ class CreateComponent extends Component
     public $eventoServicios;
     public $programas;
     public $listaServicios = [];
+    public $tiemposPack = [];
+
+    public $tiempoMontaje;
+    public $tiempoDesmontaje;
+    public $horaMontaje;
+
+    public $tiemposMontajePack = [];
+    public $tiemposDesmontajePack = [];
+
+    public $horasInicioPack = [];
+    public $horasFinalizacionPack = [];
+    public $horasMontajePack = [];
+    public $idMonitoresPack = [];
+    public $sueldoMonitoresPack = [];
+    public $gastosGasoilPack = [];
+    public $pagosPendientesPack = [];
+
+    public $idMonitores = [];
+    public $sueldoMonitores = [];
+    public $gastosGasoil = [];
+    public $pagosPendientes = [];
+
 
     //pricing
     public $precioBase;
@@ -163,6 +207,7 @@ class CreateComponent extends Component
     public $addCliente = false;
     public $addServicio = false;
     public $addObservaciones = false;
+    public $categoria_evento_id = 0;
 
 
     //Debug
@@ -172,56 +217,63 @@ class CreateComponent extends Component
     public $currentProgram;
     public $validatePrograms;
     public $type;
-    public $lowerN;
+    public $gestor_id;
+    public $gasoilDistancia;
+    public $gasoilPrecio;
     public $clienteNuevo = false;
     public $mensajeCliente = false;
-
+    public $nombreGestor;
     protected $listeners = ['rerender' => '$refresh'];
 
     public function mount()
     {
+
         $this->clientes = Cliente::all(); // datos que se envian al select2
         $this->monitores = Monitor::all();
         $this->servicios = Servicio::all();
-
-        $this->nPresupuesto = str_pad(Presupuesto::max("id") + 1, 4, "0", STR_PAD_LEFT);
+        $this->tipos_evento = TipoEvento::all();
+        $this->categorias_evento = CategoriaEvento::all();
+        $this->gestor_id = Auth::id();
+        $this->categoria_evento_id = 4;
+        $year = Carbon::now()->format('Y');
+        $numero = Presupuesto::whereBetween('fechaEmision', [$year . '-01-01', $year . '-12-31'])->count();
+        $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/' . $year;
         $this->packs = ServicioPack::all();
-
+        $this->gasoilPrecio = Settings::where('id', 1)->first()->precio_gasoil_km;
         $this->fechaEmision = date("Y-m-d", time());
-
-        $this->programas = array(array());
-
+        $this->nombreGestor = Auth::user()->name . " " . Auth::user()->surname;
         $this->servicioEventoList = array();
+        if(session('datos2')){
+            $this->nPresupuesto = session('datos')['nPresupuesto'];
+             $this->gestor_id = session('datos')['gestor_id'];
+            $this->fechaEmision = session('datos')['fechaEmision'];
+            $this->categoria_evento_id = session('datos')['categoria_evento_id'];
+            $this->estado = session('datos')['estado'];
+            $this->fechaVencimiento = session('datos')['fechaVencimiento'];
+            $this->id_cliente = session('datos2');
+        }
+        if(session('datos3')){
+            $this->nPresupuesto = session('datos')['nPresupuesto'];
+             $this->gestor_id = session('datos')['gestor_id'];
+            $this->fechaEmision = session('datos')['fechaEmision'];
+            $this->categoria_evento_id = session('datos')['categoria_evento_id'];
+            $this->estado = session('datos')['estado'];
+            $this->fechaVencimiento = session('datos')['fechaVencimiento'];
+            $this->eventoNombre = session('datos3');
+        }
+    }
+
+    public function cambiarPresupuesto()
+    {
+        $year = Carbon::parse($this->fechaEmision)->format('Y');
+        $numero = Presupuesto::whereBetween('fechaEmision', [$year . '-01-01', $year . '-12-31'])->count();
+        $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/' . $year;
     }
 
     public function render()
     {
-        // if ($this->id_cliente != 0 || $this->id_cliente != null ) {
-        //     $this->cliente = $this->clientes->find($this->id_cliente);
-        // if ($this->cliente) {
-        //     $this->trato = $this->cliente->trato;
-        //     $this->nombre = $this->cliente->nombre;
-        //     $this->apellido = $this->cliente->apellido;
-        //     $this->tipoCalle = $this->cliente->tipoCalle;
-        //     $this->calle = $this->cliente->calle;
-        //     $this->numero = $this->cliente->numero;
-        //     $this->direccionAdicional1 = $this->cliente->direccionAdicional1;
-        //     $this->direccionAdicional2 = $this->cliente->direccionAdicional2;
-        //     $this->direccionAdicional3 = $this->cliente->direccionAdicional3;
-        //     $this->codigoPostal = $this->cliente->codigoPostal;
-        //     $this->ciudad = $this->cliente->ciudad;
-        //     $this->nif = $this->cliente->nif;
-        //     $this->tlf1 = $this->cliente->tlf1;
-        //     $this->tlf2 = $this->cliente->tlf2;
-        //     $this->tlf3 = $this->cliente->tlf3;
-        //     $this->email1 = $this->cliente->email1;
-        //     $this->email2 = $this->cliente->email2;
-        //     $this->email3 = $this->cliente->email3;
-        //     $this->confPostal = $this->cliente->confPostal;
-        //     $this->confEmail = $this->cliente->confEmail;
-        //     $this->confSms = $this->cliente->confSms;
-        // }
-        // }
+        $this->dispatchBrowserEvent('initializeMapKit');
+        $this->clienteSeleccionado = Cliente::find($this->id_cliente);
         return view('livewire.presupuestos.create-component');
     }
 
@@ -345,11 +397,10 @@ class CreateComponent extends Component
         ));
 
 
-        // Alertas de guardado exitoso
+        // Alertas de guardado exitoso-
         if ($clienteSave) {
             $this->alert('success', '¡Usuario registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -359,7 +410,6 @@ class CreateComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -464,7 +514,6 @@ class CreateComponent extends Component
         if ($this->clienteSeleccionado == null) {
             return $this->alert('error', '¡No se ha seleccionado a ningun cliente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -478,14 +527,12 @@ class CreateComponent extends Component
         if ($this->diaEvento == null) {
             return $this->alert('error', '¡No se ha selccionado ningun dia de comienzo del evento!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
         if ($this->diaFinal == null) {
             return $this->alert('error', '¡No se ha selccionado ningun dia de finalizacion del evento!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -493,7 +540,6 @@ class CreateComponent extends Component
         if ($this->eventoNombre == null) {
             return $this->alert('error', '¡El campo de Evento no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -501,14 +547,12 @@ class CreateComponent extends Component
         if ($this->eventoProtagonista == null) {
             return $this->alert('error', '¡El campo de Protagonistas no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
         if ($this->eventoNiños == null) {
             return $this->alert('error', '¡El campo de Numero de niños no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -516,7 +560,6 @@ class CreateComponent extends Component
         if ($this->eventoContacto == null) {
             return $this->alert('error', '¡El campo de Contacto no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -524,7 +567,6 @@ class CreateComponent extends Component
         if ($this->eventoParentesco == null) {
             return $this->alert('error', '¡El campo de Parentesco no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -532,7 +574,6 @@ class CreateComponent extends Component
         if ($this->eventoLugar == null) {
             return $this->alert('error', '¡El campo de Lugar no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -540,7 +581,6 @@ class CreateComponent extends Component
         if ($this->eventoTelefono == null) {
             return $this->alert('error', '¡El campo de Telefono no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -548,13 +588,16 @@ class CreateComponent extends Component
         if ($this->eventoLocalidad == null) {
             return $this->alert('error', '¡El campo de Localidad no puede estar vacio!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
 
 
         $this->currentStep = 3;
+    }
+    public function tercerPaso()
+    {
+        $this->currentStep = 4;
     }
 
     //Crea un cliente o lo actualiza si existe
@@ -640,7 +683,6 @@ class CreateComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
@@ -685,6 +727,7 @@ class CreateComponent extends Component
         );
 
         $this->eventoIsSave = Evento::create($eventValidate);
+        event(new \App\Events\LogEvent(Auth::user(), 11, $this->eventoIsSave->id));
 
         if ($this->eventoIsSave) {
             $this->submit();
@@ -1173,6 +1216,33 @@ class CreateComponent extends Component
         $this->getTotalPrice();
     }
 
+    public function crearClientes()
+    {
+        session([
+            'datos' => [
+                'nPresupuesto' => $this->nPresupuesto,
+                'gestor_id' => $this->gestor_id,
+                'fechaEmision' => $this->fechaEmision,
+                'categoria_evento_id' => $this->categoria_evento_id,
+                'estado' => $this->estado,
+                'fechaVencimiento' => $this->fechaVencimiento,            ]
+        ]);
+        return Redirect::to(route("clientes.create-from-budget"));
+    }
+    public function crearTipoEvento()
+    {
+        session([
+            'datos' => [
+                'nPresupuesto' => $this->nPresupuesto,
+                'gestor_id' => $this->gestor_id,
+                'fechaEmision' => $this->fechaEmision,
+                'categoria_evento_id' => $this->categoria_evento_id,
+                'estado' => $this->estado,
+                'fechaVencimiento' => $this->fechaVencimiento,            ]
+        ]);
+        return Redirect::to(route("tipo-evento.create-from-budget"));
+    }
+
     //Calcula el precio total teniendo en cuenta el precio de la lista de los servicios y aplica un descuento si es necesario
     public function getTotalPrice()
     {
@@ -1215,9 +1285,11 @@ class CreateComponent extends Component
         $this->addCliente = true;
     }
 
-    public function checkClient()
+    public function checkLocalidad()
     {
-        $this->clienteIsSave = true;
+        if ($this->eventoLocalidad != null) {
+            $this->dispatchBrowserEvent('getLocalidad');
+        }
     }
 
     public function uncheckClient()
@@ -1315,7 +1387,10 @@ class CreateComponent extends Component
 
         $validatedData = $this->validate(
             [
+                'nPresupuesto' => 'required',
                 'fechaEmision' => 'required',
+                'fechaVencimiento' => 'nullable',
+                'categoria_evento_id' => 'required',
                 'id_evento' => 'required',
                 'id_cliente' => 'required',
                 'precioBase' => 'required',
@@ -1324,6 +1399,7 @@ class CreateComponent extends Component
                 'adelanto' => 'nullable',
                 'estado' => 'required',
                 'observaciones' => 'nullable',
+                'gasoilDistancia' => 'nullable',
 
             ],
             // Mensajes de error
@@ -1343,19 +1419,65 @@ class CreateComponent extends Component
         // Guardar datos validados
         $presupuesosSave = Presupuesto::create($validatedData);
 
-        foreach($this->listaServicios as $servicio){
-            $presupuesosSave->servicios()->attach($servicio['id'], ['numero_monitores' => $servicio['numero_monitores'], 'precio_final' => $servicio['precioFinal']]);
+        event(new \App\Events\LogEvent(Auth::user(), 3, $presupuesosSave->id));
+
+        foreach ($this->listaServicios as $servicio) {
+
+            $presupuesosSave->servicios()->attach(
+                $servicio['id'],
+                [
+                    'numero_monitores' => $servicio['numero_monitores'],
+                    'precio_final' => $servicio['precioFinal'],
+                    'tiempo' => $servicio['tiempo'],
+                    'tiempo_montaje' => $servicio['tiempo_montaje'],
+                    'tiempo_desmontaje' => $servicio['tiempo_desmontaje'],
+                    'hora_inicio' => $servicio['hora_inicio'],
+                    'hora_finalizacion' => $servicio['hora_finalizacion'],
+                    'hora_montaje' => $servicio['hora_montaje'],
+                    'sueldo_monitores' => json_encode($servicio['sueldo_monitores']),
+                    'id_monitores' => json_encode($servicio['id_monitores']),
+                    'gasto_gasoil' => json_encode($servicio['gasto_gasoil']),
+                    'pago_pendiente' => json_encode($servicio['sueldo_monitores']),
+                ]
+            );
         }
 
-        foreach($this->listaPacks as $pack){
-            $presupuesosSave->packs()->attach($pack['id'], ['numero_monitores' => json_encode($pack['numero_monitores']), 'precio_final' => $pack['precioFinal']]);
+        foreach ($this->listaPacks as $pack) {
+            $presupuesosSave->packs()->attach($pack['id'], [
+                'numero_monitores' => json_encode($pack['numero_monitores']),
+                'precio_final' => $pack['precioFinal'],
+                'tiempos' => json_encode($pack['tiempos']),
+                'horas_inicio' => json_encode($pack['horas_inicio']),
+                'horas_finalizacion' => json_encode($pack['horas_finalizacion']),
+                'tiempos_montaje' => json_encode($pack['tiempos_montaje']),
+                'tiempos_desmontaje' => json_encode($pack['tiempos_desmontaje']),
+                'horas_montaje' => json_encode($pack['horas_montaje']),
+                'sueldos_monitores' => json_encode($pack['sueldos_monitores']),
+                'id_monitores' => json_encode($pack['id_monitores']),
+                'gastos_gasoil' => json_encode($pack['gastos_gasoil']),
+                'pagos_pendientes' => json_encode($pack['sueldos_monitores']),
+            ]);
         }
+
+        // Guardar datos validados
+        $contratoSave = Contrato::create([
+            "id_presupuesto" => $presupuesosSave->id,
+            'metodoPago' => $this->metodoPago,
+            'cuentaTransferencia' => $this->cuentaTransferencia,
+            'observaciones' => $this->observaciones,
+            'authImagen' => $this->authImagen,
+            'authMenores' => $this->authMenores,
+            'dia' => $this->diaEvento,
+        ]);
+
+        event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
+
+
 
         // Alertas de guardado exitoso
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -1365,49 +1487,359 @@ class CreateComponent extends Component
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del presupuesto!', [
                 'position' => 'center',
-                'timer' => 3000,
                 'toast' => false,
             ]);
         }
-
     }
     public function cambioPrecioPack()
     {
         $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
         $this->precioFinalPack = 0;
         foreach ($pack as $keyPack => $servicio) {
-            if (!isset($this->preciosMonitores[$keyPack])) {
+            if (isset($this->preciosMonitores[$keyPack])) {
+                $this->preciosBasePack[$keyPack] = ($servicio->precioBase + ($this->preciosMonitores[$keyPack] * $servicio->precioMonitor));
+            } else {
                 $this->preciosMonitores[$keyPack] = $servicio->minMonitor;
+                $this->preciosBasePack[$keyPack] = $servicio->precioBase;
+                $this->preciosMonitores[$keyPack] = $servicio->minMonitor;
+                $this->tiemposMontajePack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
+                $this->tiemposDesmontajePack[$keyPack] = Carbon::createFromFormat('H:i:s',  $servicio->tiempoDesmontaje)->format('H:i');
+                $this->tiemposPack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoServicio)->format('H:i');
             }
             $this->precioFinalPack += ($servicio->precioBase + ($this->preciosMonitores[$keyPack] * $servicio->precioMonitor));
         }
     }
 
+    public function cambioTiempoPack()
+    {
+        if ($this->pack_seleccionado != 0) {
+            $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+            foreach ($pack as $keyPack => $servicio) {
+                if ($this->eventoMontaje == 1) {
+                    if (isset($this->tiemposMontajePack[$keyPack]) && isset($this->horasMontajePack[$keyPack])) {
+                        $inicio = Carbon::createFromFormat('H:i', $this->horasMontajePack[$keyPack]);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiemposMontajePack[$keyPack]);
+                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                        $this->horasInicioPack[$keyPack] = $inicio->addHours($horas)->addMinutes($minutos)->format('H:i');
+                        $this->emit('refresh');
+                    }
+                    if (isset($this->tiemposPack[$keyPack]) && isset($this->horasInicioPack[$keyPack])) {
+                        if (isset($this->tiemposDesmontajePack[$keyPack])) {
+                            $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                            $medio = Carbon::createFromFormat('H:i', $this->tiemposDesmontajePack[$keyPack]);
+                            $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                            list($horas, $minutos) = explode(':', $medio->format('H:i'));
+                            list($horas2, $minutos2) = explode(':', $fin->format('H:i'));
+                            $this->horasFinalizacionPack[$keyPack] = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->addMinutes((int)$minutos2)->addHours((int)$horas2)->format('H:i');
+                            $this->emit('refresh');
+                        } else {
+                            $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                            $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                            list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                            $this->horasFinalizacionPack[$keyPack] = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                            $this->emit('refresh');
+                        }
+                    }
+                } else {
+                    if (isset($this->tiemposPack[$keyPack]) && isset($this->horasInicioPack[$keyPack])) {
+                        $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                        $this->horasFinalizacionPack[$keyPack] = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                        $this->emit('refresh');
+                    }
+                }
+            }
+        } else {
+            $this->alert('error', 'Selecciona un pack.');
+            $this->numero_monitores = 0;
+            $this->tiempo = 0;
+            $this->hora_inicio = 0;
+            $this->hora_finalizacion = 0;
+            $this->precioFinalServicio = 0;
+        }
+    }
+
+    public function addMonitorServicio($id1, $id2)
+    {
+        $this->listaServicios[$id1]['sueldo_monitores'][$id2] = $this->servicios->firstWhere('id', $this->listaServicios[$id1]['id'])->precioMonitor;
+    }
+
     public function cambioPrecioServicio()
     {
-        $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
-        $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
+        if ($this->servicio_seleccionado != 0) {
+            $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
+            $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
+            $this->numero_monitores = $servicio->minMonitor;
+            $this->tiempoMontaje = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
+            $this->tiempoDesmontaje = Carbon::createFromFormat('H:i:s',  $servicio->tiempoDesmontaje)->format('H:i');
+            $this->tiempo = Carbon::createFromFormat('H:i:s', $servicio->tiempoServicio)->format('H:i');
+        } else {
+            $this->alert('error', 'Selecciona un servicio.');
+            $this->numero_monitores = 0;
+            $this->tiempo = 0;
+            $this->hora_inicio = 0;
+            $this->hora_finalizacion = 0;
+            $this->precioFinalServicio = 0;
+        }
+    }
+
+    public function asignarValorInicial($keyPack, $value)
+    {
+        $this->preciosMonitores[$keyPack] = $value;
+        $this->cambioPrecioPack();
+    }
+
+    public function cambioTiempoServicio()
+    {
+        if ($this->servicio_seleccionado != 0) {
+            if ($this->eventoMontaje == 1) {
+                if (isset($this->tiempoMontaje) && isset($this->horaMontaje) && ($this->tiempoMontaje != 0) && ($this->horaMontaje != 0)) {
+                    $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
+                    $fin = Carbon::createFromFormat('H:i', $this->tiempoMontaje);
+                    list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                    $this->hora_inicio = $inicio->addHours($horas)->addMinutes($minutos)->format('H:i');
+                    $this->emit('refresh');
+                }
+                if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio != 0)) {
+                    if (isset($this->tiempoDesmontaje) && ($this->tiempoDesmontaje != 0)) {
+                        $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                        $medio = Carbon::createFromFormat('H:i', $this->tiempoDesmontaje);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiempo);
+                        list($horas, $minutos) = explode(':', $medio->format('H:i'));
+                        list($horas2, $minutos2) = explode(':', $fin->format('H:i'));
+                        $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->addMinutes((int)$minutos2)->addHours((int)$horas2)->format('H:i');
+                        $this->emit('refresh');
+                    } else {
+                        $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                        $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                        $this->emit('refresh');
+                    }
+                }
+            } else {
+                if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio     != 0)) {
+                    $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                    $fin = Carbon::createFromFormat('H:i', $this->tiempo);
+                    list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                    $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                    $this->emit('refresh');
+                }
+            }
+        } else {
+            $this->alert('error', 'Selecciona un servicio.', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+            $this->numero_monitores = 0;
+            $this->tiempo = 0;
+            $this->hora_inicio = 0;
+            $this->hora_finalizacion = 0;
+            $this->precioFinalServicio = 0;
+        }
     }
 
     public function addPack()
     {
         if ($this->pack_seleccionado != 0) {
-            $this->listaPacks[] = ['id' => $this->pack_seleccionado, 'numero_monitores' => $this->preciosMonitores, 'precioFinal' => $this->precioFinalPack];
-            $this->pack_seleccionado = 0;
-            $this->preciosMonitores = [];
-            $this->precioFinal += $this->precioFinalPack;
-            $this->precioFinalPack = 0;
+            $packId = $this->pack_seleccionado;
+            $existe = Presupuesto::whereHas('packs', function ($query) use ($packId) {
+                $query->where('servicio_packs.id', $packId);
+            })
+                ->where('fechaEmision', $this->diaEvento)
+                ->exists();
+
+            $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
+            // Variable para rastrear si el stock se supera
+            $stockSeSupera = false;
+            // Obtener los artículos relacionados con el servicio
+            foreach ($this->packs->where('id', $packId)->first()->servicios()->get() as $servicio) {
+                $servicioId = $servicio->id;
+                $articulosDelServicio = DB::table('servicio_articulo')
+                    ->where('servicio_id', $servicioId)
+                    ->get();
+                // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+                foreach ($articulosDelServicio as $articuloDelServicio) {
+                    $articuloId = $articuloDelServicio->articulo_id;
+
+                    // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+                    $cantidadTotalUtilizada = DB::table('presupuestos')
+                        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                        ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                        ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                        ->where('presupuestos.fechaEmision', $fechaEvento)
+                        ->where('servicio_articulo.articulo_id', $articuloId)
+                        ->sum('servicio_articulo.stock_usado');
+                    // Obtener el stock total fijo del artículo
+                    $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
+
+                    // Obtener la cantidad de stock usado por el servicio que deseas agregar
+                    $cantidadStockUsadoNuevoServicio = $articuloDelServicio->stock_usado;
+
+                    // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+                    $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+
+                    if ($nuevaCantidadTotal > $stockTotal) {
+                        // El stock se superaría para al menos uno de los artículos
+                        $stockSeSupera = true;
+                        break; // Salir del bucle, ya que no es necesario verificar los otros artículos
+                    }
+                }
+            }
+
+            if ($existe) {
+                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
+            } else if ($stockSeSupera == true) {
+                $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
+            } else {
+                $this->listaPacks[] = [
+                    'id' => $this->pack_seleccionado,
+                    'numero_monitores' => $this->preciosMonitores,
+                    'precioFinal' => $this->precioFinalPack,
+                    'tiempos' => $this->tiemposPack,
+                    'horas_inicio' => $this->horasInicioPack,
+                    'horas_finalizacion' => $this->horasFinalizacionPack,
+                    'tiempos_montaje' => $this->tiemposMontajePack,
+                    'tiempos_desmontaje' => $this->tiemposDesmontajePack,
+                    'horas_montaje' => $this->horasMontajePack,
+                    'id_monitores' => $this->idMonitoresPack,
+                    'sueldos_monitores' => $this->sueldoMonitoresPack,
+                    'gastos_gasoil' => $this->gastosGasoilPack,
+                    'checks_gasoil' => $this->gastosGasoilPack,
+                    'pagos_pendientes' => $this->sueldoMonitoresPack,
+
+                ];
+                $this->pack_seleccionado = 0;
+                $this->preciosMonitores = [];
+                $this->tiemposPack = [];
+                $this->horasInicioPack = [];
+                $this->horasFinalizacionPack = [];
+                $this->tiemposMontajePack = [];
+                $this->tiemposDesmontajePack = [];
+                $this->horasMontajePack = [];
+                $this->precioFinal += $this->precioFinalPack;
+                $this->precioFinalPack = 0;
+            }
+        } else {
+            $this->alert('error', '¡Selecciona un pack de servicios!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
         }
     }
 
+    public function sumarTiempos($id)
+    {
+        $totalMinutos = 0;
+
+        foreach ($this->listaPacks[$id]['tiempos'] as $tiempo) {
+            $partes = explode(':', $tiempo);
+            $horas = $partes[0];
+            $minutos = $partes[1];
+            $totalMinutos += ($horas * 60) + $minutos;
+        }
+
+        $horasResultado = floor($totalMinutos / 60);
+        $minutosResultado = $totalMinutos % 60;
+
+        return sprintf('%02d:%02d', $horasResultado, $minutosResultado);
+    }
     public function addServicio()
     {
         if ($this->servicio_seleccionado != 0) {
-            $this->listaServicios[] = ['id' => $this->servicio_seleccionado, 'numero_monitores' => $this->numero_monitores, 'precioFinal' => $this->precioFinalServicio];
-            $this->servicio_seleccionado = 0;
-            $this->numero_monitores = 0;
-            $this->precioFinal += $this->precioFinalServicio;
-            $this->precioFinalServicio = 0;
+            $servicioId = $this->servicio_seleccionado;
+            $existe = Presupuesto::whereHas('servicios', function ($query) use ($servicioId) {
+                $query->where('servicios.id', $servicioId);
+            })
+                ->where('fechaEmision', $this->diaEvento)
+                ->exists();
+            $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
+            // Obtener los artículos relacionados con el servicio
+            $articulosDelServicio = DB::table('servicio_articulo')
+                ->where('servicio_id', $servicioId)
+                ->get();
+
+            // Variable para rastrear si el stock se supera
+            $stockSeSupera = false;
+            // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+            foreach ($articulosDelServicio as $articuloDelServicio) {
+                $articuloId = $articuloDelServicio->articulo_id;
+
+                // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+                $cantidadTotalUtilizada = DB::table('presupuestos')
+                    ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                    ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                    ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                    ->where('presupuestos.fechaEmision', $fechaEvento)
+                    ->where('servicio_articulo.articulo_id', $articuloId)
+                    ->sum('servicio_articulo.stock_usado');
+                // Obtener el stock total fijo del artículo
+                $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
+
+                // Obtener la cantidad de stock usado por el servicio que deseas agregar
+                $cantidadStockUsadoNuevoServicio = $articuloDelServicio->stock_usado;
+
+                // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+                $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+
+                if ($nuevaCantidadTotal > $stockTotal) {
+                    // El stock se superaría para al menos uno de los artículos
+                    $stockSeSupera = true;
+                    break; // Salir del bucle, ya que no es necesario verificar los otros artículos
+                }
+            }
+
+
+            if ($existe) {
+                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
+            } else if ($stockSeSupera == true) {
+                $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
+            } else {
+                for ($i = 0; $i > $this->numero_monitores; $i++) {
+                    $this->sueldoMonitores[] = $this->servicios->firstWhere('id', $this->servicio_seleccionado)->get('precioMonitor');
+                }
+                $this->listaServicios[] = [
+                    'id' => $this->servicio_seleccionado,
+                    'numero_monitores' => $this->numero_monitores,
+                    'precioFinal' => $this->precioFinalServicio,
+                    'tiempo' => $this->tiempo,
+                    'hora_inicio' => $this->hora_inicio,
+                    'hora_finalizacion' => $this->hora_finalizacion,
+                    'hora_montaje' => $this->horaMontaje,
+                    'tiempo_montaje' => $this->tiempoMontaje,
+                    'tiempo_desmontaje' => $this->tiempoDesmontaje,
+                    'sueldo_monitores' => $this->sueldoMonitores,
+                    'id_monitores' => $this->idMonitores,
+                    'gasto_gasoil' => $this->gastosGasoil,
+                    'check_gasoil' => $this->gastosGasoil,
+                    'pago_pendiente' => $this->sueldoMonitores,
+                ];
+                $this->servicio_seleccionado = 0;
+                $this->numero_monitores = 0;
+                $this->tiempo = 0;
+                $this->tiempoMontaje = 0;
+                $this->tiempoDesmontaje = 0;
+                $this->hora_inicio = 0;
+                $this->hora_finalizacion = 0;
+                $this->horaMontaje = 0;
+                $this->precioFinal += $this->precioFinalServicio;
+                $this->precioFinalServicio = 0;
+            }
+        } else {
+            $this->alert('error', '¡Selecciona un servicio!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
         }
     }
 
@@ -1423,7 +1855,13 @@ class CreateComponent extends Component
         $this->precioFinal -= $this->listaServicios[$indice]['precioFinal'];
         unset($this->listaServicios[$indice]);
         $this->listaServicios = array_values($this->listaServicios);
+    }
 
+    public function updatedDiaEvento()
+    {
+        if (!isset($this->diaFinal)) {
+            $this->diaFinal = $this->diaEvento;
+        }
     }
 
 
@@ -1435,17 +1873,43 @@ class CreateComponent extends Component
             'confirmed',
             'calcularPrecio',
             'selectCliente',
-            'selectedCompanyItem'
+            'selectedCompanyItem',
+            'alertaGuardar'
 
         ];
     }
 
-
+    public function alertaGuardar()
+    {
+        $this->alert('warning', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'submitEvento',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ]);
+    }
 
     // Función para cuando se llama a la alerta
     public function confirmed()
     {
         // Do something
         return redirect()->route('presupuestos.index');
+    }
+
+    public function setGasoil($servicioIndex, $i)
+    {
+        if ($this->gasoilDistancia != null) {
+            $this->listaServicios[$servicioIndex]['gasto_gasoil'][$i] = round((float)($this->gasoilDistancia * $this->gasoilPrecio), 2);
+        }
+    }
+    public function setGasoilPack($packIndex, $keyPack, $i)
+    {
+        if ($this->gasoilDistancia != null) {
+            $this->listaPacks[$packIndex]['gastos_gasoil'][$keyPack][$i] = round((float)($this->gasoilDistancia * $this->gasoilPrecio), 2);
+        }
     }
 }

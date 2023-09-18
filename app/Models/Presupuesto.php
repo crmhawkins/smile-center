@@ -20,8 +20,15 @@ class Presupuesto extends Model
         'descuento',
         'adelanto',
         'fechaEmision',
-        "observaciones",
+        'fechaVencimiento',
+        "nPresupuesto",
+        'seguros_sociales',
+        'pago_pendiente',
+        'materiales',
         "estado",
+        'categoria_evento_id',
+        'gasoilDistancia',
+        'gestor_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -48,11 +55,11 @@ class Presupuesto extends Model
 
     public function servicios()
     {
-        return $this->belongsToMany(Servicio::class, 'servicio_presupuesto', 'presupuesto_id', 'servicio_id')->withPivot('numero_monitores', 'precio_final');
+        return $this->belongsToMany(Servicio::class, 'servicio_presupuesto', 'presupuesto_id', 'servicio_id')->withPivot('numero_monitores', 'precio_final', 'tiempo', 'tiempo_montaje', 'tiempo_desmontaje', 'hora_montaje', 'hora_inicio', 'hora_finalizacion', 'id_monitores', 'sueldo_monitores', 'gasto_gasoil', 'pago_pendiente');
     }
 
     public function packs()
     {
-        return $this->belongsToMany(ServicioPack::class, 'pack_presupuesto', 'presupuesto_id', 'pack_id')->withPivot('numero_monitores', 'precio_final');
+        return $this->belongsToMany(ServicioPack::class, 'pack_presupuesto', 'presupuesto_id', 'pack_id')->withPivot('numero_monitores', 'precio_final', 'tiempos', 'tiempos_montaje', 'tiempos_desmontaje', 'horas_montaje','horas_inicio', 'horas_finalizacion', 'id_monitores', 'sueldos_monitores', 'gastos_gasoil', 'pagos_pendientes');
     }
 }

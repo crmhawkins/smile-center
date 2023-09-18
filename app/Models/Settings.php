@@ -11,14 +11,7 @@ class Settings extends Model
     protected $table = "settings";
 
     protected $fillable = [
-        'id',
-        'name',
-        'adress',
-        'postCode',
-        'ciudad',
-        'province',
-        'taxNumber',
-        'photo'
+        'precio_gasoil_km'
 
     ];
 

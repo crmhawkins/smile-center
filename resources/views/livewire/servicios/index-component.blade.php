@@ -33,36 +33,40 @@
                                 <th scope="col">Nº mínimo de monitores</th>
                                 <th scope="col">Precio por monitor</th>
                                 <th scope="col">Precio total Estimado</th>
-        
-        
+
+
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($servicios as $servicio)
-                                <tr>
-                                    <td>{{ $servicio->nombre }}</td>
-                                    <td>{{ $this->nombreCategoria($servicio->id_categoria) }}</td>
-                                    <td>{{ $this->nombrePack($servicio->id_pack) }}</td>
-                                    <td>{{ $servicio->precioBase }}</td>
-                                    <td>{{ $servicio->minMonitor }}</td>
-                                    <td>{{ $servicio->precioMonitor }} €</td>
-                                    <td>{{ $this->precioTotal($servicio->id) }} €</td>
-        
-        
-                                    <td> <a href="servicios-edit/{{ $servicio->id }}" class="btn btn-primary">Ver/Editar</a> </td>
-                                </tr>
+                            <tr>
+                                <td>{{ $servicio->nombre }}</td>
+                                <td>{{ $this->nombreCategoria($servicio->id_categoria) }}</td>
+                                @if($servicio->id_pack == null)
+                                <td> No pertenece a ningún pack </td>
+                                @else
+                                <td>{{ $this->nombrePack($servicio->id_pack) }}</td>
+                                @endif
+                                <td>{{ $servicio->precioBase }}</td>
+                                <td>{{ $servicio->minMonitor }}</td>
+                                <td>{{ $servicio->precioMonitor }} €</td>
+                                <td>{{ $this->precioTotal($servicio->id) }} €</td>
+
+
+                                <td> <a href="servicios-edit/{{ $servicio->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
-                @endif
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
 
-@section('scripts')
+    @section('scripts')
     <script src="../assets/js/jquery.slimscroll.js"></script>
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
@@ -78,5 +82,5 @@
     <!-- Responsive examples -->
     <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
     <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
-    <script src="../assets/pages/datatables.init.js"></script>   
-@endsection
+    <script src="../assets/pages/datatables.init.js"></script>
+    @endsection

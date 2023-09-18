@@ -5,6 +5,7 @@ namespace App\Http\Livewire\DepartamentosUser;
 use App\Models\DepartamentosUser;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
 
@@ -41,6 +42,7 @@ class CreateComponent extends Component
         }
 
         $departamentoSave = DepartamentosUser::create($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 41, $departamentoSave->id));
 
         // Alertas de guardado exitoso
         if ($departamentoSave) {
@@ -68,6 +70,7 @@ class CreateComponent extends Component
      {
          return [
              'confirmed',
+             'submit'
          ];
      }
  

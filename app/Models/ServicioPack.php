@@ -16,12 +16,12 @@ class ServicioPack extends Model
     ];
 
     public function servicios() {
-       return $this->hasMany("app\Models\Servicio", "id_pack", "id");
+       return $this->hasMany("App\Models\Servicio", "id_pack", "id");
     }
 
     public function presupuestos()
     {
-        return $this->belongsToMany(Presupuesto::class, 'servicio_presupuesto', 'pack_id', 'presupuesto_id')->withPivot('numero_monitores', 'precioFinal');
+        return $this->belongsToMany(Presupuesto::class, 'servicio_presupuesto', 'pack_id', 'presupuesto_id')->withPivot('numero_monitores', 'precioFinal', 'tiempos', 'tiempos_montaje', 'tiempos_desmontaje', 'horas_montaje','horas_inicio', 'horas_finalizacion', 'id_monitores', 'sueldos_monitores', 'gastos_gasoil', 'pagos_pendientes');
     }
 
     /**

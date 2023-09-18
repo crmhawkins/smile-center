@@ -18,8 +18,11 @@ class Servicio extends Model
         'id_pack',
         'tiempoMontaje',
         'tiempoDesmontaje',
+        'tiempoServicio',
         'precioBase',
         'precioMonitor',
+        'precioMonitorNocturno',
+        'precioMonitorAnimacion',
         'minMonitor'
 
     ];
@@ -27,6 +30,11 @@ class Servicio extends Model
     public function programas()
     {
         return $this->hasMany('app\Models\Programa');
+    }
+
+    public function articulos()
+    {
+        return $this->belongsToMany('app\Models\Articulos', 'servicio_articulo', 'servicio_id', 'articulo_id')->withPivot('stock_usado');
     }
 
     public function pack(){
@@ -39,7 +47,7 @@ class Servicio extends Model
 
     public function presupuestos()
     {
-        return $this->belongsToMany(Presupuesto::class, 'servicio_presupuesto', 'servicio_id', 'presupuesto_id')->withPivot('numero_monitores', 'precioFinal');
+        return $this->belongsToMany(Presupuesto::class, 'servicio_presupuesto', 'servicio_id', 'presupuesto_id')->withPivot('numero_monitores', 'precioFinal', 'tiempo', 'tiempo_montaje', 'tiempo_desmontaje', 'hora_montaje', 'hora_inicio', 'hora_finalizacion', 'id_monitores', 'sueldo_monitores', 'gasto_gasoil', 'pago_pendiente');
     }
 
     /**

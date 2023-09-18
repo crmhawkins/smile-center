@@ -17,12 +17,15 @@
                     <a href="/admin/calendario" class="waves-effect"><i class="icon-calendar"></i><span> Calendario </span></a>
                 </li>
                 <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-chart-bar"></i><span> Resumen <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-chart-bar"></i><span> Cuadrante <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
-                        <li><a href="/admin/resumen-semanas">Resumen Semanal</a></li>
-                        <li><a href="/admin/resumen-mensual">Resumen Mensual</a></li>
+                        <li><a href="/admin/cuadrante-semanas">Cuadrante Semanal</a></li>
+                        <li><a href="/admin/cuadrante-mensual">Cuadrante Mensual</a></li>
                         {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
+                </li>
+                <li>
+                    <a href="/admin/agenda" class="waves-effect"><i class="fas fa-book"></i><span> Agenda </span></a>
                 </li>
 
                 <li class="menu-title">Administracion</li>
@@ -35,37 +38,29 @@
                         {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
                 </li>
+
                 <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="ti-agenda"></i><span> Eventos <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
-                    <ul class="submenu">
-                        <li><a href="/admin/eventos">Ver Todos</a></li>
-                        <li><a href="/admin/eventos-create">Crear Evento</a></li>
-                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
-                    </ul>
+                    <a href="/admin/eventos" class="waves-effect"><i class="ti-agenda"></i><span> Eventos </span></a>
                 </li>
 
                 <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="far fa-file"></i><span> Contratos <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
-                    <ul class="submenu">
-                        <li><a href="/admin/contratos">Ver Todos</a></li>
-                        <li><a href="/admin/contratos-create">Crear Contrato</a></li>
-                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
-                    </ul>
+                    <a href="/admin/contratos" class="waves-effect"><i class="far fa-file"></i><span> Contratos </span></a>
                 </li>
-                
-                <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-file-invoice"></i><span> Facturas <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
-                    <ul class="submenu">
-                        <li><a href="/admin/facturas">Ver Todos</a></li>
-                        <li><a href="/admin/facturas-create">Crear Factura</a></li>
-                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
-                    </ul>
-                </li>
+
                 <li>
                     <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-hand-holding-usd"></i><span> Presupuestos <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
                         <li><a href="/admin/presupuestos">Ver Todos</a></li>
                         <li><a href="/admin/presupuestos-create">Crear Presupuesto</a></li>
+                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-bank"></i><span> Gastos <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <ul class="submenu">
+                        <li><a href="/admin/gastos">Ver Todos</a></li>
+                        <li><a href="/admin/gastos-create">Añadir Gasto</a></li>
                         {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
                 </li>
@@ -95,7 +90,7 @@
                     </ul>
                 </li>
 
-                
+
 
                 <li class="menu-title">Personalizar</li>
                 <li>
@@ -103,6 +98,30 @@
                     <ul class="submenu">
                         <li><a href="/admin/servicios">Ver Todos</a></li>
                         <li><a href="/admin/servicios-create">Crear Servicio</a></li>
+                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-box"></i><span> Tipos Gasto <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <ul class="submenu">
+                        <li><a href="/admin/tipo-gasto">Ver Todos</a></li>
+                        <li><a href="/admin/tipo-gasto-create">Crear Tipo de Gasto</a></li>
+                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-box"></i><span> Tipos Evento <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <ul class="submenu">
+                        <li><a href="/admin/tipo-evento">Ver Todos</a></li>
+                        <li><a href="/admin/tipo-evento-create">Crear Tipos de Evento</a></li>
+                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-box"></i><span> Categorías Contrato <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <ul class="submenu">
+                        <li><a href="/admin/categoria-contrato">Ver Todos</a></li>
+                        <li><a href="/admin/categoria-contrato-create">Crear Categorias de Contrato</a></li>
                         {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
                 </li>
@@ -122,14 +141,7 @@
                         {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
                 </li>
-                <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user"></i><span> Programas <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
-                    <ul class="submenu">
-                        <li><a href="/admin/programas">Ver Todos</a></li>
-                        <li><a href="/admin/programas-create">Crear Programa</a></li>
-                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
-                    </ul>
-                </li>
+
                 <li>
                     <a href="javascript:void(0);" class="waves-effect"><i class="icon-case-2"></i><span> Departamentos <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
@@ -138,13 +150,27 @@
                         {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
                 </li>
-                
+
+                <li>
+                    <a href="/admin/settings" class="waves-effect"><i class="fas fa-gear"></i><span> Opciones </span></a>
+                </li>
+
                 {{-- <li>
                     <a href="/admin/presupuestos" class="waves-effect">
                         <i class="fas fa-hand-holding-usd"></i></i><span> Presupuestos </span>
                     </a>
                 </li> --}}
-                
+
+
+             {{--   <li>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user"></i><span> Programas <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <ul class="submenu">
+                        <li><a href="/admin/programas">Ver Todos</a></li>
+                        <li><a href="/admin/programas-create">Crear Programa</a></li>
+                        {{-- <li><a href="email-compose.html">Email Compose</a></li>
+                    </ul>
+                </li> --}}
+
 
                 {{-- <li>
                     <a href="javascript:void(0);" class="waves-effect"><i class="icon-paper-sheet"></i><span> Pages <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
