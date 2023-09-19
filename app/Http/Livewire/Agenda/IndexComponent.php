@@ -112,9 +112,9 @@ class IndexComponent extends Component
         $this->emit('refreshComponent');
     }
 
-    public function getNombreServicio($array)
+    public function getNombreServicio($id)
     {
-        return $this->servicios->find($array['id'])->nombre;
+        return $this->servicios->find($id)->nombre;
     }
 
     public function getNombrePack($id)
