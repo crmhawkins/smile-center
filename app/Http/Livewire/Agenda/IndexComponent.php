@@ -114,7 +114,11 @@ class IndexComponent extends Component
 
     public function getNombreServicio($id)
     {
-        return $this->servicios->find($id)->nombre;
+        if($this->servicios->find($id) == null){
+            return "";
+        }else{
+            return $this->servicios->find($id)->nombre;
+        }
     }
 
     public function getNombrePack($id)
