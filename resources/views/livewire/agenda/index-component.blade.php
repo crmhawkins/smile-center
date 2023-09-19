@@ -49,7 +49,7 @@
                                                                                 class="col-sm-12 col-form-label">Servicio</label>
                                                                             <input type="text" id="adelantoResumen"
                                                                                 class="form-control text-center"
-                                                                                value="{{ $this->getNombreServicio($itemServicio->id) }}"
+                                                                                value="{{ $this->getNombreServicio($itemServicio->servicio_id) }}"
                                                                                 disabled>
                                                                         </div>
                                                                         @for ($i = 0; $i < $itemServicio->numero_monitores; $i++)
@@ -105,7 +105,7 @@
                                                                                 <input type="text"
                                                                                     id="adelantoResumen"
                                                                                     class="form-control text-center"
-                                                                                    value="{{ $this->getNombreServicio($itemServicio->id) }}"
+                                                                                    value="{{ $this->getNombreServicio($itemServicio->servicio_id) }}"
                                                                                     disabled>
                                                                             </div>
                                                                             @for ($i = 0; $i < json_decode($itemPack->numero_monitores)[$servicioIndex]; $i++)
