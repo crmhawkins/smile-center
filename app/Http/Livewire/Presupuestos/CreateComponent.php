@@ -14,6 +14,7 @@ use App\Models\Programa;
 use App\Models\Servicio;
 use App\Models\ServicioPack;
 use App\Models\Settings;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Arr;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -23,7 +24,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\File;
 
 
 use function PHPUnit\Framework\isEmpty;
@@ -33,12 +34,14 @@ class CreateComponent extends Component
 
     use LivewireAlert;
 
-
+    public $diaMostrar;
+    public $contrato_id;
+    public $ruta;
     public $cuentaTransferencia;
     public $metodoPago;
     public $authMenores;
     public $authImagen;
-
+    public $identificador;
     public $currentStep = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $nPresupuesto; // Numero de presupusto
     public $fechaEmision; // Fecha del presupuesto
@@ -243,18 +246,18 @@ class CreateComponent extends Component
         $this->fechaEmision = date("Y-m-d", time());
         $this->nombreGestor = Auth::user()->name . " " . Auth::user()->surname;
         $this->servicioEventoList = array();
-        if(session('datos2')){
+        if (session('datos2')) {
             $this->nPresupuesto = session('datos')['nPresupuesto'];
-             $this->gestor_id = session('datos')['gestor_id'];
+            $this->gestor_id = session('datos')['gestor_id'];
             $this->fechaEmision = session('datos')['fechaEmision'];
             $this->categoria_evento_id = session('datos')['categoria_evento_id'];
             $this->estado = session('datos')['estado'];
             $this->fechaVencimiento = session('datos')['fechaVencimiento'];
             $this->id_cliente = session('datos2');
         }
-        if(session('datos3')){
+        if (session('datos3')) {
             $this->nPresupuesto = session('datos')['nPresupuesto'];
-             $this->gestor_id = session('datos')['gestor_id'];
+            $this->gestor_id = session('datos')['gestor_id'];
             $this->fechaEmision = session('datos')['fechaEmision'];
             $this->categoria_evento_id = session('datos')['categoria_evento_id'];
             $this->estado = session('datos')['estado'];
@@ -403,8 +406,11 @@ class CreateComponent extends Component
                 'position' => 'center',
                 'toast' => false,
                 'showConfirmButton' => true,
+                'showCancelButton' => true,
                 'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
+                'onCancel' => 'verContrato',
+                'confirmButtonText' => 'Seguir editando',
+                'cancelButtonText' => 'Ver contrato',
                 'timerProgressBar' => true,
             ]);
         } else {
@@ -1225,7 +1231,8 @@ class CreateComponent extends Component
                 'fechaEmision' => $this->fechaEmision,
                 'categoria_evento_id' => $this->categoria_evento_id,
                 'estado' => $this->estado,
-                'fechaVencimiento' => $this->fechaVencimiento,            ]
+                'fechaVencimiento' => $this->fechaVencimiento,
+            ]
         ]);
         return Redirect::to(route("clientes.create-from-budget"));
     }
@@ -1238,7 +1245,8 @@ class CreateComponent extends Component
                 'fechaEmision' => $this->fechaEmision,
                 'categoria_evento_id' => $this->categoria_evento_id,
                 'estado' => $this->estado,
-                'fechaVencimiento' => $this->fechaVencimiento,            ]
+                'fechaVencimiento' => $this->fechaVencimiento,
+            ]
         ]);
         return Redirect::to(route("tipo-evento.create-from-budget"));
     }
@@ -1418,6 +1426,7 @@ class CreateComponent extends Component
 
         // Guardar datos validados
         $presupuesosSave = Presupuesto::create($validatedData);
+        $this->identificador = $presupuesosSave->id;
 
         event(new \App\Events\LogEvent(Auth::user(), 3, $presupuesosSave->id));
 
@@ -1469,6 +1478,7 @@ class CreateComponent extends Component
             'authMenores' => $this->authMenores,
             'dia' => $this->diaEvento,
         ]);
+        $this->contrato_id = $contratoSave->id;
 
         event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
 
@@ -1481,8 +1491,11 @@ class CreateComponent extends Component
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'confirmButtonText' => 'Seguir editando',
+                'showDenyButton' => true,
+                'denyButtonText' => 'Ver contrato',
+                'onDenied' => 'verContrato',
+                'timer' => null,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del presupuesto!', [
@@ -1502,9 +1515,35 @@ class CreateComponent extends Component
                 $this->preciosMonitores[$keyPack] = $servicio->minMonitor;
                 $this->preciosBasePack[$keyPack] = $servicio->precioBase;
                 $this->preciosMonitores[$keyPack] = $servicio->minMonitor;
-                $this->tiemposMontajePack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
-                $this->tiemposDesmontajePack[$keyPack] = Carbon::createFromFormat('H:i:s',  $servicio->tiempoDesmontaje)->format('H:i');
-                $this->tiemposPack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoServicio)->format('H:i');
+                try {
+                    $this->tiemposMontajePack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
+                } catch (\Exception $e) {
+                    // Si falla, intenta con el formato 'H:i'
+                    try {
+                        $this->tiemposMontajePack[$keyPack] = Carbon::createFromFormat('H:i', $servicio->tiempoMontaje)->format('H:i');
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                try {
+                    $this->tiemposDesmontajePack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoDesmontaje)->format('H:i');
+                } catch (\Exception $e) {
+                    // Si falla, intenta con el formato 'H:i'
+                    try {
+                        $this->tiemposDesmontajePack[$keyPack] = Carbon::createFromFormat('H:i', $servicio->tiempoDesmontaje)->format('H:i');
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                try {
+                    $this->tiemposPack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoServicio)->format('H:i');
+                } catch (\Exception $e) {
+                    // Si falla, intenta con el formato 'H:i'
+                    try {
+                        $this->tiemposPack[$keyPack] = Carbon::createFromFormat('H:i', $servicio->tiempoServicio)->format('H:i');
+                    } catch (\Exception $e) {
+                    }
+                }
             }
             $this->precioFinalPack += ($servicio->precioBase + ($this->preciosMonitores[$keyPack] * $servicio->precioMonitor));
         }
@@ -1571,9 +1610,35 @@ class CreateComponent extends Component
             $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
             $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
             $this->numero_monitores = $servicio->minMonitor;
-            $this->tiempoMontaje = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
-            $this->tiempoDesmontaje = Carbon::createFromFormat('H:i:s',  $servicio->tiempoDesmontaje)->format('H:i');
-            $this->tiempo = Carbon::createFromFormat('H:i:s', $servicio->tiempoServicio)->format('H:i');
+            try {
+                $this->tiempoMontaje = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
+            } catch (\Exception $e) {
+                // Si falla, intenta con el formato 'H:i'
+                try {
+                    $this->tiempoMontaje = Carbon::createFromFormat('H:i', $servicio->tiempoMontaje)->format('H:i');
+                } catch (\Exception $e) {
+                }
+            }
+
+            try {
+                $this->tiempoDesmontaje = Carbon::createFromFormat('H:i:s',  $servicio->tiempoDesmontaje)->format('H:i');
+            } catch (\Exception $e) {
+                // Si falla, intenta con el formato 'H:i'
+                try {
+                    $this->tiempoDesmontaje = Carbon::createFromFormat('H:i', $servicio->tiempoDesmontaje)->format('H:i');
+                } catch (\Exception $e) {
+                }
+            }
+
+            try {
+                $this->tiempo = Carbon::createFromFormat('H:i:s',  $servicio->tiempoServicio)->format('H:i');
+            } catch (\Exception $e) {
+                // Si falla, intenta con el formato 'H:i'
+                try {
+                    $this->tiempo = Carbon::createFromFormat('H:i', $servicio->tiempoServicio)->format('H:i');
+                } catch (\Exception $e) {
+                }
+            }
         } else {
             $this->alert('error', 'Selecciona un servicio.');
             $this->numero_monitores = 0;
@@ -1872,6 +1937,7 @@ class CreateComponent extends Component
             'submitEvento',
             'confirmed',
             'calcularPrecio',
+            'verContrato',
             'selectCliente',
             'selectedCompanyItem',
             'alertaGuardar'
@@ -1897,7 +1963,12 @@ class CreateComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('presupuestos.index');
+        return redirect()->route('presupuestos.edit', $this->identificador);
+    }
+
+    public function verContrato()
+    {
+        return redirect()->route('contratos.edit', $this->contrato_id);
     }
 
     public function setGasoil($servicioIndex, $i)
@@ -1911,5 +1982,69 @@ class CreateComponent extends Component
         if ($this->gasoilDistancia != null) {
             $this->listaPacks[$packIndex]['gastos_gasoil'][$keyPack][$i] = round((float)($this->gasoilDistancia * $this->gasoilPrecio), 2);
         }
+    }
+
+    public function confirmedImprimir()
+    {
+
+        $this->diaMostrar = Carbon::now()->locale('es_ES')->isoFormat('D [de] MMMM [de] Y');
+        $presupuesto = Presupuesto::find($this->identificador);
+        $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
+        $evento = Evento::where('id', $presupuesto->id_evento)->first();
+        $packs = ServicioPack::all();
+        foreach ($presupuesto->servicios()->get() as $servicio) {
+            $listaServicios[] = ['id' => $servicio->id, 'nombre' => $servicio->nombre, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
+        }
+
+        foreach ($presupuesto->packs()->get() as $pack) {
+            $listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precio_final' => $pack->pivot->precio_final, 'existente' => 1];
+        }
+
+        $filename = Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
+        $this->ruta = '/contratos/' . $filename;
+
+
+
+        if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) > 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) <= 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else if (count($presupuesto->packs) <= 0 && count($presupuesto->servicios) > 0) {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        } else {
+            $datos =  [
+                'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
+                'evento' => $evento, 'packs' => $packs, 'observaciones' => '',
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+            ];
+        }
+
+
+        $path = public_path('contratos');
+
+        if (!File::exists($path)) {
+            File::makeDirectory($path, $mode = 0777, true, true);
+        }
+
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+
+        $this->confirmed();
+
+        return response()->streamDownload(
+            fn () => print($pdf),
+            $filename
+        );
     }
 }

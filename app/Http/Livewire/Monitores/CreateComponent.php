@@ -24,11 +24,20 @@ class CreateComponent extends Component
     public $lugar;
     public $localidad;
     public $telefono;
+    public $alias;
+    public $dni;
+    public $num_ss;
+    public $nivel_estudios;
+    public $domicilio;
+    public $provincia;
+    public $codigo_postal;
+    public $nombre_padre;
+    public $nombre_madre;
+    public $email;
 
 
     public function mount()
     {
-
     }
 
 
@@ -42,14 +51,25 @@ class CreateComponent extends Component
     public function submit()
     {
         // Validación de datos
-        $validatedData = $this->validate([
-            'nombre' => 'required',
-            'apellidos' => 'required',
-            'localidad' => 'required',
-            'telefono' => 'required',
-            'fechaNa' => 'required',
+        $validatedData = $this->validate(
+            [
+                'nombre' => 'required',
+                'apellidos' => 'required',
+                'localidad' => 'required',
+                'telefono' => 'required',
+                'fechaNa' => 'required',
+                'alias'  => 'nullable',
+                'dni' => 'nullable',
+                'num_ss' => 'nullable',
+                'nivel_estudios' => 'nullable',
+                'domicilio' => 'nullable',
+                'provincia' => 'nullable',
+                'codigo_postal' => 'nullable',
+                'nombre_padre' => 'nullable',
+                'nombre_madre' => 'nullable',
+                'email' => 'nullable',
 
-        ],
+            ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
@@ -57,8 +77,9 @@ class CreateComponent extends Component
                 'localidad.required' => 'La localidad es obligatoria.',
                 'telefono.required' => 'El telefono es obligatorio.',
                 'fechaNa.required' => 'El telefono es obligatorio.',
-            
-            ]);
+
+            ]
+        );
 
         // Guardar datos validados
         $monitorSave = Monitor::create($validatedData);
@@ -66,7 +87,7 @@ class CreateComponent extends Component
 
         // Alertas de guardado exitoso
         if ($monitorSave) {
-            $this->alert('success', '¡Usuario registrado correctamente!', [
+            $this->alert('success', '¡Monitor registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
@@ -76,7 +97,7 @@ class CreateComponent extends Component
                 'timerProgressBar' => true,
             ]);
         } else {
-            $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
+            $this->alert('error', '¡No se ha podido guardar la información del monitor!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,

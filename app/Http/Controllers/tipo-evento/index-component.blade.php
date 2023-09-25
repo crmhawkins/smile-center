@@ -3,13 +3,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">CATEGORÍAS DE EVENTOS</h4>
+                <h4 class="page-title">TIPOS DE EVENTOS</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Categorías de contrato</a></li>
-                    <li class="breadcrumb-item active">Todas las categorías</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Tipos de Eventos</a></li>
+                    <li class="breadcrumb-item active">Todos los eventos</li>
                 </ol>
             </div>
         </div> <!-- end row -->
@@ -21,22 +21,26 @@
         <div class="col-12">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h4 class="mt-0 header-title">Listado de todas las categorías de contrato</h4>
-                        <p class="sub-title../plugins">Listado completo de todas las categorías de contrato, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
+                    <h4 class="mt-0 header-title">Listado de todos los tipos de eventos</h4>
+                        <p class="sub-title../plugins">Listado completo de todos tipos de eventos, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
                         </p>
-                    @if (count($categorias_evento) > 0)
+                    @if (count($tipos_evento) > 0)
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th scope="col">Categoria</th>
+
+
                                     <th scope="col">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($categorias_evento as $categoria)
+                                @foreach ($tipos_evento as $tipo)
                                     <tr>
-                                        <td>{{ $categoria->nombre }}</td>
-                                        <td> <a href="categoria-evento-edit/{{ $categoria->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                                        <td>{{ $tipo->nombre }}</td>
+
+
+                                        <td> <a href="tipo-evento-edit/{{ $tipo->id }}" class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -64,5 +68,5 @@
 <!-- Responsive examples -->
 <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
-<script src="../assets/pages/datatables.init.js"></script>
+<script src="../assets/pages/datatables.init.js"></script>   
 @endsection

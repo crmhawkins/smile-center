@@ -16,7 +16,7 @@ class Evento extends Model
         'eventoNombre',
         'eventoProtagonista',
         'eventoNiños',
-        'eventoAdultos',
+        'eventoAdulto',
         //'id_contacto',
         'eventoContacto',
         'eventoParentesco',
