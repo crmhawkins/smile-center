@@ -24,6 +24,13 @@
                                 name="precio_gasoil_km" placeholder="0" step="0.01">
                         </div>
                     </div>
+                    <div class="form-group col-md-4">
+                        <label for="eventoNiños" class="col-sm-12 col-form-label">Saldo inicial</label>
+                        <div class="col-sm-10">
+                            <input type="number" wire:model="precio_gasoil_km" class="form-control"
+                                name="precio_gasoil_km" placeholder="0" step="0.01">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

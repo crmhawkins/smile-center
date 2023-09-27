@@ -52,7 +52,7 @@ class HomeController extends Controller
 
         $gastos_caja = Caja::whereBetween('fecha', [$inicioSemana, $finSemana])->where('tipo_movimiento', 'Gasto')->sum('importe');
         $ingresos_caja = Caja::whereBetween('fecha', [$inicioSemana, $finSemana])->where('tipo_movimiento', 'Ingreso')->sum('importe');
-        $resultado_caja = $ingresos_caja - $gastos_caja;
+        $resultados_caja = $ingresos_caja - $gastos_caja;
 
         return view('home', compact('user', 'presupuestos', 'categorias', 'porcentaje_ingresos_mensuales', 'eventos',  'ingresos_mensuales', 'ingresos_caja', 'gastos_caja', 'resultados_caja'));
     }

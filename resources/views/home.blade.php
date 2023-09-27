@@ -46,7 +46,7 @@
                     <div>
                         <h5 class="font-16">Gastos semanales (caja)</h5>
                     </div>
-                    @if(($gastos_caja) < 0)<h3 class="mt-4" style="color:red !important">@else <h3 class="mt-4" style="color:green !important"> @endif {{$gastos_caja}} €</h3>
+                    <h3 class="mt-4">  {{$gastos_caja}} €</h3>
                     <div class="progress mt-4" style="height: 4px;">
                         <div class="progress-bar bg-success" role="progressbar" style="width: 88%" aria-valuenow="88"
                             aria-valuemin="0" aria-valuemax="100"></div>

@@ -24,7 +24,7 @@
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Presupuesto</label>
                             <div class="col-sm-10">
-                                <div class="col-md-8" x-data="" x-init="$('#select2-monitor').select2();
+                                <div class="col-md-12" x-data="" x-init="$('#select2-monitor').select2();
                                 $('#select2-monitor').on('change', function(e) {
                                     var data = $('#select2-monitor').select2('val');
                                     @this.set('presupuesto_id', data);
@@ -80,7 +80,7 @@
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Descripción</label>
                             <div class="col-sm-10">
-                                <textarea wire:model="descripcion" nombre="descripcion" id="descripcion" placeholder="Nombre de la categoría..." width="100%"></textarea>
+                                <textarea wire:model="descripcion" nombre="descripcion" id="descripcion" placeholder="Nombre de la categoría..." rows="4" cols="150"></textarea>
                                 @error('nombre')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror

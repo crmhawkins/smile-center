@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Caja;
 
+use App\Models\Caja;
 use App\Models\Cliente;
 use App\Models\Evento;
 use App\Models\Presupuesto;
@@ -93,7 +94,7 @@ class CreateIngresoComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('tipo-evento.index');
+        return redirect()->route('caja.index');
     }
 
     public function getCliente($id)

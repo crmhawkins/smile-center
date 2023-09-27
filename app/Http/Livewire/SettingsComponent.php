@@ -15,6 +15,7 @@ class SettingsComponent extends Component
     public $setting;
 
     public $precio_gasoil_km;
+    public $saldo_inicial;
     public $file;
 
     public function mount()
@@ -22,6 +23,8 @@ class SettingsComponent extends Component
         $this->setting = Settings::where('id', 1)->first();
 
         $this->precio_gasoil_km = Settings::where('id', 1)->first()->precio_gasoil_km;
+        $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
+
     }
 
     public function render()
