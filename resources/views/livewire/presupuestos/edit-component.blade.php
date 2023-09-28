@@ -1285,7 +1285,7 @@
                                 <button class="w-100 btn btn-info mb-2" wire:click.prevent="alertaAceptar">Imprimir
                                     datos de
                                     presupuesto</button>
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">Generar
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">@if($contrato_id != null)Ver @else Generar @endif
                                     contrato</button>
                             </div>
                         </div>

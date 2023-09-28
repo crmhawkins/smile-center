@@ -1408,6 +1408,7 @@ class CreateComponent extends Component
                 'estado' => 'required',
                 'observaciones' => 'nullable',
                 'gasoilDistancia' => 'nullable',
+                'gestor_id' => 'nullable'
 
             ],
             // Mensajes de error

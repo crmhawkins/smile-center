@@ -419,7 +419,7 @@
                     <td colspan="2"><b>INDIQUE CON SI/NO LA SIGUIENTE AUTORIZACIÓN:</b></td>
                 </tr>
                 <tr width="100%">
-                    @if ($authImagen == 1)
+                    @if ($authImagen == true)
                         <td width="5%"
                             style="border-right-color: #fff !important; border-top-color: #fff !important; border-bottom-color: #fff !important; background-color:yellow !important;">
                             SI</td>

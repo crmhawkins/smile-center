@@ -13,6 +13,7 @@ use App\Models\Contrato;
 use App\Models\Programa;
 use App\Models\Servicio;
 use App\Models\ServicioPack;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Arr;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -31,6 +32,7 @@ class EditComponent extends Component
     use LivewireAlert;
 
     public $identificador;
+    public $diaMostrar;
     public $contrato_id;
     public $currentStep = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $nPresupuesto; // Numero de presupusto
@@ -41,7 +43,7 @@ class EditComponent extends Component
     public $preciosBasePack = [];
     public $tipos_evento;
     public $categorias_evento;
-    //cliente
+    public $gestor_id;
     public $id_evento = 0; // 0 por defecto por si no se selecciona ninguna
     public $id_cliente = 0; // 0 por defecto por si no se selecciona ninguna
     public $observaciones = "";
@@ -189,10 +191,10 @@ class EditComponent extends Component
     public $validatePrograms;
     public $type;
     public $lowerN;
-    public $metodoPago;
+    public $metodoPago = 'Efectivo';
     public $cuentaTransferencia;
-    public $authImagen;
-    public $authMenores;
+    public $authImagen = 0;
+    public $authMenores = 0;
 
 
     public $clienteNuevo = false;
@@ -212,6 +214,7 @@ class EditComponent extends Component
     public $sueldoMonitores = [];
     public $gastosGasoil = [];
     public $pagosPendientes = [];
+    public $nombreGestor;
 
 
     public function mount()
@@ -228,13 +231,18 @@ class EditComponent extends Component
         $this->adelanto = $this->presupuesto->adelanto;
         $this->estado = $this->presupuesto->estado;
         $this->fechaVencimiento = $this->presupuesto->fechaVencimiento;
-
+        $this->gestor_id = $this->presupuesto->gestor_id ? $this->presupuesto->gestor_id : Auth::id();
+        $gestor = User::firstWhere('id', $this->gestor_id);
+        $this->nombreGestor = $gestor->name . " " . $gestor->surname;
 
         //Cliente
         $this->id_cliente = $this->presupuesto->id_cliente;
         $this->clientes = Cliente::all(); // datos que se envian al select2
         $this->clienteSeleccionado = Cliente::where('id', $this->presupuesto->id_cliente)->first();
 
+        if (Contrato::where('id_presupuesto', $this->identificador)->exists()) {
+            $this->contrato_id = Contrato::firstWhere('id_presupuesto', $this->identificador)->id;
+        }
         //Evento
         $this->id_evento = $this->presupuesto->id_evento;
         $this->evento = Evento::where('id', $this->id_evento)->first();
@@ -301,7 +309,7 @@ class EditComponent extends Component
 
             // Preparar arrays basados en numero_monitores
             $defaultArray = array_fill(0, count($numMonitores), '0');
-            $defaultDoubleArray = array_map(function() use ($defaultArray) {
+            $defaultDoubleArray = array_map(function () use ($defaultArray) {
                 return $defaultArray;
             }, $numMonitores);
 
@@ -1425,6 +1433,8 @@ class EditComponent extends Component
         }
     }
 
+
+
     public function destroy()
     {
 
@@ -1982,7 +1992,6 @@ class EditComponent extends Component
     }
     public function confirmedImprimir()
     {
-
         $this->diaMostrar = Carbon::now()->locale('es_ES')->isoFormat('D [de] MMMM [de] Y');
         $presupuesto = Presupuesto::find($this->identificador);
         $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
@@ -2004,26 +2013,26 @@ class EditComponent extends Component
         if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) > 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
-                'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '',
-                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
             ];
         } else if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) <= 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
-                'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '',
-                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+                'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
             ];
         } else if (count($presupuesto->packs) <= 0 && count($presupuesto->servicios) > 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
-                'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => '',
-                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+                'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
             ];
         } else {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
-                'evento' => $evento, 'packs' => $packs, 'observaciones' => '',
-                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => 1, 'authMenores' => 1, 'fechaMostrar' => $this->diaMostrar,
+                'evento' => $evento, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
+                'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
             ];
         }
 
@@ -2036,10 +2045,7 @@ class EditComponent extends Component
 
         $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
 
-        if (Contrato::where('id_presupuesto', $this->identificador)->exists()) {
-            $this->contrato_id = Contrato::where('id_presupuesto', $this->identificador)->first()->id;
-            $this->confirmed2();
-        } else {
+        if ($this->contrato_id === null) {
             // Guardar datos validados
             $contratoSave = Contrato::create([
                 "id_presupuesto" => $this->identificador,
@@ -2053,6 +2059,8 @@ class EditComponent extends Component
             $this->contrato_id = $contratoSave->id;
 
             event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
+            $this->confirmed2();
+        } else {
             $this->confirmed2();
         }
 
