@@ -29,6 +29,7 @@ class ShowComponent extends Component
     public $monitores_datos;
     public $fechas = [];
     public $presupuestos;
+    public $contratos;
     public $eventos;
     public $categorias;
     public $servicios;
@@ -43,12 +44,14 @@ class ShowComponent extends Component
     protected $listeners = [
         'loadWeek' => 'loadWeek',
         'loadMonth' => 'loadMonth',
+        'terminarInputs'
     ];
 
 
     public function mount()
     {
         $this->presupuestos = Presupuesto::all();
+        $this->contratos = Contrato::all();
         $this->servicios = Servicio::all();
         $this->packs = ServicioPack::all();
         $this->monitores_datos = Monitor::all();
@@ -62,6 +65,44 @@ class ShowComponent extends Component
     {
 
         return view('livewire.resumen-semana.show-component');
+    }
+
+    public function checkAuthContrato($idEvento)
+    {
+        $presupuesto_check = $this->presupuestos->firstWhere('id_evento', $idEvento);
+        if ($presupuesto_check != null) {
+            $contrato_check = $this->contratos->firstWhere('id_presupuesto', $presupuesto_check->id);
+            if ($contrato_check != null) {
+                if ($contrato_check->authImagen == 1) {
+                    return 'Autoriza imagen';
+                } else {
+                    return 'No autoriza imagen';
+                }
+            } else {
+                return 'Sin contrato';
+            }
+        } else {
+            return '¿No hay presupuesto?';
+        }
+    }
+
+    public function checknPresupuesto($idEvento)
+    {
+        $presupuesto_check = $this->presupuestos->firstWhere('id_evento', $idEvento);
+        if ($presupuesto_check != null) {
+            return $presupuesto_check->nPresupuesto;
+        } else {
+            return '¿No hay presupuesto?';
+        }
+    }
+    public function checkPrecioFinal($idEvento)
+    {
+        $presupuesto_check = $this->presupuestos->firstWhere('id_evento', $idEvento);
+        if ($presupuesto_check != null) {
+            return $presupuesto_check->nPresupuesto;
+        } else {
+            return '¿No hay presupuesto?';
+        }
     }
 
     public function cambioSemana()
@@ -86,6 +127,10 @@ class ShowComponent extends Component
 
     public function detectarEdicion($id, $column)
     {
+        $this->datoEdicion['id'] = null;
+        $this->datoEdicion['column'] = null;
+        $this->datoEdicion['value'] = null;
+
         $this->datoEdicion['id'] = $id;
         $this->datoEdicion['column'] = $column;
         switch ($this->datoEdicion['column']) {
@@ -109,6 +154,10 @@ class ShowComponent extends Component
 
     public function detectarEdicionServicio($id, $id2, $column)
     {
+        $this->datoEdicion['id'] = null;
+        $this->datoEdicion['column'] = null;
+        $this->datoEdicion['value'] = null;
+
         $this->datoEdicion['id'] = ['presupuesto' => $id, 'servicio' => $id2];
         $this->datoEdicion['column'] = $column;
         switch ($this->datoEdicion['column']) {
@@ -137,8 +186,35 @@ class ShowComponent extends Component
         }
     }
 
+    public function terminarInputs()
+    {
+        if ($this->datoEdicion['id'] != null) {
+            if (isset($this->datoEdicion['id']['servicio'])) {
+                if (isset($this->datoEdicion['id']['pack'])) {
+                    if (isset($this->datoEdicion['id']['monitor'])) {
+                        $this->terminarEdicionMonitoresPack();
+                    } else {
+                        $this->terminarEdicionServicioPack();
+                    }
+                } else {
+                    if (isset($this->datoEdicion['id']['monitor'])) {
+                        $this->terminarEdicionServicioMonitores();
+                    } else {
+                        $this->terminarEdicionServicio();
+                    }
+                }
+            } else {
+                $this->terminarEdicion();
+            }
+        }
+    }
+
     public function detectarEdicionPack($id, $id2, $id3, $id4, $column)
     {
+        $this->datoEdicion['id'] = null;
+        $this->datoEdicion['column'] = null;
+        $this->datoEdicion['value'] = null;
+
         $this->datoEdicion['id'] = ['presupuesto' => $id, 'pack' => $id2, 'servicio' => $id3];
         $this->datoEdicion['column'] = $column;
         switch ($this->datoEdicion['column']) {
@@ -169,6 +245,10 @@ class ShowComponent extends Component
     }
     public function detectarEdicionMonitores($id, $id2, $id3, $column)
     {
+        $this->datoEdicion['id'] = null;
+        $this->datoEdicion['column'] = null;
+        $this->datoEdicion['value'] = null;
+
         $this->datoEdicion['id'] = ['presupuesto' => $id, 'servicio' => $id2, 'monitor' => $id3];
         $this->datoEdicion['column'] = $column;
         switch ($this->datoEdicion['column']) {
@@ -194,6 +274,10 @@ class ShowComponent extends Component
     }
     public function detectarEdicionMonitoresPack($id, $id2, $id3, $id4, $column)
     {
+        $this->datoEdicion['id'] = null;
+        $this->datoEdicion['column'] = null;
+        $this->datoEdicion['value'] = null;
+
         $this->datoEdicion['id'] = ['presupuesto' => $id, 'pack' => $id2, 'servicio' => $id3, 'monitor' => $id4];
         $this->datoEdicion['column'] = $column;
         switch ($this->datoEdicion['column']) {
