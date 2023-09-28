@@ -1217,7 +1217,31 @@
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
                                 Datos para la creación del contrato</h5>
                         </div>
-                        <div class="form-group row">
+                        <div class="col-sm-11 align-items-center ms-5">
+                            <label for="observaciones" class="col-form-label">Observaciones</label>
+                            <textarea class="form-control" wire:model="observaciones" id="observaciones"></textarea>
+                        </div>
+                        <div class="col-sm-5 align-items-center ms-5">
+                            <label for="metodoPago" class="col-form-label">Método de pago</label>
+                            <select class="form-control text-center" wire:model="metodoPago" name="metodoPago"
+                                id="metodoPago">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Bizum">Bizum</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-5 align-items-center ms-5">
+                            @if ($metodoPago == 'Transferencia')
+                                <label for="cuentaTransferencia" class="col-form-label">Cuenta para la
+                                    transferencia</label>
+                                <select class="form-control text-center" wire:model="cuentaTransferencia"
+                                    name="cuentaTransferencia" id="cuentaTransferencia">
+                                    <option value="Deutsche Bank">Deutsche Bank</option>
+                                    <option value="Caixabank">Caixabank</option>
+                                </select>
+                            @endif
+                        </div>
+                        <div class="form-group col-12">
                             <div class="col-sm-10 d-inline-flex align-items-center ms-5">
                                 <input class="form-check-input mt-0" wire:model="authImagen" type="checkbox"
                                     id="authImagen">
@@ -1226,7 +1250,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group col-12">
                             <div class="col-sm-10 d-inline-flex align-items-center ms-5">
                                 <input class="form-check-input mt-0" wire:model="authMenores" type="checkbox"
                                     id="authMenores">
@@ -1258,10 +1282,10 @@
                         <h5>Opciones de impresión</h5>
                         <div class="row">
                             <div class="col-12">
-                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Imprimir
+                                <button class="w-100 btn btn-info mb-2" wire:click.prevent="alertaAceptar">Imprimir
                                     datos de
                                     presupuesto</button>
-                                <button class="w-100 btn btn-danger mb-2" wire:click.prevent="alertaCancelar">Imprimir
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">Generar
                                     contrato</button>
                             </div>
                         </div>

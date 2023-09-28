@@ -31,7 +31,7 @@ class EditComponent extends Component
     use LivewireAlert;
 
     public $identificador;
-
+    public $contrato_id;
     public $currentStep = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $nPresupuesto; // Numero de presupusto
     public $fechaEmision; // Fecha del presupuesto
@@ -189,6 +189,12 @@ class EditComponent extends Component
     public $validatePrograms;
     public $type;
     public $lowerN;
+    public $metodoPago;
+    public $cuentaTransferencia;
+    public $authImagen;
+    public $authMenores;
+
+
     public $clienteNuevo = false;
     public $mensajeCliente = false;
     public $presupuesto;
@@ -1464,7 +1470,8 @@ class EditComponent extends Component
             'imprimirPresupuesto',
             'updatePresupuestoValidacion',
             'updateEvento',
-            'confirmedImprimir'
+            'confirmedImprimir',
+            'confirmed2'
         ];
     }
 
@@ -1736,6 +1743,11 @@ class EditComponent extends Component
         return redirect()->route('presupuestos.index');
     }
 
+    public function confirmed2()
+    {
+        return redirect()->route('contratos.edit', $this->contrato_id);
+    }
+
 
     public function alertaGuardar()
     {
@@ -1970,7 +1982,25 @@ class EditComponent extends Component
 
         $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
 
-        $this->confirmed();
+        if (Contrato::where('id_presupuesto', $this->identificador)->exists()) {
+            $this->contrato_id = Contrato::where('id_presupuesto', $this->identificador)->first()->id;
+            $this->confirmed2();
+        } else {
+            // Guardar datos validados
+            $contratoSave = Contrato::create([
+                "id_presupuesto" => $this->identificador,
+                'metodoPago' => $this->metodoPago,
+                'cuentaTransferencia' => $this->cuentaTransferencia,
+                'observaciones' => $this->observaciones,
+                'authImagen' => $this->authImagen,
+                'authMenores' => $this->authMenores,
+                'dia' => $this->diaEvento,
+            ]);
+            $this->contrato_id = $contratoSave->id;
+
+            event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
+            $this->confirmed2();
+        }
 
         return response()->streamDownload(
             fn () => print($pdf),
