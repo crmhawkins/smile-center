@@ -251,43 +251,97 @@ class EditComponent extends Component
         $this->diaFinal = $this->evento->diaFinal;
         $this->diaEvento = $this->evento->diaEvento;
 
+        // foreach ($this->presupuesto->servicios()->get() as $servicio) {
+        //     $defaultArray = array_fill(0, count($servicio->pivot->numero_monitores), '0');
+
+        //     $this->listaServicios[] = [
+        //         'id' => $servicio->id,
+        //         'numero_monitores' => $servicio->pivot->numero_monitores,
+        //         'precioFinal' => $servicio->pivot->precio_final,
+        //         'tiempo' => $servicio->pivot->tiempo,
+        //         'hora_inicio' => $servicio->pivot->hora_inicio,
+        //         'hora_finalizacion' => $servicio->pivot->hora_finalizacion,
+        //         'id_monitores' => json_decode($servicio->pivot->id_monitores, true) ?? $defaultArray,
+        //         'sueldo_monitores' => json_decode($servicio->pivot->sueldo_monitores, true) ?? $defaultArray,
+        //         'gasto_gasoil' => json_decode($servicio->pivot->gasto_gasoil, true) ?? $defaultArray,
+        //         'pago_pendiente' => json_decode($servicio->pivot->pago_pendiente, true) ?? $defaultArray,
+        //         'hora_montaje' => $servicio->pivot->hora_montaje,
+        //         'tiempo_montaje' => $servicio->pivot->tiempo_montaje,
+        //         'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje,
+        //         'existente' => 1
+        //     ];
+        // }
+
         foreach ($this->presupuesto->servicios()->get() as $servicio) {
+            $numMonitores = $servicio->pivot->numero_monitores;
+
+            // Preparar un array basado en numero_monitores
+            $defaultArray = array_fill(0, $numMonitores, '0');
+
             $this->listaServicios[] = [
                 'id' => $servicio->id,
-                'numero_monitores' => $servicio->pivot->numero_monitores,
-                'precioFinal' => $servicio->pivot->precio_final,
-                'tiempo' => $servicio->pivot->tiempo,
-                'hora_inicio' => $servicio->pivot->hora_inicio,
-                'hora_finalizacion' => $servicio->pivot->hora_finalizacion,
-                'id_monitores' => json_decode($servicio->pivot->id_monitores, true),
-                'sueldo_monitores' => json_decode($servicio->pivot->sueldo_monitores, true),
-                'gasto_gasoil' => json_decode($servicio->pivot->gasto_gasoil, true),
-                'pago_pendiente' => json_decode($servicio->pivot->pago_pendiente, true),
-                'hora_montaje' => $servicio->pivot->hora_montaje,
-                'tiempo_montaje' => $servicio->pivot->tiempo_montaje,
-                'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje,
+                'numero_monitores' => $numMonitores,
+                'precioFinal' => $servicio->pivot->precio_final ?? '0',
+                'tiempo' => $servicio->pivot->tiempo ?? '0',
+                'hora_inicio' => $servicio->pivot->hora_inicio ?? '0',
+                'hora_finalizacion' => $servicio->pivot->hora_finalizacion ?? '0',
+                'id_monitores' => json_decode($servicio->pivot->id_monitores, true) ?? $defaultArray,
+                'sueldo_monitores' => json_decode($servicio->pivot->sueldo_monitores, true) ?? $defaultArray,
+                'gasto_gasoil' => json_decode($servicio->pivot->gasto_gasoil, true) ?? $defaultArray,
+                'pago_pendiente' => json_decode($servicio->pivot->pago_pendiente, true) ?? $defaultArray,
+                'hora_montaje' => $servicio->pivot->hora_montaje ?? '0',
+                'tiempo_montaje' => $servicio->pivot->tiempo_montaje ?? '0',
+                'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje ?? '0',
                 'existente' => 1
             ];
         }
 
         foreach ($this->presupuesto->packs()->get() as $pack) {
+            $numMonitores = json_decode($pack->pivot->numero_monitores, true);
+
+            // Preparar arrays basados en numero_monitores
+            $defaultArray = array_fill(0, count($numMonitores), '0');
+            $defaultDoubleArray = array_map(function() use ($defaultArray) {
+                return $defaultArray;
+            }, $numMonitores);
+
             $this->listaPacks[] = [
                 'id' => $pack->id,
-                'numero_monitores' => json_decode($pack->pivot->numero_monitores, true),
-                'precioFinal' => $pack->pivot->precio_final,
-                'tiempos' => json_decode($pack->pivot->tiempos, true),
-                'horas_inicio' => json_decode($pack->pivot->horas_inicio, true),
-                'horas_finalizacion' => json_decode($pack->pivot->horas_finalizacion, true),
-                'id_monitores' => json_decode($pack->pivot->id_monitores, true),
-                'sueldos_monitores' => json_decode($pack->pivot->sueldos_monitores, true),
-                'gastos_gasoil' => json_decode($pack->pivot->gastos_gasoil, true),
-                'horas_montaje' => json_decode($pack->pivot->horas_montaje, true),
-                'tiempos_montaje' => json_decode($pack->pivot->tiempos_montaje, true),
-                'tiempos_desmontaje' => json_decode($pack->pivot->tiempos_desmontaje, true),
-                'pagos_pendientes' => json_decode($pack->pivot->pagos_pendientes, true),
+                'numero_monitores' => $numMonitores,
+                'precioFinal' => $pack->pivot->precio_final ?? '0',
+                'tiempos' => $pack->pivot->tiempos ? json_decode($pack->pivot->tiempos, true) : $defaultDoubleArray,
+                'horas_inicio' => $pack->pivot->horas_inicio ? json_decode($pack->pivot->horas_inicio, true) : $defaultDoubleArray,
+                'horas_finalizacion' => $pack->pivot->horas_finalizacion ? json_decode($pack->pivot->horas_finalizacion, true) : $defaultDoubleArray,
+                'id_monitores' => $pack->pivot->id_monitores ? json_decode($pack->pivot->id_monitores, true) : $defaultArray,
+                'sueldos_monitores' => $pack->pivot->sueldos_monitores ? json_decode($pack->pivot->sueldos_monitores, true) : $defaultArray,
+                'gastos_gasoil' => $pack->pivot->gastos_gasoil ? json_decode($pack->pivot->gastos_gasoil, true) : $defaultArray,
+                'horas_montaje' => $pack->pivot->horas_montaje ? json_decode($pack->pivot->horas_montaje, true) : $defaultDoubleArray,
+                'tiempos_montaje' => $pack->pivot->tiempos_montaje ? json_decode($pack->pivot->tiempos_montaje, true) : $defaultDoubleArray,
+                'tiempos_desmontaje' => $pack->pivot->tiempos_desmontaje ? json_decode($pack->pivot->tiempos_desmontaje, true) : $defaultDoubleArray,
+                'pagos_pendientes' => $pack->pivot->pagos_pendientes ? json_decode($pack->pivot->pagos_pendientes, true) : $defaultArray,
                 'existente' => 1
             ];
         }
+
+        // foreach ($this->presupuesto->packs()->get() as $pack) {
+
+        //     $this->listaPacks[] = [
+        //         'id' => $pack->id,
+        //         'numero_monitores' => json_decode($pack->pivot->numero_monitores, true),
+        //         'precioFinal' => $pack->pivot->precio_final,
+        //         'tiempos' => json_decode($pack->pivot->tiempos, true),
+        //         'horas_inicio' => json_decode($pack->pivot->horas_inicio, true),
+        //         'horas_finalizacion' => json_decode($pack->pivot->horas_finalizacion, true),
+        //         'id_monitores' => json_decode($pack->pivot->id_monitores, true),
+        //         'sueldos_monitores' => json_decode($pack->pivot->sueldos_monitores, true),
+        //         'gastos_gasoil' => json_decode($pack->pivot->gastos_gasoil, true),
+        //         'horas_montaje' => json_decode($pack->pivot->horas_montaje, true),
+        //         'tiempos_montaje' => json_decode($pack->pivot->tiempos_montaje, true),
+        //         'tiempos_desmontaje' => json_decode($pack->pivot->tiempos_desmontaje, true),
+        //         'pagos_pendientes' => json_decode($pack->pivot->pagos_pendientes, true),
+        //         'existente' => 1
+        //     ];
+        // }
         // $this->servicioEventoList = ServicioEvento::where("id_evento", $this->evento->id)->get()->toArray();
 
         $this->programas = Programa::all();
