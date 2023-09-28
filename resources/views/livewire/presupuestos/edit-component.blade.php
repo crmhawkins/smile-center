@@ -930,11 +930,11 @@
                                 @foreach ($listaPacks as $packIndex => $pack)
                                     @if ($packIndex == 0)
                                         <tr>
-                                            <th>Pack de servicio</th>
-                                            <th>Precio final</th>
-                                            <th>Monitores contratados</th>
-                                            <th>Tiempo total</th>
-                                            <th>Eliminar</th>
+                                            <th colspan="3" class="header">Pack de servicio</th>
+                                            <th class="header">Precio final</th>
+                                            <th class="header">Monitores contratados</th>
+                                            <th colspan="2" class="header">Tiempo total</th>
+                                            <th class="header">Eliminar</th>
                                         </tr>
                                     @else
                                         <tr>
