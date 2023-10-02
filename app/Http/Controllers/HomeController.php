@@ -43,7 +43,7 @@ class HomeController extends Controller
         $finMesPasado = Carbon::now()->endofMonth()->endofWeek()->subMonth();  // Domingo de esta semana
         $ingresos_mensuales = (float) ($presupuestos->whereBetween('fechaEmision', [$inicioMes, $finMes])->sum('precioFinal') - $presupuestos->whereBetween('fechaEmision', [$inicioMes, $finMes])->sum('adelanto'));
         $ingresos_mensuales_pasado = (float) ($presupuestos->whereBetween('fechaEmision', [$inicioMesPasado, $finMesPasado])->sum('precioFinal') - $presupuestos->whereBetween('fechaEmision', [$inicioMesPasado, $finMesPasado])->sum('adelanto'));
-        $porcentaje_ingresos_mensuales = round(($ingresos_mensuales / $ingresos_mensuales_pasado) * 100);
+        $porcentaje_ingresos_mensuales = $ingresos_mensuales_pasado > 0 ? round(($ingresos_mensuales / $ingresos_mensuales_pasado) * 100) : 0;
         $pendiente = (float) ($presupuestos->where('estado', '!=', 'Facturado')->whereBetween('fechaEmision', [$inicioMes, $finMes])->sum('precioFinal') - $presupuestos->where('estado', '!=', 'Facturado')->whereBetween('fechaEmision', [$inicioMes, $finMes])->sum('adelanto'));
 
         $user = $request->user();
