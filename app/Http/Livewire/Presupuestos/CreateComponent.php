@@ -241,7 +241,7 @@ class CreateComponent extends Component
         $this->categoria_evento_id = 4;
         $this->year = 0;
         $year = Carbon::now()->addYears($this->year)->format('Y');
-        $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%{$year}%')->count();
+        $numero = Presupuesto::where('nPresupuesto', 'LIKE', "%{$year}%")->count();
         $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/';
         $this->packs = ServicioPack::all();
         $this->gasoilPrecio = Settings::where('id', 1)->first()->precio_gasoil_km;
@@ -271,7 +271,7 @@ class CreateComponent extends Component
     public function cambiarPresupuesto()
     {
         $year = Carbon::now()->addYears($this->year)->format('Y');
-        $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%{$year}%')->count();
+        $numero = Presupuesto::where('nPresupuesto', 'LIKE', "%{$year}%")->count();
         $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/';
     }
 
@@ -1397,6 +1397,7 @@ class CreateComponent extends Component
         $this->precioBase = $this->precioFinal;
         $this->precioFinal = $this->precioBase - $this->descuento;
         $this->id_evento = $this->eventoIsSave->id;
+        $this->nPresupuesto = $this->nPresupuesto . Carbon::now()->addYears($this->year)->format('Y');
 
         $validatedData = $this->validate(
             [
