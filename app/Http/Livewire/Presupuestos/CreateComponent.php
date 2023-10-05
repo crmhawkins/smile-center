@@ -271,7 +271,6 @@ class CreateComponent extends Component
     {
         $year = Carbon::now()->addYears($this->year)->format('Y');
         $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%{$year}%')->count();
-        echo $numero;
         $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/';
     }
 
