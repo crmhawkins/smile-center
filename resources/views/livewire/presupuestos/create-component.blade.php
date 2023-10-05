@@ -35,7 +35,7 @@
                                         name="nPresupuesto" placeholder="X" disabled>
                                 </div>
                                 <div class="col-6">
-                                    <select class="form-control" wire:model="year" value="0" wire:change='cambiarPresupuesto()'>
+                                    <select class="form-control" wire:model="year" value="0" wire:change="cambiarPresupuesto()">
                                         <option value="-1">{{ $this->getYear(-1) }}</option>
                                         <option value="0">{{ $this->getYear(0) }}</option>
                                         <option value="1">{{ $this->getYear(1) }}</option>
@@ -1282,7 +1282,7 @@
             });
         </script>
     </div>
-
+</div>
     @section('scripts')
         {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
