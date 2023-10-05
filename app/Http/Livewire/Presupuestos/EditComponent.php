@@ -41,6 +41,8 @@ class EditComponent extends Component
     public $fechaVencimiento; // Fecha del presupuesto
     public $clienteSeleccionado; // Cliente seleccionado
     public $categoria_evento_id = 0;
+
+    public $indicador_montaje = 1;
     public $preciosBasePack = [];
     public $tipos_evento;
     public $categorias_evento;
@@ -128,6 +130,9 @@ class EditComponent extends Component
     public $tiempo = 0;
     public $hora_inicio = 0;
     public $hora_finalizacion = 0;
+
+    public $horaMontaje;
+    public $tiempoMontaje;
     public $tiempoDesmontaje;
     public $precioMonitor;
     public $costoDesplazamiento;
@@ -1561,8 +1566,41 @@ class EditComponent extends Component
         $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
         $this->precioFinalPack = 0;
         foreach ($pack as $keyPack => $servicio) {
-            if (!isset($this->preciosMonitores[$keyPack])) {
+            if (isset($this->preciosMonitores[$keyPack])) {
+                $this->preciosBasePack[$keyPack] = ($servicio->precioBase + ($this->preciosMonitores[$keyPack] * $servicio->precioMonitor));
+            } else {
                 $this->preciosMonitores[$keyPack] = $servicio->minMonitor;
+                $this->preciosBasePack[$keyPack] = $servicio->precioBase;
+                $this->preciosMonitores[$keyPack] = $servicio->minMonitor;
+                try {
+                    $this->tiemposMontajePack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
+                } catch (\Exception $e) {
+                    // Si falla, intenta con el formato 'H:i'
+                    try {
+                        $this->tiemposMontajePack[$keyPack] = Carbon::createFromFormat('H:i', $servicio->tiempoMontaje)->format('H:i');
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                try {
+                    $this->tiemposDesmontajePack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoDesmontaje)->format('H:i');
+                } catch (\Exception $e) {
+                    // Si falla, intenta con el formato 'H:i'
+                    try {
+                        $this->tiemposDesmontajePack[$keyPack] = Carbon::createFromFormat('H:i', $servicio->tiempoDesmontaje)->format('H:i');
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                try {
+                    $this->tiemposPack[$keyPack] = Carbon::createFromFormat('H:i:s', $servicio->tiempoServicio)->format('H:i');
+                } catch (\Exception $e) {
+                    // Si falla, intenta con el formato 'H:i'
+                    try {
+                        $this->tiemposPack[$keyPack] = Carbon::createFromFormat('H:i', $servicio->tiempoServicio)->format('H:i');
+                    } catch (\Exception $e) {
+                    }
+                }
             }
             $this->precioFinalPack += ($servicio->precioBase + ($this->preciosMonitores[$keyPack] * $servicio->precioMonitor));
         }
@@ -1570,15 +1608,51 @@ class EditComponent extends Component
 
     public function cambioTiempoPack()
     {
-        $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
-        $this->precioFinalPack = 0;
-        foreach ($pack as $keyPack => $servicio) {
-            if (isset($this->horasInicioPack[$keyPack]) && isset($this->horasFinalizacionPack[$keyPack]) &&  $this->horasInicioPack[$keyPack] != 0 && $this->horasFinalizacionPack[$keyPack] != 0) {
-                $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
-                $fin = Carbon::createFromFormat('H:i', $this->horasFinalizacionPack[$keyPack]);
-                $this->tiemposPack[$keyPack] = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
-                $this->emit('refresh');
+        if ($this->pack_seleccionado != 0) {
+            $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+            foreach ($pack as $keyPack => $servicio) {
+                if ($this->indicador_montaje == 1) {
+                    if (isset($this->tiemposMontajePack[$keyPack]) && isset($this->horasMontajePack[$keyPack])) {
+                        $inicio = Carbon::createFromFormat('H:i', $this->horasMontajePack[$keyPack]);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiemposMontajePack[$keyPack]);
+                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                        $this->horasInicioPack[$keyPack] = $inicio->addHours($horas)->addMinutes($minutos)->format('H:i');
+                        $this->emit('refresh');
+                    }
+                    if (isset($this->tiemposPack[$keyPack]) && isset($this->horasInicioPack[$keyPack])) {
+                        if (isset($this->tiemposDesmontajePack[$keyPack])) {
+                            $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                            $medio = Carbon::createFromFormat('H:i', $this->tiemposDesmontajePack[$keyPack]);
+                            $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                            list($horas, $minutos) = explode(':', $medio->format('H:i'));
+                            list($horas2, $minutos2) = explode(':', $fin->format('H:i'));
+                            $this->horasFinalizacionPack[$keyPack] = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->addMinutes((int)$minutos2)->addHours((int)$horas2)->format('H:i');
+                            $this->emit('refresh');
+                        } else {
+                            $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                            $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                            list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                            $this->horasFinalizacionPack[$keyPack] = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                            $this->emit('refresh');
+                        }
+                    }
+                } else {
+                    if (isset($this->tiemposPack[$keyPack]) && isset($this->horasInicioPack[$keyPack])) {
+                        $inicio = Carbon::createFromFormat('H:i', $this->horasInicioPack[$keyPack]);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                        $this->horasFinalizacionPack[$keyPack] = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                        $this->emit('refresh');
+                    }
+                }
             }
+        } else {
+            $this->alert('error', 'Selecciona un pack.');
+            $this->numero_monitores = 0;
+            $this->tiempo = 0;
+            $this->hora_inicio = 0;
+            $this->hora_finalizacion = 0;
+            $this->precioFinalServicio = 0;
         }
     }
 
@@ -1587,6 +1661,36 @@ class EditComponent extends Component
         if ($this->servicio_seleccionado != 0) {
             $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
             $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
+            $this->numero_monitores = $servicio->minMonitor;
+            try {
+                $this->tiempoMontaje = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
+            } catch (\Exception $e) {
+                // Si falla, intenta con el formato 'H:i'
+                try {
+                    $this->tiempoMontaje = Carbon::createFromFormat('H:i', $servicio->tiempoMontaje)->format('H:i');
+                } catch (\Exception $e) {
+                }
+            }
+
+            try {
+                $this->tiempoDesmontaje = Carbon::createFromFormat('H:i:s',  $servicio->tiempoDesmontaje)->format('H:i');
+            } catch (\Exception $e) {
+                // Si falla, intenta con el formato 'H:i'
+                try {
+                    $this->tiempoDesmontaje = Carbon::createFromFormat('H:i', $servicio->tiempoDesmontaje)->format('H:i');
+                } catch (\Exception $e) {
+                }
+            }
+
+            try {
+                $this->tiempo = Carbon::createFromFormat('H:i:s',  $servicio->tiempoServicio)->format('H:i');
+            } catch (\Exception $e) {
+                // Si falla, intenta con el formato 'H:i'
+                try {
+                    $this->tiempo = Carbon::createFromFormat('H:i', $servicio->tiempoServicio)->format('H:i');
+                } catch (\Exception $e) {
+                }
+            }
         } else {
             $this->alert('error', 'Selecciona un servicio.');
             $this->numero_monitores = 0;
@@ -1600,17 +1704,39 @@ class EditComponent extends Component
     public function cambioTiempoServicio()
     {
         if ($this->servicio_seleccionado != 0) {
-            if ($this->hora_inicio && $this->hora_finalizacion != 0) {
-                $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
-                $fin = Carbon::createFromFormat('H:i', $this->hora_finalizacion);
-                $this->tiempo = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
-                $this->emit('refresh');
-            }
-            if ($this->hora_inicio && $this->horaMontaje != 0) {
-                $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
-                $fin = Carbon::createFromFormat('H:i', $this->hora_inicio);
-                $this->tiempoDesmontaje = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
-                $this->emit('refresh');
+            if ($this->indicador_montaje == 1) {
+                if (isset($this->tiempoMontaje) && isset($this->horaMontaje) && ($this->tiempoMontaje != 0) && ($this->horaMontaje != 0)) {
+                    $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
+                    $fin = Carbon::createFromFormat('H:i', $this->tiempoMontaje);
+                    list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                    $this->hora_inicio = $inicio->addHours($horas)->addMinutes($minutos)->format('H:i');
+                    $this->emit('refresh');
+                }
+                if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio != 0)) {
+                    if (isset($this->tiempoDesmontaje) && ($this->tiempoDesmontaje != 0)) {
+                        $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                        $medio = Carbon::createFromFormat('H:i', $this->tiempoDesmontaje);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiempo);
+                        list($horas, $minutos) = explode(':', $medio->format('H:i'));
+                        list($horas2, $minutos2) = explode(':', $fin->format('H:i'));
+                        $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->addMinutes((int)$minutos2)->addHours((int)$horas2)->format('H:i');
+                        $this->emit('refresh');
+                    } else {
+                        $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiempo);
+                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                        $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                        $this->emit('refresh');
+                    }
+                }
+            } else {
+                if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio     != 0)) {
+                    $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                    $fin = Carbon::createFromFormat('H:i', $this->tiempo);
+                    list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                    $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
+                    $this->emit('refresh');
+                }
             }
         } else {
             $this->alert('error', 'Selecciona un servicio.', [
@@ -1766,18 +1892,51 @@ class EditComponent extends Component
             }
 
 
+
             if ($existe) {
                 $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
             } else if ($stockSeSupera == true) {
                 $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
-                $this->alert('error', '¡Selecciona un servicio!', [
-                    'position' => 'center',
-                    'toast' => false,
-                    'showConfirmButton' => true,
-                    'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
-                ]);
+            } else {
+                for ($i = 0; $i > $this->numero_monitores; $i++) {
+                    $this->sueldoMonitores[] = $this->servicios->firstWhere('id', $this->servicio_seleccionado)->get('precioMonitor');
+                }
+                $this->listaServicios[] = [
+                    'id' => $this->servicio_seleccionado,
+                    'numero_monitores' => $this->numero_monitores,
+                    'precioFinal' => $this->precioFinalServicio,
+                    'tiempo' => $this->tiempo,
+                    'hora_inicio' => $this->hora_inicio,
+                    'hora_finalizacion' => $this->hora_finalizacion,
+                    'hora_montaje' => $this->horaMontaje,
+                    'tiempo_montaje' => $this->tiempoMontaje,
+                    'tiempo_desmontaje' => $this->tiempoDesmontaje,
+                    'sueldo_monitores' => $this->sueldoMonitores,
+                    'id_monitores' => $this->idMonitores,
+                    'gasto_gasoil' => $this->gastosGasoil,
+                    'check_gasoil' => $this->gastosGasoil,
+                    'pago_pendiente' => $this->sueldoMonitores,
+                    'existente' => 0,
+                ];
+                $this->servicio_seleccionado = 0;
+                $this->numero_monitores = 0;
+                $this->tiempo = 0;
+                $this->tiempoMontaje = 0;
+                $this->tiempoDesmontaje = 0;
+                $this->hora_inicio = 0;
+                $this->hora_finalizacion = 0;
+                $this->horaMontaje = 0;
+                $this->precioFinal += $this->precioFinalServicio;
+                $this->precioFinalServicio = 0;
             }
+        } else {
+            $this->alert('error', '¡Selecciona un servicio!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
         }
     }
 
