@@ -240,7 +240,8 @@ class CreateComponent extends Component
         $this->gestor_id = Auth::id();
         $this->categoria_evento_id = 4;
         $this->year = 0;
-        $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%.$year.%')->count();
+        $year = Carbon::now()->addYears($this->year)->format('Y');
+        $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%{$year}%')->count();
         $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/';
         $this->packs = ServicioPack::all();
         $this->gasoilPrecio = Settings::where('id', 1)->first()->precio_gasoil_km;
