@@ -35,7 +35,7 @@
                                         name="nPresupuesto" placeholder="X" disabled>
                                 </div>
                                 <div class="col-6">
-                                    <select class="form-control" wire:model="year" value="0" wire:change='cambiarPresupuesto'>
+                                    <select class="form-control" wire:model="year" value="0" wire:change='cambiarPresupuesto()'>
                                         <option value="-1">{{ $this->getYear(-1) }}</option>
                                         <option value="0">{{ $this->getYear(0) }}</option>
                                         <option value="1">{{ $this->getYear(1) }}</option>
