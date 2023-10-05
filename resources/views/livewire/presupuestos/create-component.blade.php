@@ -31,11 +31,11 @@
                             <label for="nPresupuesto">Presupuesto Nº</label>
                             <div class="row">
                                 <div class="col-6">
-                                    <input type="text" wire:model="nPresupuesto" class="form-control"
+                                    <input type="text" wire:model="nPresupuesto" class="form-control" style="text-align: right !important"
                                         name="nPresupuesto" placeholder="X" disabled>
                                 </div>
                                 <div class="col-6">
-                                    <select class="form-control" wire:model="year" value="0">
+                                    <select class="form-control" wire:model="year" value="0" wire:change='cambiarPresupuesto'>
                                         <option value="-1">{{ $this->getYear(-1) }}</option>
                                         <option value="0">{{ $this->getYear(0) }}</option>
                                         <option value="1">{{ $this->getYear(1) }}</option>
@@ -50,7 +50,7 @@
                         <div class="form-group col-md-3">
                             <label for="fechaEmision">Fecha de emisión</label>
                             <input type="date" wire:model.defer="fechaEmision" class="form-control"
-                                wire:change='cambiarPresupuesto' name="fechaEmision" id="fechaEmision" placeholder="X">
+                                name="fechaEmision" id="fechaEmision" placeholder="X">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="fechaVencimiento">Fecha de vencimiento</label>
