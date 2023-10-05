@@ -226,6 +226,7 @@ class CreateComponent extends Component
     public $clienteNuevo = false;
     public $mensajeCliente = false;
     public $nombreGestor;
+    public $year;
     protected $listeners = ['rerender' => '$refresh'];
 
     public function mount()
@@ -268,11 +269,14 @@ class CreateComponent extends Component
 
     public function cambiarPresupuesto()
     {
-        $year = Carbon::parse($this->fechaEmision)->format('Y');
-        $numero = Presupuesto::whereBetween('fechaEmision', [$year . '-01-01', $year . '-12-31'])->count();
-        $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/' . $year;
+        $year = Carbon::now()->addYears($this->year)->format('Y');
+        $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%.$year.%')->count();
+        $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/';
     }
 
+    public function getYear($suma){
+        return Carbon::now()->addYears($suma)->format('Y');
+    }
     public function render()
     {
         $this->dispatchBrowserEvent('initializeMapKit');
