@@ -239,9 +239,9 @@ class CreateComponent extends Component
         $this->categorias_evento = CategoriaEvento::all();
         $this->gestor_id = Auth::id();
         $this->categoria_evento_id = 4;
-        $year = Carbon::now()->format('Y');
-        $numero = Presupuesto::whereBetween('fechaEmision', [$year . '-01-01', $year . '-12-31'])->count();
-        $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/' . $year;
+        $this->year = 0;
+        $numero = Presupuesto::where('nPresupuesto', 'LIKE', '%.$year.%')->count();
+        $this->nPresupuesto = str_pad($numero + 1, 4, "0", STR_PAD_LEFT) . '/';
         $this->packs = ServicioPack::all();
         $this->gasoilPrecio = Settings::where('id', 1)->first()->precio_gasoil_km;
         $this->fechaEmision = date("Y-m-d", time());
