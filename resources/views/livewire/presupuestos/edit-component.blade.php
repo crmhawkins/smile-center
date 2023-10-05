@@ -102,7 +102,7 @@
                                         <option value="0">-- ELIGE UN CLIENTE --</option>
                                         @foreach ($clientes as $cliente)
                                             <option value="{{ $cliente->id }}"
-                                                @if ($this->id_cliente == $cliente->id) selected @endif>>
+                                                @if ($this->id_cliente == $cliente->id) selected @endif>
                                                 {{ $cliente->nombre }} {{ $cliente->apellidos }}
                                             </option>
                                         @endforeach
