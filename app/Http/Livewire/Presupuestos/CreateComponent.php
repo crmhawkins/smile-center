@@ -1684,7 +1684,7 @@ class CreateComponent extends Component
                         $this->emit('refresh');
                     } else {
                         $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
-                        $fin = Carbon::createFromFormat('H:i', $this->tiemposPack[$keyPack]);
+                        $fin = Carbon::createFromFormat('H:i', $this->tiempo);
                         list($horas, $minutos) = explode(':', $fin->format('H:i'));
                         $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
                         $this->emit('refresh');

@@ -24,6 +24,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class EditComponent extends Component
@@ -127,7 +128,7 @@ class EditComponent extends Component
     public $tiempo = 0;
     public $hora_inicio = 0;
     public $hora_finalizacion = 0;
-    public $tiempodDesmontaje;
+    public $tiempoDesmontaje;
     public $precioMonitor;
     public $costoDesplazamiento;
     public $dia;
@@ -1608,7 +1609,7 @@ class EditComponent extends Component
             if ($this->hora_inicio && $this->horaMontaje != 0) {
                 $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
                 $fin = Carbon::createFromFormat('H:i', $this->hora_inicio);
-                $this->tiempoMontaje = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
+                $this->tiempoDesmontaje = $fin->diff($inicio)->format('%H:%I');  // Esto te dará la diferencia en horas completas
                 $this->emit('refresh');
             }
         } else {
@@ -2006,7 +2007,7 @@ class EditComponent extends Component
         }
 
         $filename = Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
-        $this->ruta = '/contratos/' . $filename;
+        $ruta = '/contratos/' . $filename;
 
 
 
@@ -2043,7 +2044,7 @@ class EditComponent extends Component
             File::makeDirectory($path, $mode = 0777, true, true);
         }
 
-        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $ruta)->output(); //
 
         if ($this->contrato_id === null) {
             // Guardar datos validados
