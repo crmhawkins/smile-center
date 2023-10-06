@@ -1774,6 +1774,7 @@ class CreateComponent extends Component
 
                 // Preparar arrays basados en numero_monitores
                 $defaultArray = array_fill(0, count($numMonitores), '0');
+                $defaultTimeArray = array_fill(0, count($numMonitores), '00:00');
                 $defaultDoubleArray = array_map(function () use ($defaultArray) {
                     return $defaultArray;
                 }, $numMonitores);
@@ -1782,12 +1783,12 @@ class CreateComponent extends Component
                     'id' => $this->pack_seleccionado,
                     'numero_monitores' => $this->preciosMonitores,
                     'precioFinal' => $this->precioFinalPack ?? '0',
-                    'tiempos' => !empty($this->tiemposPack) ? $this->tiemposPack : $defaultArray,
-                    'horas_inicio' => !empty($this->horasInicioPack) ? $this->horasInicioPack : $defaultArray,
-                    'horas_finalizacion' => !empty($this->horasFinalizacionPack) ? $this->horasFinalizacionPack : $defaultArray,
-                    'tiempos_montaje' => !empty($this->tiemposMontajePack) ? $this->tiemposMontajePack : $defaultArray,
-                    'tiempos_desmontaje' => !empty($this->tiemposDesmontajePack) ? $this->tiemposDesmontajePack : $defaultArray,
-                    'horas_montaje' => !empty($this->horasMontajePack) ? $this->horasMontajePack : $defaultArray,
+                    'tiempos' => !empty($this->tiemposPack) ? $this->tiemposPack : $defaultTimeArray,
+                    'horas_inicio' => !empty($this->horasInicioPack) ? $this->horasInicioPack : $defaultTimeArray,
+                    'horas_finalizacion' => !empty($this->horasFinalizacionPack) ? $this->horasFinalizacionPack : $defaultTimeArray,
+                    'tiempos_montaje' => !empty($this->tiemposMontajePack) ? $this->tiemposMontajePack : $defaultTimeArray,
+                    'tiempos_desmontaje' => !empty($this->tiemposDesmontajePack) ? $this->tiemposDesmontajePack : $defaultTimeArray,
+                    'horas_montaje' => !empty($this->horasMontajePack) ? $this->horasMontajePack : $defaultTimeArray,
                     'id_monitores' => !empty($this->idMonitoresPack) ? $this->idMonitoresPack : $defaultDoubleArray,
                     'sueldos_monitores' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
                     'gastos_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
