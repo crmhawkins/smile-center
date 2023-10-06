@@ -42,6 +42,7 @@ class CreateComponent extends Component
     public $authMenores;
     public $authImagen;
     public $identificador;
+    public $indicador_montaje = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $currentStep = 1; // Pasos para el formulario, 1 es el comienzo y 3 el final
     public $nPresupuesto; // Numero de presupusto
     public $fechaEmision; // Fecha del presupuesto
