@@ -1869,6 +1869,52 @@ class CreateComponent extends Component
                     break; // Salir del bucle, ya que no es necesario verificar los otros artículos
                 }
             }
+
+
+
+            if ($existe) {
+                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
+            } else if ($stockSeSupera == true) {
+                $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
+            } else {
+                for ($i = 0; $i > $this->numero_monitores; $i++) {
+                    $this->sueldoMonitores[] = $this->servicios->firstWhere('id', $this->servicio_seleccionado)->get('precioMonitor');
+                }
+                $this->listaServicios[] = [
+                    'id' => $this->servicio_seleccionado,
+                    'numero_monitores' => $this->numero_monitores,
+                    'precioFinal' => $this->precioFinalServicio,
+                    'tiempo' => $this->tiempo,
+                    'hora_inicio' => $this->hora_inicio,
+                    'hora_finalizacion' => $this->hora_finalizacion,
+                    'hora_montaje' => $this->horaMontaje,
+                    'tiempo_montaje' => $this->tiempoMontaje,
+                    'tiempo_desmontaje' => $this->tiempoDesmontaje,
+                    'sueldo_monitores' => $this->sueldoMonitores,
+                    'id_monitores' => $this->idMonitores,
+                    'gasto_gasoil' => $this->gastosGasoil,
+                    'check_gasoil' => $this->gastosGasoil,
+                    'pago_pendiente' => $this->sueldoMonitores,
+                ];
+                $this->servicio_seleccionado = 0;
+                $this->numero_monitores = 0;
+                $this->tiempo = 0;
+                $this->tiempoMontaje = 0;
+                $this->tiempoDesmontaje = 0;
+                $this->hora_inicio = 0;
+                $this->hora_finalizacion = 0;
+                $this->horaMontaje = 0;
+                $this->precioFinal += $this->precioFinalServicio;
+                $this->precioFinalServicio = 0;
+            }
+        } else {
+            $this->alert('error', '¡Selecciona un servicio!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
         }
     }
 
