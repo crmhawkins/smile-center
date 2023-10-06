@@ -1770,21 +1770,29 @@ class CreateComponent extends Component
             } else if ($stockSeSupera == true) {
                 $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
             } else {
+                $numMonitores = $this->preciosMonitores;
+
+                // Preparar arrays basados en numero_monitores
+                $defaultArray = array_fill(0, count($numMonitores), '0');
+                $defaultDoubleArray = array_map(function () use ($defaultArray) {
+                    return $defaultArray;
+                }, $numMonitores);
+
                 $this->listaPacks[] = [
                     'id' => $this->pack_seleccionado,
                     'numero_monitores' => $this->preciosMonitores,
-                    'precioFinal' => $this->precioFinalPack,
-                    'tiempos' => $this->tiemposPack,
-                    'horas_inicio' => $this->horasInicioPack,
-                    'horas_finalizacion' => $this->horasFinalizacionPack,
-                    'tiempos_montaje' => $this->tiemposMontajePack,
-                    'tiempos_desmontaje' => $this->tiemposDesmontajePack,
-                    'horas_montaje' => $this->horasMontajePack,
-                    'id_monitores' => $this->idMonitoresPack,
-                    'sueldos_monitores' => $this->sueldoMonitoresPack,
-                    'gastos_gasoil' => $this->gastosGasoilPack,
-                    'checks_gasoil' => $this->gastosGasoilPack,
-                    'pagos_pendientes' => $this->sueldoMonitoresPack,
+                    'precioFinal' => $this->precioFinalPack ?? '0',
+                    'tiempos' => $this->tiemposPack ?? $defaultDoubleArray,
+                    'horas_inicio' => $this->horasInicioPack ?? $defaultDoubleArray,
+                    'horas_finalizacion' => $this->horasFinalizacionPack ?? $defaultDoubleArray,
+                    'tiempos_montaje' => $this->tiemposMontajePack ?? $defaultDoubleArray,
+                    'tiempos_desmontaje' => $this->tiemposDesmontajePack ?? $defaultDoubleArray,
+                    'horas_montaje' => $this->horasMontajePack ?? $defaultDoubleArray,
+                    'id_monitores' => $this->idMonitoresPack ?? $defaultArray,
+                    'sueldos_monitores' => $this->sueldoMonitoresPack ?? $defaultArray,
+                    'gastos_gasoil' => $this->gastosGasoilPack ?? $defaultArray,
+                    'checks_gasoil' => $this->gastosGasoilPack ?? $defaultArray,
+                    'pagos_pendientes' => $this->sueldoMonitoresPack ?? $defaultArray,
 
                 ];
                 $this->pack_seleccionado = 0;
@@ -1878,21 +1886,23 @@ class CreateComponent extends Component
                 for ($i = 0; $i > $this->numero_monitores; $i++) {
                     $this->sueldoMonitores[] = $this->servicios->firstWhere('id', $this->servicio_seleccionado)->get('precioMonitor');
                 }
+                $defaultArray = array_fill(0, $this->numero_monitores, '0');
+
                 $this->listaServicios[] = [
                     'id' => $this->servicio_seleccionado,
                     'numero_monitores' => $this->numero_monitores,
-                    'precioFinal' => $this->precioFinalServicio,
-                    'tiempo' => $this->tiempo,
-                    'hora_inicio' => $this->hora_inicio,
-                    'hora_finalizacion' => $this->hora_finalizacion,
-                    'hora_montaje' => $this->horaMontaje,
-                    'tiempo_montaje' => $this->tiempoMontaje,
-                    'tiempo_desmontaje' => $this->tiempoDesmontaje,
-                    'sueldo_monitores' => $this->sueldoMonitores,
-                    'id_monitores' => $this->idMonitores,
-                    'gasto_gasoil' => $this->gastosGasoil,
-                    'check_gasoil' => $this->gastosGasoil,
-                    'pago_pendiente' => $this->sueldoMonitores,
+                    'precioFinal' => $this->precioFinalServicio ?? '0',
+                    'tiempo' => $this->tiempo ?? '0',
+                    'hora_inicio' => $this->hora_inicio ?? '0',
+                    'hora_finalizacion' => $this->hora_finalizacion ?? '0',
+                    'hora_montaje' => $this->horaMontaje ?? '0',
+                    'tiempo_montaje' => $this->tiempoMontaje ?? '0',
+                    'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '0',
+                    'sueldo_monitores' => $this->sueldoMonitores ?? $defaultArray,
+                    'id_monitores' => $this->idMonitores ?? $defaultArray,
+                    'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
+                    'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
+                    'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
                 ];
                 $this->servicio_seleccionado = 0;
                 $this->numero_monitores = 0;
