@@ -1870,8 +1870,6 @@ class CreateComponent extends Component
                 }
             }
 
-
-
             if ($existe) {
                 $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
             } else if ($stockSeSupera == true) {
