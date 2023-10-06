@@ -1811,6 +1811,7 @@ class EditComponent extends Component
 
                 // Preparar arrays basados en numero_monitores
                 $defaultArray = array_fill(0, count($numMonitores), '0');
+                $defaultTimeArray = array_fill(0, count($numMonitores), '00:00');
                 $defaultDoubleArray = array_map(function () use ($defaultArray) {
                     return $defaultArray;
                 }, $numMonitores);
@@ -1819,17 +1820,17 @@ class EditComponent extends Component
                     'id' => $this->pack_seleccionado,
                     'numero_monitores' => $this->preciosMonitores,
                     'precioFinal' => $this->precioFinalPack ?? '0',
-                    'tiempos' => $this->tiemposPack ?? $defaultDoubleArray,
-                    'horas_inicio' => $this->horasInicioPack ?? $defaultDoubleArray,
-                    'horas_finalizacion' => $this->horasFinalizacionPack ?? $defaultDoubleArray,
-                    'tiempos_montaje' => $this->tiemposMontajePack ?? $defaultDoubleArray,
-                    'tiempos_desmontaje' => $this->tiemposDesmontajePack ?? $defaultDoubleArray,
-                    'horas_montaje' => $this->horasMontajePack ?? $defaultDoubleArray,
-                    'id_monitores' => $this->idMonitoresPack ?? $defaultArray,
-                    'sueldos_monitores' => $this->sueldoMonitoresPack ?? $defaultArray,
-                    'gastos_gasoil' => $this->gastosGasoilPack ?? $defaultArray,
-                    'checks_gasoil' => $this->gastosGasoilPack ?? $defaultArray,
-                    'pagos_pendientes' => $this->sueldoMonitoresPack ?? $defaultArray,
+                    'tiempos' => !empty($this->tiemposPack) ? $this->tiemposPack : $defaultTimeArray,
+                    'horas_inicio' => !empty($this->horasInicioPack) ? $this->horasInicioPack : $defaultTimeArray,
+                    'horas_finalizacion' => !empty($this->horasFinalizacionPack) ? $this->horasFinalizacionPack : $defaultTimeArray,
+                    'tiempos_montaje' => !empty($this->tiemposMontajePack) ? $this->tiemposMontajePack : $defaultTimeArray,
+                    'tiempos_desmontaje' => !empty($this->tiemposDesmontajePack) ? $this->tiemposDesmontajePack : $defaultTimeArray,
+                    'horas_montaje' => !empty($this->horasMontajePack) ? $this->horasMontajePack : $defaultTimeArray,
+                    'id_monitores' => !empty($this->idMonitoresPack) ? $this->idMonitoresPack : $defaultDoubleArray,
+                    'sueldos_monitores' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
+                    'gastos_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
+                    'checks_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
+                    'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
                     'existente' => 0
                 ];
                 $this->pack_seleccionado = 0;
@@ -1915,12 +1916,12 @@ class EditComponent extends Component
                     'id' => $this->servicio_seleccionado,
                     'numero_monitores' => $this->numero_monitores,
                     'precioFinal' => $this->precioFinalServicio ?? '0',
-                    'tiempo' => $this->tiempo ?? '0',
-                    'hora_inicio' => $this->hora_inicio ?? '0',
-                    'hora_finalizacion' => $this->hora_finalizacion ?? '0',
-                    'hora_montaje' => $this->horaMontaje ?? '0',
-                    'tiempo_montaje' => $this->tiempoMontaje ?? '0',
-                    'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '0',
+                    'tiempo' => $this->tiempo ?? '00:00',
+                    'hora_inicio' => $this->hora_inicio ?? '00:00',
+                    'hora_finalizacion' => $this->hora_finalizacion ?? '00:00',
+                    'hora_montaje' => $this->horaMontaje ?? '00:00',
+                    'tiempo_montaje' => $this->tiempoMontaje ?? '00:00',
+                    'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '00:00',
                     'sueldo_monitores' => $this->sueldoMonitores ?? $defaultArray,
                     'id_monitores' => $this->idMonitores ?? $defaultArray,
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
