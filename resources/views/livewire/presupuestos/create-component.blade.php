@@ -924,7 +924,7 @@
                                             <td> {{ $pack['tiempos'][$keyPack] }} h </td>
                                             <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
                                             <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
-                                            <td> {{ $pack['horas_desmontaje'][$keyPack] }} h </td>
+                                            <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
                                             <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
                                             <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
                                             </td>
