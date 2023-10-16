@@ -293,7 +293,7 @@
                     <td style="border-right-color: #fff !important; border-top-color: #fff !important;"><b>Total
                             servicios contratados:</b> {{ $presupuesto->precioFinal }} €</td>
                     <td style="border-right-color: #fff !important; border-top-color: #fff !important;"><b>Entrega:</b>
-                        {{ $presupuesto->adelanto}} € ({{($presupuesto->adelanto / $presupuesto->precioFinal) * 100}}%)</td>
+                        {{ $presupuesto->adelanto}} € ({{round(($presupuesto->adelanto / $presupuesto->precioFinal) * 100, 2)}}%)</td>
                     <td style="border-top-color: #fff !important;"><b>Método de pago:</b> {{ $metodoPago }}</td>
                 </tr>
                 <tr width="100%">
