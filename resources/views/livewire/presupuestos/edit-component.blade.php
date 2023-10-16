@@ -1269,9 +1269,11 @@
                         <h5>Opciones de guardado</h5>
                         <div class="row">
                             <div class="col-12">
-                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
+                                <button class="w-100 btn btn-success mb-2"
+                                    wire:click.prevent="alertaGuardar">Guardar
                                     presupuesto</button>
-                                <button class="w-100 btn btn-danger mb-2" wire:click.prevent="alertaEliminar">Eliminar
+                                <button class="w-100 btn btn-danger mb-2"
+                                    wire:click.prevent="alertaEliminar">Eliminar
                                     presupuesto</button>
                             </div>
                         </div>
@@ -1285,8 +1287,22 @@
                                 <button class="w-100 btn btn-info mb-2" wire:click.prevent="alertaAceptar">Imprimir
                                     datos de
                                     presupuesto</button>
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">@if($contrato_id != null)Ver @else Generar @endif
-                                    contrato</button>
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">
+                                    @if ($contrato_id != null)
+                                        Imprimir
+                                    @else
+                                        Generar
+                                    @endif
+                                    contrato
+                                </button>
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar2">
+                                    @if ($contrato_id != null)
+                                        Ver
+                                    @else
+                                        Generar
+                                    @endif
+                                    página del contrato
+                                </button>
                             </div>
                         </div>
                     </div>

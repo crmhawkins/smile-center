@@ -459,8 +459,6 @@
                         <div class="col-12">
                             <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Editar contrato</button>
                             <button class="w-100 btn btn-info mb-2" id="alertaGuardar2">Descargar documento</button>
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar contrato</button>
-
                         </div>
                     </div>
                 </div>
@@ -478,19 +476,6 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.livewire.emit('submit');
-                    }
-                });
-            });
-            $("#alertaEliminar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: 'Pulsa el botón de confirmar para eliminar el contrato. No se puede revertir esta acción.',
-                    icon: 'warning',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('destroy');
                     }
                 });
             });

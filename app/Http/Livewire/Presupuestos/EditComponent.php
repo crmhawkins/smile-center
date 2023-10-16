@@ -1451,10 +1451,13 @@ class EditComponent extends Component
         foreach ($this->listaPacks as $pack) {
             $this->presupuesto->packs()->detach($pack['id']);
         }
-        event(new \App\Events\LogEvent(Auth::user(), 5, $this->presupuesto->id));
+        $contrato = Contrato::firstWhere('id_presupuesto', $this->presupuesto->id);
+        event(new \App\Events\LogEvent(Auth::user(), 7, $this->presupuesto->id));
         event(new \App\Events\LogEvent(Auth::user(), 13, $this->evento->id));
-
+        event(new \App\Events\LogEvent(Auth::user(), 16, $contrato->id));
         $this->evento->delete();
+        $contrato->delete();
+
         // Guardar datos validados
         $presupuesosSave = $this->presupuesto->delete();
 
@@ -2021,6 +2024,21 @@ class EditComponent extends Component
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmedImprimir',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+            'timer' => null
+        ]);
+    }
+
+    public function alertaCancelar2()
+    {
+        $this->alert('info', 'Comprueba que has guardado todo antes de visitar la página del contrato.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed2',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
