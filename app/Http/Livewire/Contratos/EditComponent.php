@@ -1,4 +1,4 @@
-e<?php
+<?php
 
 namespace App\Http\Livewire\Contratos;
 
