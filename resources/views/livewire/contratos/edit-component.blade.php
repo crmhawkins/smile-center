@@ -360,7 +360,7 @@
                                 <h5>Total de los servicios contratados: &nbsp; {{$presupuesto->precioFinal}} € </h5>
                             </div>
                             <div class="col-sm-4 mt-3">
-                                <h5>Entrega: &nbsp; {{($presupuesto->precioFinal * 0.20)}} € (20%)</h5>
+                                <h5>Entrega: &nbsp; {{ $presupuesto->adelanto}} € ({{round(($presupuesto->adelanto / $presupuesto->precioFinal) * 100, 2)}}%)</h5>
                             </div>
                             <div class="col-sm-3">
                                 <label class="col-form-label">Método de pago</label>
