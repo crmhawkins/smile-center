@@ -122,7 +122,8 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
-            'confirmDelete'
+            'confirmDelete',
+            'update'
         ];
     }
 
