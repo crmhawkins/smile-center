@@ -24,8 +24,6 @@ class EditComponent extends Component
         $pack = ServicioPack::find($this->identificador);
         $this->servicios = Servicio::all();
         $this->serviciosPack = Servicio::where("id_pack", $this->identificador)->get();
-
-
         $this->nombre = $pack->nombre;
 
     }
@@ -43,7 +41,6 @@ class EditComponent extends Component
 
     public function addServ(){
         $servicio = Servicio::where('id', $this->servicio)->first();
-        dd($this->serviciosPack['items']);
         // $this->serviciosPack[count($this->serviciosPack)] = $servicio;
         array_push($this->serviciosPack, $servicio);
     }
@@ -68,6 +65,11 @@ class EditComponent extends Component
         ]);
 
         if ($servicioSave) {
+
+            foreach ($this->serviciosPack as $servicio) {
+                Servicio::where('id', $servicio["id"])->update(["id_pack" => $servicioPack->id]);
+            }
+
             $this->alert('success', 'Usuario actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -85,7 +87,7 @@ class EditComponent extends Component
             ]);
         }
 
-        session()->flash('message', 'Servicio actualizado correctamente.');
+        session()->flash('message', 'Pack actualizado correctamente.');
 
         $this->emit('eventUpdated');
     }
@@ -93,7 +95,7 @@ class EditComponent extends Component
       // Eliminación
       public function destroy(){
 
-        $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
+        $this->alert('warning', '¿Seguro que desea borrar el pack? No hay vuelta atrás', [
             'position' => 'center',
             'timer' => 3000,
             'toast' => false,
