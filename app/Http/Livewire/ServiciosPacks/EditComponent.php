@@ -17,7 +17,7 @@ class EditComponent extends Component
     public $servicios;
     public $servicio;
     public $serviciosPack = [];
-
+    public $serviciosPackIDs = [];
 
     public function mount()
     {
@@ -39,10 +39,18 @@ class EditComponent extends Component
         unset($this->serviciosPack[$key]);
     }
 
-    public function addServ(){
-        $servicio = Servicio::where('id', $this->servicio)->first();
-        // $this->serviciosPack[count($this->serviciosPack)] = $servicio;
-        array_push($this->serviciosPack, $servicio);
+    public function addServ()
+    {
+        if (!in_array($this->servicio, $this->serviciosPackIDs)) {
+            $servicio = Servicio::where('id', $this->servicio)->first();
+            $this->serviciosPack[count($this->serviciosPack)] = $servicio;
+            $this->serviciosPackIDs[count($this->serviciosPack)] = $this->servicio;
+        } else {
+            $this->alert('warning', 'Este servicio ya se encuentra en este pack', [
+                'position' => 'center',
+                'timer' => 1000,
+            ]);
+        }
     }
     // Al hacer update en el formulario
     public function update()
