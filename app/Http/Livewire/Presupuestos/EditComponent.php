@@ -1366,7 +1366,7 @@ class EditComponent extends Component
 
         foreach ($this->listaPacksEliminar as $pack) {
             $this->presupuesto->packs()->wherePivot('numero_monitores', json_encode($pack['numero_monitores']))
-                ->wherePivot('precioFinal', $pack['precioFinal'])
+                ->wherePivot('precio_final', $pack['precioFinal'])
                 ->wherePivot('tiempos', json_encode($pack['tiempos']))
                 ->wherePivot('horas_inicio', json_encode($pack['horas_inicio']))
                 ->wherePivot('horas_finalizacion', json_encode($pack['horas_finalizacion']))
@@ -1822,7 +1822,7 @@ class EditComponent extends Component
                 $this->listaPacks[] = [
                     'id' => $this->pack_seleccionado,
                     'numero_monitores' => $this->preciosMonitores,
-                    'precio_final' => $this->precioFinalPack ?? '0',
+                    'precioFinal' => $this->precioFinalPack ?? '0',
                     'tiempos' => !empty($this->tiemposPack) ? $this->tiemposPack : $defaultTimeArray,
                     'horas_inicio' => !empty($this->horasInicioPack) ? $this->horasInicioPack : $defaultTimeArray,
                     'horas_finalizacion' => !empty($this->horasFinalizacionPack) ? $this->horasFinalizacionPack : $defaultTimeArray,
@@ -1918,7 +1918,7 @@ class EditComponent extends Component
                 $this->listaServicios[] = [
                     'id' => $this->servicio_seleccionado,
                     'numero_monitores' => $this->numero_monitores,
-                    'precio_final' => $this->precioFinalServicio ?? '0',
+                    'precioFinal' => $this->precioFinalServicio ?? '0',
                     'tiempo' => $this->tiempo ?? '00:00',
                     'hora_inicio' => $this->hora_inicio ?? '00:00',
                     'hora_finalizacion' => $this->hora_finalizacion ?? '00:00',
