@@ -1973,7 +1973,11 @@ class EditComponent extends Component
         unset($this->listaServicios[$indice]);
         $this->listaServicios = array_values($this->listaServicios);
     }
-
+    public function asignarValorInicial($keyPack, $value)
+    {
+        $this->preciosMonitores[$keyPack] = $value;
+        $this->cambioPrecioPack();
+    }
     // Función para cuando se llama a la alerta
     public function confirmed()
     {
