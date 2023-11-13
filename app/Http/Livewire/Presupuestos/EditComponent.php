@@ -1822,7 +1822,7 @@ class EditComponent extends Component
                 $this->listaPacks[] = [
                     'id' => $this->pack_seleccionado,
                     'numero_monitores' => $this->preciosMonitores,
-                    'precioFinal' => $this->precioFinalPack ?? '0',
+                    'precio_final' => $this->precioFinalPack ?? '0',
                     'tiempos' => !empty($this->tiemposPack) ? $this->tiemposPack : $defaultTimeArray,
                     'horas_inicio' => !empty($this->horasInicioPack) ? $this->horasInicioPack : $defaultTimeArray,
                     'horas_finalizacion' => !empty($this->horasFinalizacionPack) ? $this->horasFinalizacionPack : $defaultTimeArray,
