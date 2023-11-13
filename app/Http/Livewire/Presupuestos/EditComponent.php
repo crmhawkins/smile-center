@@ -1918,7 +1918,7 @@ class EditComponent extends Component
                 $this->listaServicios[] = [
                     'id' => $this->servicio_seleccionado,
                     'numero_monitores' => $this->numero_monitores,
-                    'precioFinal' => $this->precioFinalServicio ?? '0',
+                    'precio_final' => $this->precioFinalServicio ?? '0',
                     'tiempo' => $this->tiempo ?? '00:00',
                     'hora_inicio' => $this->hora_inicio ?? '00:00',
                     'hora_finalizacion' => $this->hora_finalizacion ?? '00:00',
