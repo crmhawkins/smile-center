@@ -2,7 +2,9 @@
 
 namespace App\Http\Livewire\Eventos;
 
+use App\Models\Contrato;
 use App\Models\Evento;
+use App\Models\Presupuesto;
 use App\Models\Servicio;
 use App\Models\Cliente;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -24,7 +26,7 @@ class EditComponent extends Component
 
     public $eventoNombre;
     public $eventoProtagonista;
-    public $eventoNiños; 
+    public $eventoNiños;
     public $eventoContacto;
     public $eventoParentesco;
     public $eventoLugar;
@@ -33,7 +35,7 @@ class EditComponent extends Component
     public $eventoTelefono;
     public $diaEvento;
     public $diaFinal;
-    
+
 
     public function mount()
     {
@@ -68,7 +70,7 @@ class EditComponent extends Component
         return $nombreCompleto;
     }
 
-    
+
     public function render()
     {
         return view('livewire.eventos.edit-component');
@@ -105,7 +107,7 @@ class EditComponent extends Component
                 'eventoLugar.required' => 'El eventoLugar es obligatorio.',
                 'eventoLocalidad.required' => 'La eventoLocalidad es obligatoria.',
                 'eventoTelefono.required' => 'El eventoTelefono es obligatorio.',
-            
+
             ]);
 
         // Encuentra el identificador
@@ -160,7 +162,7 @@ class EditComponent extends Component
       // Eliminación
       public function destroy(){
 
-        $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
+        $this->alert('warning', '¿Seguro que desea borrar el evento? También se eliminará el presupuesto asociado.', [
             'position' => 'center',
             'timer' => 3000,
             'toast' => false,
@@ -195,8 +197,11 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $evento = Evento::find($this->identificador);
+        $presupuesto = Presupuesto::where('evento_id', $this->identificador)->first();
+        $contrato = Contrato::firstWhere('id_presupuesto', $presupuesto->id);
         event(new \App\Events\LogEvent(Auth::user(), 13, $evento->id));
         $evento->delete();
+        $presupuesto->delete();
         return redirect()->route('eventos.index');
 
     }
