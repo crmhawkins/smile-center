@@ -8,7 +8,7 @@ use App\Models\ServicioPack;
 use App\Models\Cliente;
 use App\Models\Contrato;
 use App\Models\MetodoPago;
-use App\Models\ServicioEvento;
+use App\Models\TipoEvento;
 use App\Models\CuentaBancaria;
 use App\Models\Monitor;
 use App\Models\Empresa;
@@ -54,7 +54,7 @@ class CreateComponent extends Component
     // Evento
 
     public $diaFinal;
-
+public $tipos_eventos;
 
 
     //Monitores
@@ -128,7 +128,7 @@ class CreateComponent extends Component
         $this->dia = Carbon::now();
         $this->empresa = Empresa::find("1");
         $this->presupuestos = Presupuesto::where('estado', 'Aceptado')->get();
-        $this->paquetes = ServicioPack::all();
+        $this->tipos_eventos = TipoEvento::all();
         $this->servicios = Servicio::all();
         //Autoincrementa automaticamente el numero del contrato antes de que se cree
 
@@ -163,8 +163,9 @@ class CreateComponent extends Component
         return view('livewire.contratos.create-component', ['presupuesto' => $this->presupuesto, 'cliente' => $this->cliente, 'evento' => $this->evento, 'servicios' => $this->servicios, 'packs' => $this->packs]);
     }
 
-    public function updatingId_presupuesto()
-    {
+    public function getEventoNombre($id){
+        $evento = $this->tipos_eventos->find($id);
+        return $evento->nombre;
     }
 
     public function loadPresupuesto()
@@ -350,7 +351,7 @@ class CreateComponent extends Component
         $filename = Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
         $this->ruta = '/contratos/' . $filename;
 
-       
+
 
 
         $datos =  [
@@ -366,9 +367,9 @@ class CreateComponent extends Component
         }
 
         $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
-        
+
         $this->confirmed();
-        
+
         return response()->streamDownload(
             fn () => print($pdf),
             $filename

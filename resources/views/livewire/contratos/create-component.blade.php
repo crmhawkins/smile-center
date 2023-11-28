@@ -160,7 +160,7 @@
                             <div class="col-sm-7">
                                 <label for="nContrato" class="col-sm-12 col-form-label">Evento</label>
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" value="{{$evento->eventoNombre}}" disabled>
+                                    <input type="text" class="form-control" value="{{$this->getEventoNombre($evento->eventoNombre)}}" disabled>
                                     @error('nContrato')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror

@@ -14,6 +14,7 @@ use App\Models\Monitor;
 use App\Models\Empresa;
 use App\Models\Presupuesto;
 use App\Models\Programa;
+use App\Models\TipoEvento;
 use App\Models\User;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -140,7 +141,7 @@ class EditComponent extends Component
 
     // pricing
 
-
+    public $tipos_eventos;
     public $total;
     public $precioBase;
     public $entrega;
@@ -183,7 +184,7 @@ class EditComponent extends Component
         $this->empresa = Empresa::find("1");
         $this->presupuestos = Presupuesto::all();
         $this->contrato = Contrato::find($this->identificador);
-
+$this->tipos_eventos = TipoEvento::all();
         $this->nContrato = $this->contrato->id;
         $this->dia = $this->contrato->dia;
         $this->firma = $this->contrato->cuentaTransferencia;
@@ -486,6 +487,11 @@ class EditComponent extends Component
         return redirect()->route('contratos.index');
     }
 
+    public function getEventoNombre($id)
+    {
+        $evento = $this->tipos_eventos->find($id);
+        return $evento->nombre;
+    }
     public function submitImprimir()
     {
         $this->imprimir = 1;

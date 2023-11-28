@@ -227,6 +227,7 @@ class EditComponent extends Component
     {
 
         $this->presupuesto = Presupuesto::find($this->identificador);
+        $this->categoria_evento_id = $this->presupuesto->categoria_evento_id;
         $this->nPresupuesto = $this->presupuesto->id;
         $this->observaciones = $this->presupuesto->observaciones;
         $this->addObservaciones = $this->observaciones > " ";
@@ -264,7 +265,6 @@ class EditComponent extends Component
         $this->eventoMontaje = $this->evento->eventoMontaje;
         $this->diaFinal = $this->evento->diaFinal;
         $this->diaEvento = $this->evento->diaEvento;
-
         // foreach ($this->presupuesto->servicios()->get() as $servicio) {
         //     $defaultArray = array_fill(0, count($servicio->pivot->numero_monitores), '0');
 
@@ -1330,6 +1330,7 @@ class EditComponent extends Component
                 'descuento' => 'nullable',
                 'adelanto' => 'nullable',
                 'observaciones' => 'nullable',
+                'categoria_evento_id' => 'nullable',
 
             ],
             // Mensajes de error
@@ -1339,7 +1340,7 @@ class EditComponent extends Component
                 'id_cliente.required' => 'El alumno es obligatorio.',
                 'precioBase.required' => 'El curso es obligatorio.',
                 'precioFinal.required' => 'Los detalles son obligatorios',
-
+                'categoria_evento_id' => 'nullable',
                 'estado.required' => 'El estado es obligatorio',
             ]
         );

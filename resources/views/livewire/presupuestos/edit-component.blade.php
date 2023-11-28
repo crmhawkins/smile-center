@@ -428,7 +428,7 @@
                                     var data = $('#select2-evento').select2('val');
                                     @this.set('eventoNombre', data);
                                 });" wire:ignore>
-                                    <select class="form-control" name="id_cliente" id="select2-evento">
+                                    <select class="form-control" name="id_cliente" id="select2-evento" wire:model="eventoNombre">
                                         <option value="0">-- ELIGE UN TIPO DE EVENTO --</option>
                                         @foreach ($tipos_evento as $tipo)
                                             <option value="{{ $tipo->id }}">
