@@ -199,8 +199,8 @@ class EditComponent extends Component
     public $lowerN;
     public $metodoPago = 'Efectivo';
     public $cuentaTransferencia;
-    public $authImagen = 0;
-    public $authMenores = 0;
+    public $authImagen = 1;
+    public $authMenores = 1;
 
 
     public $clienteNuevo = false;
