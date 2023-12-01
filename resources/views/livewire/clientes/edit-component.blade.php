@@ -44,17 +44,6 @@
                                 <h5 class="ms-3" style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos del cliente</h5>
                             </div>
                             @if($tipo_cliente != 1)
-                            <div class="col-sm-2">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Tratamiento</label>
-                                <div class="col-sm-10">
-                                    <select class="input-group-text" name="trato" required id="trato" wire:model="trato">
-                                        <option class="dropdown-item" disabled>Trato</option>
-                                        <option class="dropdown-item" value="M">M</option>
-                                        <option class="dropdown-item" value="Melle">Melle</option>
-                                        <option class="dropdown-item" value="Mme">Mme</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col-sm-4">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-sm-12">
@@ -69,7 +58,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Apellidos</label>
                                 <div class="col-sm-10">
                                     <input type="text" wire:model="apellido" class="form-control" name="apellido" id="apellido" placeholder="Apellidos">
@@ -84,8 +73,23 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">NIF/DNI</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model="nif" class="form-control" name="nif" id="nif" placeholder="Nif">
+                                    @error('nif')
+                                    <span class="text-danger">{{ $message }}</span>
+
+                                    <style>
+                                        .nif {
+                                            color: red;
+                                        }
+                                    </style>
+                                    @enderror
+                                </div>
+                            </div>
                             @else
-                            <div class="col-sm-12">
+                            <div class="col-sm-8">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre de la empresa</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="nombre" class="form-control" name="nombre" id="nombre" aria-label="Nombre" placeholder="Nombre">
@@ -99,26 +103,26 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">NIF/DNI</label>
+                                <div class="col-sm-10">
+                                    <input type="text" wire:model="nif" class="form-control" name="nif" id="nif" placeholder="Nif">
+                                    @error('nif')
+                                    <span class="text-danger">{{ $message }}</span>
+
+                                    <style>
+                                        .nif {
+                                            color: red;
+                                        }
+                                    </style>
+                                    @enderror
+                                </div>
+                            </div>
                             @endif
                             <!-- NIF/DNI -->
                             <div class="form-group row">
-                                <div class="col-md-3">
-                                    <label for="example-text-input" class="col-sm-12 col-form-label">NIF/DNI</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" wire:model="nif" class="form-control" name="nif" id="nif" placeholder="Nif">
-                                        @error('nif')
-                                        <span class="text-danger">{{ $message }}</span>
-
-                                        <style>
-                                            .nif {
-                                                color: red;
-                                            }
-                                        </style>
-                                        @enderror
-                                    </div>
-                                </div>
                                 @if($tipo_cliente != 0)
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Código Órgano Gestor</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="codigo_organo_gestor" class="form-control" name="codigo_organo_gestor" id="codigo_organo_gestor" aria-label="Nombre" placeholder="Nombre">
@@ -132,7 +136,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Código Unidad Tramitadora</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="codigo_unidad_tramitadora" class="form-control" name="codigo_unidad_tramitadora" id="codigo_unidad_tramitadora" aria-label="Nombre" placeholder="Nombre">
@@ -146,7 +150,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Códigos Oficina Contable</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="codigo_oficina_contable" class="form-control" name="codigo_oficina_contable" id="codigo_oficina_contable" aria-label="Nombre" placeholder="Nombre">

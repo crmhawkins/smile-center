@@ -184,7 +184,7 @@ class EditComponent extends Component
         $this->empresa = Empresa::find("1");
         $this->presupuestos = Presupuesto::all();
         $this->contrato = Contrato::find($this->identificador);
-$this->tipos_eventos = TipoEvento::all();
+        $this->tipos_eventos = TipoEvento::all();
         $this->nContrato = $this->contrato->id;
         $this->dia = $this->contrato->dia;
         $this->firma = $this->contrato->cuentaTransferencia;

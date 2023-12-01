@@ -31,11 +31,13 @@
                             <label for="nPresupuesto">Presupuesto Nº</label>
                             <div class="row">
                                 <div class="col-6">
-                                    <input type="text" wire:model="nPresupuesto" class="form-control" style="text-align: right !important"
-                                        name="nPresupuesto" placeholder="X" disabled>
+                                    <input type="text" wire:model="nPresupuesto" class="form-control"
+                                        style="text-align: right !important" name="nPresupuesto" placeholder="X"
+                                        disabled>
                                 </div>
                                 <div class="col-6">
-                                    <select class="form-control" wire:model="year" value="0" wire:change="cambiarPresupuesto()">
+                                    <select class="form-control" wire:model="year" value="0"
+                                        wire:change="cambiarPresupuesto()">
                                         <option value="-1">{{ $this->getYear(-1) }}</option>
                                         <option value="0">{{ $this->getYear(0) }}</option>
                                         <option value="1">{{ $this->getYear(1) }}</option>
@@ -165,26 +167,7 @@
                     <div class="form-row">
                         @if ($id_cliente != 0 || $id_cliente != null)
                             <div class="form-row">
-                                <!-- Tratamiento -->
-                                <div class="form-group col-md-4">
-                                    <label for="example-text-input"
-                                        class="col-sm-12 col-form-label">Tratamiento</label>
-                                    <div class="col-sm-10">
-                                        <select class="input-group-text" name="trato" required disabled>
-                                            <option class="dropdown-item" value="" disabled>Trato
-                                            </option>
-                                            <option class="dropdown-item" value="M">M</option>
-                                            <option class="dropdown-item" value="Melle">Melle</option>
-                                            <option class="dropdown-item" value="Mme">Mme</option>
-                                        </select>
-                                        @error('trato')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Nombre -->
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label"
                                         disabled>Nombre</label>
                                     <div class="col-sm-10">
@@ -199,9 +182,9 @@
                                 </div>
 
                                 <!-- Apellido -->
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Apellido</label>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-11">
                                         <input type="text" value="{{ $clienteSeleccionado->apellido }}"
                                             class="form-control" name="apellido" placeholder="Apellido" disabled>
                                         @error('apellido')
@@ -209,14 +192,10 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="form-row">
-                                <!-- NIF/DNI -->
                                 <div class="form-group col-md-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label"
                                         disabled>NIF/DNI</label>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-11">
                                         <input type="text" value="{{ $clienteSeleccionado->nif }}"
                                             class="form-control" name="nif" placeholder="Nif" disabled>
                                         @error('nif')
@@ -661,7 +640,7 @@
                             <div class="form-group col-md-2">
                                 <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
                                 <div class="col-md-12">
-                                    <input type="text" wire:model.lazy="precioFinalServicio"
+                                    <input type="number" step="0.01" wire:model.lazy="precioFinalServicio"
                                         wire:change="cambioTiempoServicio()" class="form-control"
                                         name="precioFinalServicio" id="precioFinalServicio"
                                         placeholder="Precio final">
@@ -670,17 +649,35 @@
                             <div class="form-group col-md-2">
                                 <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
                                 <div class="col-md-12">
-                                    <input type="number" wire:model.lazy="numero_monitores"
+                                    <input type="number" wire:model="numero_monitores"
                                         @if ($servicio_seleccionado != null) min="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" value="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" @endif
                                         wire:change="cambioPrecioServicio()" class="form-control"
-                                        name="numero_monitores" id="numero_monitores"
-                                        placeholder="Número de monitores">
+                                        name="numero_monitores" placeholder="Número de monitores">
                                 </div>
                             </div>
                             <div class="form-group col-md-2 text-center">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
                                 <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
                             </div>
+                            @if (
+                                $servicio_seleccionado > 0 &&
+                                    $servicios->where('id', $servicio_seleccionado)->first()->articulos()->count() > 0)
+                                <div class="form-group col-md-12">
+                                    <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
+                                        relacionado al servicio</label>
+                                    <div class="col-md-12">
+                                        <Select wire:model="articulo_seleccionado" class="form-control"
+                                            name="articulo_seleccionado" id="articulo_seleccionado">
+                                            <option value="0">Selecciona un artículo.</option>
+                                            @foreach ($servicios->where('id', $servicio_seleccionado)->first()->articulos()->get() as $keys => $articulo)
+                                                <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                    {{ $articulo->name }}
+                                                </option>
+                                            @endforeach
+                                        </Select>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="form-group col-md-2">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
                                 <div class="col-md-12">
@@ -796,259 +793,358 @@
                                                 placeholder="00:00:00">
                                         </div>
                                     </div>
-                                    <div class="form-group col-md-1">
-                                        <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
-                                            class="btn btn-circle btn-primary"
-                                            target="_blank">{{ $keyPack + 1 }}</a>
-                                    </div>
-                                    <div class="form-group col-md-3">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
-                                            montaje</label>
-                                        <div class="col-md-12">
-                                            <input type="time" wire:model="tiemposMontajePack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control" name="tiempo"
-                                                placeholder="00:00:00">
+
+                                    @if ($servicio->id > 0 && $servicio->articulos()->count() > 0)
+                                        <div class="form-group col-md-1">
+                                            <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
+                                                class="btn btn-circle btn-primary"
+                                                target="_blank">{{ $keyPack + 1 }}</a>
                                         </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
-                                            desmontaje</label>
-                                        <div class="col-md-12">
-                                            <input type="time"
-                                                wire:model="tiemposDesmontajePack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_finalizacion" placeholder="00:00:00">
+                                        <div class="form-group col-md-11">
+                                            <label for="articulo_seleccionado"
+                                                class="col-sm-12 col-form-label">Artículo relacionado al
+                                                servicio</label>
+                                            <div class="col-md-12">
+                                                <Select wire:model="articulos_seleccionados.{{ $keyPack }}"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicio->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                            montaje</label>
-                                        <div class="col-md-12">
-                                            <input type="time" wire:model="horasMontajePack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_inicio" placeholder="00:00:00">
+                                        <div class="form-group col-md-1">
+                                            &nbsp;
                                         </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                            inicio</label>
-                                        <div class="col-md-12">
-                                            <input type="time" wire:model="horasInicioPack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_inicio" placeholder="00:00:00">
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                            finalización</label>
-                                        <div class="col-md-12">
-                                            <input type="time"
-                                                wire:model="horasFinalizacionPack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_finalizacion" placeholder="00:00:00">
-                                        </div>
-                                    </div>
-                                @endforeach
-                                <div class="form-group col-md-12">
-                                    <label for="precioServicio" class="col-sm-12 col-form-label">Precio final
-                                        del pack</label>
+                                        <div class="form-group col-md-3">
+                                        @else
+                                            <div class="form-group col-md-1">
+                                                <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
+                                                    class="btn btn-circle btn-primary"
+                                                    target="_blank">{{ $keyPack + 1 }}</a>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                    @endif
+
+                                    <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
+                                        montaje</label>
                                     <div class="col-md-12">
-                                        <input type="number" class="form-control" wire:model="precioFinalPack"
-                                            placeholder="Evento">
+                                        <input type="time" wire:model="tiemposMontajePack.{{ $keyPack }}"
+                                            wire:change="cambioTiempoPack()" class="form-control" name="tiempo"
+                                            placeholder="00:00:00">
                                     </div>
-                                </div>
-                            @endif
-                        @else
-                        @endif
                     </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
+                            desmontaje</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="tiemposDesmontajePack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_finalizacion"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                            montaje</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="horasMontajePack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_inicio"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                            inicio</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="horasInicioPack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_inicio"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                            finalización</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="horasFinalizacionPack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_finalizacion"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    @endforeach
+                    <div class="form-group col-md-12">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Precio final
+                            del pack</label>
+                        <div class="col-md-12">
+                            <input type="number" class="form-control" wire:model="precioFinalPack"
+                                placeholder="Evento">
+                        </div>
+                    </div>
+                    @endif
+                @else
+                    @endif
                 </div>
             </div>
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <div class="form-group col-md-12">
-                        <h5 class="ms-3"
-                            style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                            Servicios contratados</h5>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <h6 class="ms-3"
-                            style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
-                            Packs de servicio</h6>
-                        <table class="table table-striped table-bordered nowrap">
-                            @foreach ($listaPacks as $packIndex => $pack)
-                                @if ($packIndex == 0)
+        </div>
+        <div class="card m-b-30">
+            <div class="card-body">
+                <div class="form-group col-md-12">
+                    <h5 class="ms-3"
+                        style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                        Servicios contratados</h5>
+                </div>
+                <div class="form-group col-md-12">
+                    <h6 class="ms-3"
+                        style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                        Packs de servicio</h6>
+                    <table class="table table-striped table-bordered nowrap">
+                        @foreach ($listaPacks as $packIndex => $pack)
+                            @if ($packIndex == 0)
+                                <tr>
+                                    <th colspan="2">Pack de servicio</th>
+                                    <th colspan="2">Precio final</th>
+                                    <th colspan="2">Monitores contratados</th>
+                                    <th colspan="2">Tiempo total</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            @else
+                                <tr>
+                                    <th colspan="2" class="header">Pack de servicio</th>
+                                    <th colspan="2" class="header">Precio final</th>
+                                    <th colspan="2" class="header">Monitores contratados</th>
+                                    <th colspan="2" class="header">Tiempo total</th>
+                                    <th class="header">Eliminar</th>
+                                </tr>
+                            @endif
+                            <tr>
+                                <td class="izquierda" colspan="3">
+                                    {{ $packs->where('id', $pack['id'])->first()->nombre }}
+                                </td>
+                                <td>{{ $pack['precioFinal'] }} € </td>
+                                <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
+                                <td colspan="2"> {{ $this->sumarTiempos($packIndex) }} h </td>
+                                <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
+                                        wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="header">Servicio contratado</th>
+                                <th class="header">Artículo seleccionado</th>
+                                <th class="header">Monitores contratados</th>
+                                <th class="header">Duración</th>
+                                <th class="header">Duración del montaje</th>
+                                <th class="header">Duración del desmontaje</th>
+                                <th class="header">Hora de montaje</th>
+                                <th class="header">Hora de inicio</th>
+                                <th class="header">Hora de finalización</th>
+                            </tr>
+                            @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                                @if (
+                                    $keyPack + 1 !=
+                                        $packs->where('id', $pack['id'])->first()->servicios()->count())
                                     <tr>
-                                        <th>Pack de servicio</th>
-                                        <th>Precio final</th>
-                                        <th>Monitores contratados</th>
-                                        <th>Tiempo total</th>
-                                        <th>Eliminar</th>
+                                        <td class="izquierda"> {{ $servicioPack->nombre }}
+                                        </td>
+                                        <td>
+                                            @if (isset($pack['articulos_seleccionados'][$keyPack]) && $pack['articulos_seleccionados'][$keyPack] != null)
+                                                <Select
+                                                    wire:model="listaPacks.{{ $packIndex }}.articulos_seleccionados.{{ $keyPack }}"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicioPack->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            @else
+                                                Sin artículos asignados
+                                            @endif
+                                        </td>
+                                        <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                        <td> {{ $pack['tiempos'][$keyPack] }} h </td>
+                                        <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
+                                        <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
+                                        <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
+                                        <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                        <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
+                                        </td>
                                     </tr>
                                 @else
                                     <tr>
-                                        <th colspan="3" class="header">Pack de servicio</th>
-                                        <th class="header">Precio final</th>
-                                        <th class="header">Monitores contratados</th>
-                                        <th colspan="2" class="header">Tiempo total</th>
-                                        <th class="header">Eliminar</th>
+                                        <td class="izquierda"> {{ $servicioPack->nombre }}
+                                        </td>
+                                        <td>
+                                            @if (isset($pack['articulos_seleccionados'][$keyPack]) && $pack['articulos_seleccionados'][$keyPack] != null)
+                                                <Select
+                                                    wire:model="listaPacks.{{ $packIndex }}.articulos_seleccionados.{{ $keyPack }}"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicioPack->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            @else
+                                                Sin artículos asignados
+                                            @endif
+                                        </td>
+                                        <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                        <td> {{ $pack['tiempos'][$keyPack] }} h </td>
+                                        <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
+                                        <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
+                                        <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
+                                        <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                        <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
+                                        </td>
+
                                     </tr>
                                 @endif
-                                <tr>
-                                    <td class="izquierda" colspan="3">
-                                        {{ $packs->where('id', $pack['id'])->first()->nombre }}
-                                    </td>
-                                    <td>{{ $pack['precioFinal'] }} € </td>
-                                    <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
-                                    <td colspan="2"> {{ $this->sumarTiempos($packIndex) }} h </td>
-                                    <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
-                                            wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="header">Servicio contratado</th>
-                                    <th class="header">Monitores contratados</th>
-                                    <th class="header">Duración</th>
-                                    <th class="header">Duración del montaje</th>
-                                    <th class="header">Duración del desmontaje</th>
-                                    <th class="header">Hora de montaje</th>
-                                    <th class="header">Hora de inicio</th>
-                                    <th class="header">Hora de finalización</th>
-                                </tr>
-                                @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                    @if (
-                                        $keyPack + 1 !=
-                                            $packs->where('id', $pack['id'])->first()->servicios()->count())
-                                        <tr>
-                                            <td class="izquierda"> {{ $servicioPack->nombre }} </td>
-                                            <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
-                                            <td> {{ $pack['tiempos'][$keyPack] }} h </td>
-                                            <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
-                                            <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
-                                            <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
-                                            <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
-                                            <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
-                                            </td>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <td class="izquierda" style="border-bottom: 1px solid black !important;">
-                                                {{ $servicioPack->nombre }} </td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $pack['numero_monitores'][$keyPack] }} monitores </td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $pack['tiempos'][$keyPack] }} h </td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                ({{ $pack['horas_inicio'][$keyPack] }} </td>
-                                            <td class="derecha" style="border-bottom: 1px solid black !important;">
-                                                {{ $pack['horas_finalizacion'][$keyPack] }})
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
+                            @endforeach
+                        @endforeach
+                    </table>
+                    <h6 class="ms-3"
+                        style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                        Servicios individuales</h6>
+                    @if (count($listaServicios) > 0)
+                        <table class="table table-striped table-bordered nowrap">
+                            <tr>
+                                <th class="header">Servicio contratado</th>
+                                <th class="header">Artículo seleccionado</th>
+                                <th class="header">Monitores contratados</th>
+                                <th class="header">Precio</th>
+                                <th class="header">Duración</th>
+                                <th class="header">Duración del montaje</th>
+                                <th class="header">Duración del desmontaje</th>
+                                <th class="header">Hora de montaje</th>
+                                <th class="header">Hora de inicio</th>
+                                <th class="header">Hora de finalización</th>
+                                <th class="header">Eliminar</th>
+                            </tr>
+                            @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                                @if ($servicioIndex + 1 == count($listaServicios))
+                                    <tr>
+                                        <td class="izquierda">
+                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                        </td>
+                                        <td>
+                                            @if (isset($itemServicio['articulo_seleccionado']) && $itemServicio['articulo_seleccionado'] > 0)
+                                                <Select
+                                                    wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicios->where('id', $itemServicio['id'])->first()->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            @else
+                                                Sin artículos asignados
+                                            @endif
+                                        </td>
+                                        <td>{{ $itemServicio['numero_monitores'] }}</td>
+                                        <td> {{ $itemServicio['precioFinal'] }} €</td>
+                                        <td> {{ $itemServicio['tiempo'] }} h</td>
+                                        <td> {{ $itemServicio['tiempo_montaje'] }} h</td>
+                                        <td> {{ $itemServicio['tiempo_desmontaje'] }} h</td>
+                                        <td> {{ $itemServicio['hora_montaje'] }}</td>
+                                        <td> {{ $itemServicio['hora_inicio'] }}</td>
+                                        <td> {{ $itemServicio['hora_finalizacion'] }}</td>
+                                        <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
+                                                wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                        </td>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <td class="izquierda" style="border-bottom: 1px solid black !important;">
+                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                        </td>
+                                        <td>
+                                            @if (isset($itemServicio['articulo_seleccionado']) && $itemServicio['articulo_seleccionado'] > 0)
+                                                <Select
+                                                    wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicios->where('id', $itemServicio['id'])->first()->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            @else
+                                                Sin artículos asignados
+                                            @endif
+                                        </td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['numero_monitores'] }}</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['precioFinal'] }} €</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['tiempo'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['tiempo_montaje'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['tiempo_desmontaje'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['hora_montaje'] }}</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['hora_inicio'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['hora_finalizacion'] }} h</td>
+                                        <td class="derecha" style="border-bottom: 1px solid black !important;">
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                        </td>
+                                    </tr>
+                                @endif
                             @endforeach
                         </table>
-                        <h6 class="ms-3"
-                            style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
-                            Servicios individuales</h6>
-                        @if (count($listaServicios) > 0)
-                            <table class="table table-striped table-bordered nowrap">
-                                <tr>
-                                    <th class="header">Servicio contratado</th>
-                                    <th class="header">Monitores contratados</th>
-                                    <th class="header">Precio</th>
-                                    <th class="header">Duración</th>
-                                    <th class="header">Duración del montaje</th>
-                                    <th class="header">Duración del desmontaje</th>
-                                    <th class="header">Hora de montaje</th>
-                                    <th class="header">Hora de inicio</th>
-                                    <th class="header">Hora de finalización</th>
-                                    <th class="header">Eliminar</th>
-                                </tr>
-                                @foreach ($listaServicios as $servicioIndex => $itemServicio)
-                                    @if ($servicioIndex + 1 == count($listaServicios))
-                                        <tr>
-                                            <td class="izquierda">
-                                                {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                            </td>
-                                            <td>{{ $itemServicio['numero_monitores'] }}</td>
-                                            <td> {{ $itemServicio['precioFinal'] }} €</td>
-                                            <td> {{ $itemServicio['tiempo'] }} h</td>
-                                            <td> {{ $itemServicio['tiempo_montaje'] }} h</td>
-                                            <td> {{ $itemServicio['tiempo_desmontaje'] }} h</td>
-                                            <td> {{ $itemServicio['hora_montaje'] }}</td>
-                                            <td> {{ $itemServicio['hora_inicio'] }}</td>
-                                            <td> {{ $itemServicio['hora_finalizacion'] }}</td>
-                                            <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
-                                                    wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                            </td>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <td class="izquierda" style="border-bottom: 1px solid black !important;">
-                                                {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                            </td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['numero_monitores'] }}</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['precioFinal'] }} €</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['tiempo'] }} h</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['tiempo_montaje'] }} h</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['tiempo_desmontaje'] }} h</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['hora_montaje'] }}</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['hora_inicio'] }} h</td>
-                                            <td style="border-bottom: 1px solid black !important;">
-                                                {{ $itemServicio['hora_finalizacion'] }} h</td>
-                                            <td class="derecha" style="border-bottom: 1px solid black !important;">
-                                                <button type="button" class="btn btn-sm btn-danger"
-                                                    wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </table>
-                        @endif
-                    </div>
-                    <div class="form-row justify-content-center">
-                        <div class="form-group col-md-3">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">Subtotal</label>
-                            <div class="col-md-12">
-                                <input type="text" wire:model.lazy="precioFinal" class="form-control"
-                                    name="precioFinal" id="precioFinal" disabled placeholder="Precio final">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">Descuento</label>
-                            <div class="col-md-12">
-                                <input type="number" wire:model.lazy="descuento" class="form-control"
-                                    name="descuento" id="descuento" max="{{ $this->precioFinal }}"
-                                    placeholder="Precio final">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">Adelanto</label>
-                            <div class="col-md-12">
-                                <input type="number" wire:model.lazy="adelanto" class="form-control"
-                                    name="adelanto" id="adelanto"
-                                    max="{{ $this->precioFinal - $this->descuento }}" placeholder="Precio final">
-                            </div>
+                    @endif
+                </div>
+                <div class="form-row justify-content-center">
+                    <div class="form-group col-md-3">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Subtotal</label>
+                        <div class="col-md-12">
+                            <input type="text" wire:model.lazy="precioFinal" class="form-control"
+                                name="precioFinal" id="precioFinal" disabled placeholder="Precio final">
                         </div>
                     </div>
-                    <div class="form-group col-md-12">
-                        <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                        <h4>Total: {{ $this->precioFinal - $this->descuento }} € @if ($adelanto > 0 || $adelanto != null)
-                                ( {{ $this->adelanto }} € pagado por adelantado. )
-                            @endif
-                        </h4>
+                    <div class="form-group col-md-3">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Descuento</label>
+                        <div class="col-md-12">
+                            <input type="number" wire:model.lazy="descuento" class="form-control" name="descuento"
+                                id="descuento" max="{{ $this->precioFinal }}" placeholder="Precio final">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Adelanto</label>
+                        <div class="col-md-12">
+                            <input type="number" wire:model.lazy="adelanto" class="form-control" name="adelanto"
+                                id="adelanto" max="{{ $this->precioFinal - $this->descuento }}"
+                                placeholder="Precio final">
+                        </div>
                     </div>
                 </div>
+                <div class="form-group col-md-12">
+                    <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                    <h4>Total: {{ $this->precioFinal - $this->descuento }} € @if ($adelanto > 0 || $adelanto != null)
+                            ( {{ $this->adelanto }} € pagado por adelantado. )
+                        @endif
+                    </h4>
+                </div>
             </div>
+        </div>
 
-            {{-- <div class="card m-b-30">
+        {{-- <div class="card m-b-30">
                 <div class="card-body">
                     <div class="form-row">
                         <div class="form-group col-md-12">
@@ -1164,318 +1260,318 @@
                     </div>
                 </div>
             </div> --}}
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Datos para la creación del contrato</h5>
-                        </div>
-                        <div class="col-sm-11 align-items-center ms-5">
-                            <label for="observaciones" class="col-form-label">Observaciones</label>
-                            <textarea class="form-control" wire:model="observaciones" id="observaciones"></textarea>
-                        </div>
-                        <div class="col-sm-5 align-items-center ms-5">
-                            <label for="metodoPago" class="col-form-label">Método de pago</label>
-                            <select class="form-control text-center" wire:model="metodoPago" name="metodoPago"
-                                id="metodoPago">
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Bizum">Bizum</option>
+        <div class="card m-b-30">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h5 class="ms-3"
+                            style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                            Datos para la creación del contrato</h5>
+                    </div>
+                    <div class="col-sm-11 align-items-center ms-5">
+                        <label for="observaciones" class="col-form-label">Observaciones</label>
+                        <textarea class="form-control" wire:model="observaciones" id="observaciones"></textarea>
+                    </div>
+                    <div class="col-sm-5 align-items-center ms-5">
+                        <label for="metodoPago" class="col-form-label">Método de pago</label>
+                        <select class="form-control text-center" wire:model="metodoPago" name="metodoPago"
+                            id="metodoPago">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Bizum">Bizum</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-5 align-items-center ms-5">
+                        @if ($metodoPago == 'Transferencia')
+                            <label for="cuentaTransferencia" class="col-form-label">Cuenta para la
+                                transferencia</label>
+                            <select class="form-control text-center" wire:model="cuentaTransferencia"
+                                name="cuentaTransferencia" id="cuentaTransferencia">
+                                <option value="Deutsche Bank">Deutsche Bank</option>
+                                <option value="Caixabank">Caixabank</option>
                             </select>
+                        @endif
+                    </div>
+                    <div class="form-group col-12">
+                        <div class="col-sm-10 d-inline-flex align-items-center ms-5">
+                            <input class="form-check-input mt-0" wire:model="authImagen" type="checkbox"
+                                id="authImagen">
+                            <label for="confEmail" class=" col-form-label">Autorizo la captación y difusión de
+                                imágenes en medios propios.</label>
                         </div>
-                        <div class="col-sm-5 align-items-center ms-5">
-                            @if ($metodoPago == 'Transferencia')
-                                <label for="cuentaTransferencia" class="col-form-label">Cuenta para la
-                                    transferencia</label>
-                                <select class="form-control text-center" wire:model="cuentaTransferencia"
-                                    name="cuentaTransferencia" id="cuentaTransferencia">
-                                    <option value="Deutsche Bank">Deutsche Bank</option>
-                                    <option value="Caixabank">Caixabank</option>
-                                </select>
-                            @endif
-                        </div>
-                        <div class="form-group col-12">
-                            <div class="col-sm-10 d-inline-flex align-items-center ms-5">
-                                <input class="form-check-input mt-0" wire:model="authImagen" type="checkbox"
-                                    id="authImagen">
-                                <label for="confEmail" class=" col-form-label">Autorizo la captación y difusión de
-                                    imágenes en medios propios.</label>
-                            </div>
-                        </div>
+                    </div>
 
-                        <div class="form-group col-12">
-                            <div class="col-sm-10 d-inline-flex align-items-center ms-5">
-                                <input class="form-check-input mt-0" wire:model="authMenores" type="checkbox"
-                                    id="authMenores">
-                                <label for="confEmail" class=" col-form-label">En caso afirmativo, deseo que se
-                                    muestren los rostros de los menores. </label>
-                            </div>
+                    <div class="form-group col-12">
+                        <div class="col-sm-10 d-inline-flex align-items-center ms-5">
+                            <input class="form-check-input mt-0" wire:model="authMenores" type="checkbox"
+                                id="authMenores">
+                            <label for="confEmail" class=" col-form-label">En caso afirmativo, deseo que se
+                                muestren los rostros de los menores. </label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 justify-content-center">
-            <div class="card m-b-30 position-fixed">
-                <div class="card-body">
-                    <h5>Opciones de guardado</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
-                                presupuesto</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <style>
-            fieldset.scheduler-border {
-                border: 1px groove #ddd !important;
-                padding: 0 1.4em 1.4em 1.4em !important;
-                margin: 0 0 1.5em 0 !important;
-                -webkit-box-shadow: 0px 0px 0px 0px #000;
-                box-shadow: 0px 0px 0px 0px #000;
-            }
-
-            table {
-                border: 1px black solid !important;
-            }
-
-            th {
-                border-bottom: 1px black solid !important;
-                border: 1px black solid !important;
-                border-top: 1px black solid !important;
-            }
-
-            th.header {
-                border-bottom: 1px black solid !important;
-                border: 1px black solid !important;
-                border-top: 2px black solid !important;
-            }
-
-            td.izquierda {
-                border-left: 1px black solid !important;
-
-            }
-
-            td.derecha {
-                border-right: 1px black solid !important;
-
-            }
-
-            td.suelo {}
-        </style>
-        <script>
-            window.addEventListener('initializeMapKit', () => {
-                fetch('/admin/service/jwt')
-                    .then(response => response.json())
-                    .then(data => {
-                        mapkit.init({
-                            authorizationCallback: function(done) {
-                                done(data.token);
-                            }
-                        });
-                        // Aquí puedes inicializar tu mapa u otras funcionalidades relacionadas
-                    });
-            });
-        </script>
     </div>
+    <div class="col-md-3 justify-content-center">
+        <div class="card m-b-30 position-fixed">
+            <div class="card-body">
+                <h5>Opciones de guardado</h5>
+                <div class="row">
+                    <div class="col-12">
+                        <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
+                            presupuesto</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        fieldset.scheduler-border {
+            border: 1px groove #ddd !important;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+        table {
+            border: 1px black solid !important;
+        }
+
+        th {
+            border-bottom: 1px black solid !important;
+            border: 1px black solid !important;
+            border-top: 1px black solid !important;
+        }
+
+        th.header {
+            border-bottom: 1px black solid !important;
+            border: 1px black solid !important;
+            border-top: 2px black solid !important;
+        }
+
+        td.izquierda {
+            border-left: 1px black solid !important;
+
+        }
+
+        td.derecha {
+            border-right: 1px black solid !important;
+
+        }
+
+        td.suelo {}
+    </style>
+    <script>
+        window.addEventListener('initializeMapKit', () => {
+            fetch('/admin/service/jwt')
+                .then(response => response.json())
+                .then(data => {
+                    mapkit.init({
+                        authorizationCallback: function(done) {
+                            done(data.token);
+                        }
+                    });
+                    // Aquí puedes inicializar tu mapa u otras funcionalidades relacionadas
+                });
+        });
+    </script>
 </div>
-    @section('scripts')
-        {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
+</div>
+@section('scripts')
+    {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> --}}
-        {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
-        <script>
-            // In your Javascript (external .js resource or <script> tag)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> --}}
+    {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
+    <script>
+        // In your Javascript (external .js resource or <script> tag)
 
-            $("#alertaGuardar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    icon: 'warning',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('submitEvento');
-                    }
-                });
+        $("#alertaGuardar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                icon: 'warning',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('submitEvento');
+                }
+            });
+        });
+
+        $.datepicker.regional['es'] = {
+            closeText: 'Cerrar',
+            prevText: '< Ant',
+            nextText: 'Sig >',
+            currentText: 'Hoy',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
+                'Octubre', 'Noviembre', 'Diciembre'
+            ],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb'],
+            dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+            weekHeader: 'Sm',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['es']);
+        // document.addEventListener('livewire:load', function() {
+
+
+        // })
+        document.addEventListener("livewire:load", () => {
+            Livewire.hook('message.processed', (message, component) => {
+                $('.js-example-basic-single').select2();
             });
 
-            $.datepicker.regional['es'] = {
-                closeText: 'Cerrar',
-                prevText: '< Ant',
-                nextText: 'Sig >',
-                currentText: 'Hoy',
-                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-                    'Octubre', 'Noviembre', 'Diciembre'
-                ],
-                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb'],
-                dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
-                weekHeader: 'Sm',
-                dateFormat: 'yy-mm-dd',
-                firstDay: 1,
-                isRTL: false,
-                showMonthAfterYear: false,
-                yearSuffix: ''
-            };
-            $.datepicker.setDefaults($.datepicker.regional['es']);
-            // document.addEventListener('livewire:load', function() {
+            // $('#id_cliente').on('change', function (e) {
+            // console.log('change')
+            // console.log( e.target.value)
+            // // var data = $('.js-example-basic-single').select2("val");
+            // })
+        });
 
+
+
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2();
+            // $('.js-example-basic-single').on('change', function (e) {
+            // console.log('change')
+            // console.log( e.target.value)
+            // var data = $('.js-example-basic-single').select2("val");
+
+            // @this.set('foo', data);
+            //     livewire.emit('selectedCompanyItem', e.target.value)
+            // });
+            // $('#tableServicios').DataTable({
+            //     responsive: true,
+            //     dom: 'Bfrtip',
+            //     buttons: [
+            //         'copy', 'csv', 'excel', 'pdf', 'print'
+            //     ],
+            //     buttons: [{
+            //         extend: 'collection',
+            //         text: 'Export',
+            //         buttons: [{
+            //                 extend: 'pdf',
+            //                 className: 'btn-export'
+            //             },
+            //             {
+            //                 extend: 'excel',
+            //                 className: 'btn-export'
+            //             }
+            //         ],
+            //         className: 'btn btn-info text-white'
+            //     }],
+            //     "language": {
+            //         "lengthMenu": "Mostrando _MENU_ registros por página",
+            //         "zeroRecords": "Nothing found - sorry",
+            //         "info": "Mostrando página _PAGE_ of _PAGES_",
+            //         "infoEmpty": "No hay registros disponibles",
+            //         "infoFiltered": "(filtrado de _MAX_ total registros)",
+            //         "search": "Buscar:",
+            //         "paginate": {
+            //             "first": "Primero",
+            //             "last": "Ultimo",
+            //             "next": "Siguiente",
+            //             "previous": "Anterior"
+            //         },
+            //         "zeroRecords": "No se encontraron registros coincidentes",
+            //     }
+
+        });
+
+
+
+        // $("#fechaEmision").datepicker();
+
+
+        // $("#fechaEmision").on('change', function(e) {
+        //     @this.set('fechaEmision', $('#fechaEmision').val());
+        // });
+
+
+
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("password");
+            var eyeIcon = document.getElementById("eye-icon");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.className = "fas fa-eye-slash";
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.className = "fas fa-eye";
+            }
+        }
+        //observer para aplicar el datepicker de evento
+        // const observer = new MutationObserver((mutations, observer) => {
+        //     console.log(mutations, observer);
+        // });
+        // observer.observe(document, {
+        //     subtree: true,
+        //     attributes: true
+        // });
+
+
+
+        document.addEventListener('DOMSubtreeModified', (e) => {
+            $("#diaEvento").datepicker();
+
+            // $("#diaEvento").on('focus', function(e) {
+            //     document.getElementById("guardar-evento").style.visibility = "hidden";
+            // })
+            // $("#diaEvento").on('focusout', function(e) {
+            //     if ($('#diaEvento').val() != "") {
+            //         document.getElementById("guardar-evento").style.visibility = "visible";
+            //     }
 
             // })
-            document.addEventListener("livewire:load", () => {
-                Livewire.hook('message.processed', (message, component) => {
-                    $('.js-example-basic-single').select2();
-                });
+            // $("#diaFinal").on('focus', function(e) {
+            //     document.getElementById("guardar-evento").style.visibility = "hidden";
+            // })
+            // $("#diaFinal").on('focusout', function(e) {
+            //     if ($('#diaFinal').val() != "") {
+            //         document.getElementById("guardar-evento").style.visibility = "visible";
+            //     }
 
-                // $('#id_cliente').on('change', function (e) {
-                // console.log('change')
-                // console.log( e.target.value)
-                // // var data = $('.js-example-basic-single').select2("val");
-                // })
-            });
+            // })
 
+            $("#diaFinal").datepicker();
 
-
-            $(document).ready(function() {
-                $('.js-example-basic-single').select2();
-                // $('.js-example-basic-single').on('change', function (e) {
-                // console.log('change')
-                // console.log( e.target.value)
-                // var data = $('.js-example-basic-single').select2("val");
-
-                // @this.set('foo', data);
-                //     livewire.emit('selectedCompanyItem', e.target.value)
-                // });
-                // $('#tableServicios').DataTable({
-                //     responsive: true,
-                //     dom: 'Bfrtip',
-                //     buttons: [
-                //         'copy', 'csv', 'excel', 'pdf', 'print'
-                //     ],
-                //     buttons: [{
-                //         extend: 'collection',
-                //         text: 'Export',
-                //         buttons: [{
-                //                 extend: 'pdf',
-                //                 className: 'btn-export'
-                //             },
-                //             {
-                //                 extend: 'excel',
-                //                 className: 'btn-export'
-                //             }
-                //         ],
-                //         className: 'btn btn-info text-white'
-                //     }],
-                //     "language": {
-                //         "lengthMenu": "Mostrando _MENU_ registros por página",
-                //         "zeroRecords": "Nothing found - sorry",
-                //         "info": "Mostrando página _PAGE_ of _PAGES_",
-                //         "infoEmpty": "No hay registros disponibles",
-                //         "infoFiltered": "(filtrado de _MAX_ total registros)",
-                //         "search": "Buscar:",
-                //         "paginate": {
-                //             "first": "Primero",
-                //             "last": "Ultimo",
-                //             "next": "Siguiente",
-                //             "previous": "Anterior"
-                //         },
-                //         "zeroRecords": "No se encontraron registros coincidentes",
-                //     }
+            $("#diaFinal").on('change', function(e) {
+                @this.set('diaFinal', $('#diaFinal').val());
 
             });
 
+            $("#diaEvento").on('change', function(e) {
+                @this.set('diaEvento', $('#diaEvento').val());
+                @this.set('diaFinal', $('#diaEvento').val());
 
+            });
 
-            // $("#fechaEmision").datepicker();
+            $('#id_cliente').on('change', function(e) {
+                console.log('change')
+                console.log(e.target.value)
+                var data = $('#id_cliente').select2("val");
+                @this.set('id_cliente', data);
+                Livewire.emit('selectCliente')
 
-
-            // $("#fechaEmision").on('change', function(e) {
-            //     @this.set('fechaEmision', $('#fechaEmision').val());
-            // });
-
-
-
-            function togglePasswordVisibility() {
-                var passwordInput = document.getElementById("password");
-                var eyeIcon = document.getElementById("eye-icon");
-                if (passwordInput.type === "password") {
-                    passwordInput.type = "text";
-                    eyeIcon.className = "fas fa-eye-slash";
-                } else {
-                    passwordInput.type = "password";
-                    eyeIcon.className = "fas fa-eye";
-                }
-            }
-            //observer para aplicar el datepicker de evento
-            // const observer = new MutationObserver((mutations, observer) => {
-            //     console.log(mutations, observer);
-            // });
-            // observer.observe(document, {
-            //     subtree: true,
-            //     attributes: true
-            // });
-
-
-
-            document.addEventListener('DOMSubtreeModified', (e) => {
-                $("#diaEvento").datepicker();
-
-                // $("#diaEvento").on('focus', function(e) {
-                //     document.getElementById("guardar-evento").style.visibility = "hidden";
-                // })
-                // $("#diaEvento").on('focusout', function(e) {
-                //     if ($('#diaEvento').val() != "") {
-                //         document.getElementById("guardar-evento").style.visibility = "visible";
-                //     }
-
-                // })
-                // $("#diaFinal").on('focus', function(e) {
-                //     document.getElementById("guardar-evento").style.visibility = "hidden";
-                // })
-                // $("#diaFinal").on('focusout', function(e) {
-                //     if ($('#diaFinal').val() != "") {
-                //         document.getElementById("guardar-evento").style.visibility = "visible";
-                //     }
-
-                // })
-
-                $("#diaFinal").datepicker();
-
-                $("#diaFinal").on('change', function(e) {
-                    @this.set('diaFinal', $('#diaFinal').val());
-
-                });
-
-                $("#diaEvento").on('change', function(e) {
-                    @this.set('diaEvento', $('#diaEvento').val());
-                    @this.set('diaFinal', $('#diaEvento').val());
-
-                });
-
-                $('#id_cliente').on('change', function(e) {
-                    console.log('change')
-                    console.log(e.target.value)
-                    var data = $('#id_cliente').select2("val");
-                    @this.set('id_cliente', data);
-                    Livewire.emit('selectCliente')
-
-                    // livewire.emit('selectedCompanyItem', data)
-                })
+                // livewire.emit('selectedCompanyItem', data)
             })
+        })
 
-            function OpenSecondPage() {
-                var id = @this.id_cliente
-                window.open(`/admin/clientes-edit/` + id, '_blank'); // default page
-            };
-        </script>
-    @endsection
+        function OpenSecondPage() {
+            var id = @this.id_cliente
+            window.open(`/admin/clientes-edit/` + id, '_blank'); // default page
+        };
+    </script>
+@endsection

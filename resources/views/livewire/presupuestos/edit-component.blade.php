@@ -148,23 +148,6 @@
                         @if ($id_cliente != 0 || $id_cliente != null)
                             <div class="form-row">
                                 <!-- Tratamiento -->
-                                <div class="form-group col-md-4">
-                                    <label for="example-text-input"
-                                        class="col-sm-12 col-form-label">Tratamiento</label>
-                                    <div class="col-sm-10">
-                                        <select class="input-group-text" name="trato" required disabled>
-                                            <option class="dropdown-item" value="" disabled>Trato
-                                            </option>
-                                            <option class="dropdown-item" value="M">M</option>
-                                            <option class="dropdown-item" value="Melle">Melle</option>
-                                            <option class="dropdown-item" value="Mme">Mme</option>
-                                        </select>
-                                        @error('trato')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
                                 <!-- Nombre -->
                                 <div class="form-group col-md-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label"
@@ -428,7 +411,8 @@
                                     var data = $('#select2-evento').select2('val');
                                     @this.set('eventoNombre', data);
                                 });" wire:ignore>
-                                    <select class="form-control" name="id_cliente" id="select2-evento" wire:model="eventoNombre">
+                                    <select class="form-control" name="id_cliente" id="select2-evento"
+                                        wire:model="eventoNombre">
                                         <option value="0">-- ELIGE UN TIPO DE EVENTO --</option>
                                         @foreach ($tipos_evento as $tipo)
                                             <option value="{{ $tipo->id }}">
@@ -590,7 +574,7 @@
                             <div class="form-group col-md-2">
                                 <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
                                 <div class="col-md-12">
-                                    <input type="text" wire:model.lazy="precioFinalServicio"
+                                    <input type="number" step="0.01" wire:model.lazy="precioFinalServicio"
                                         wire:change="cambioTiempoServicio()" class="form-control"
                                         name="precioFinalServicio" id="precioFinalServicio"
                                         placeholder="Precio final">
@@ -599,7 +583,7 @@
                             <div class="form-group col-md-2">
                                 <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
                                 <div class="col-md-12">
-                                    <input type="number" wire:model.lazy="numero_monitores"
+                                    <input type="number" wire:model="numero_monitores"
                                         min="{{ $servicio->minMonitor }}" wire:change="cambioPrecioServicio()"
                                         class="form-control" name="numero_monitores" id="numero_monitores"
                                         placeholder="Número de monitores">
@@ -609,6 +593,25 @@
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
                                 <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
                             </div>
+                            @if (
+                                $servicio_seleccionado > 0 &&
+                                    $servicios->where('id', $servicio_seleccionado)->first()->articulos()->count() > 0)
+                                <div class="form-group col-md-12">
+                                    <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
+                                        relacionado al servicio</label>
+                                    <div class="col-md-12">
+                                        <Select wire:model="articulo_seleccionado" class="form-control"
+                                            name="articulo_seleccionado" id="articulo_seleccionado">
+                                            <option value="0">Selecciona un artículo.</option>
+                                            @foreach ($servicios->where('id', $servicio_seleccionado)->first()->articulos()->get() as $keys => $articulo)
+                                                <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                    {{ $articulo->name }}
+                                                </option>
+                                            @endforeach
+                                        </Select>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="form-group col-md-2">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
                                 <div class="col-md-12">
@@ -724,457 +727,385 @@
                                                 placeholder="00:00:00">
                                         </div>
                                     </div>
-                                    <div class="form-group col-md-1">
-                                        <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
-                                            class="btn btn-circle btn-primary"
-                                            target="_blank">{{ $keyPack + 1 }}</a>
-                                    </div>
-                                    <div class="form-group col-md-3">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
-                                            montaje</label>
-                                        <div class="col-md-12">
-                                            <input type="time" wire:model="tiemposMontajePack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control" name="tiempo"
-                                                placeholder="00:00:00">
+                                    @if ($servicio->id > 0 && $servicio->articulos()->count() > 0)
+                                        <div class="form-group col-md-1">
+                                            <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
+                                                class="btn btn-circle btn-primary"
+                                                target="_blank">{{ $keyPack + 1 }}</a>
                                         </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
-                                            desmontaje</label>
-                                        <div class="col-md-12">
-                                            <input type="time"
-                                                wire:model="tiemposDesmontajePack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_finalizacion" placeholder="00:00:00">
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                            montaje</label>
-                                        <div class="col-md-12">
-                                            <input type="time" wire:model="horasMontajePack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_inicio" placeholder="00:00:00">
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                            inicio</label>
-                                        <div class="col-md-12">
-                                            <input type="time" wire:model="horasInicioPack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_inicio" placeholder="00:00:00">
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                            finalización</label>
-                                        <div class="col-md-12">
-                                            <input type="time"
-                                                wire:model="horasFinalizacionPack.{{ $keyPack }}"
-                                                wire:change="cambioTiempoPack()" class="form-control"
-                                                name="hora_finalizacion" placeholder="00:00:00">
-                                        </div>
-                                    </div>
-                                @endforeach
-                                <div class="form-group col-md-12">
-                                    <label for="precioServicio" class="col-sm-12 col-form-label">Precio final
-                                        del pack</label>
-                                    <div class="col-md-12">
-                                        <input type="number" class="form-control" wire:model="precioFinalPack"
-                                            placeholder="Evento">
-                                    </div>
-                                </div>
-                            @endif
-                        @else
-                        @endif
-                    </div>
-                </div>
-            </div>
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <div class="form-group col-md-12">
-                        <h5 class="ms-3"
-                            style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                            Servicios contratados</h5>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <h6 class="ms-3"
-                            style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
-                            Packs de servicio</h6>
-                        @if ($eventoMontaje != 1)
-                            <table class="table table-striped table-bordered nowrap">
-                                @foreach ($listaPacks as $packIndex => $pack)
-                                    @if ($packIndex == 0)
-                                        <tr>
-                                            <th>Pack de servicio</th>
-                                            <th>Precio final</th>
-                                            <th>Monitores contratados</th>
-                                            <th>Tiempo total</th>
-                                            <th>Eliminar</th>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <th class="header">Pack de servicio</th>
-                                            <th class="header">Precio final</th>
-                                            <th class="header">Monitores contratados</th>
-                                            <th class="header">Tiempo total</th>
-                                            <th class="header">Eliminar</th>
-                                        </tr>
-                                    @endif
-                                    <tr>
-                                        <td class="izquierda">{{ $packs->where('id', $pack['id'])->first()->nombre }}
-                                        </td>
-                                        <td>{{ $pack['precioFinal'] }} € </td>
-                                        <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
-                                        <td> {{ $this->sumarTiempos($packIndex) }} h </td>
-                                        <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
-                                                wire:click.prevent="deletePack('{{ $packIndex }}')">X</button></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="header">Servicio contratado</th>
-                                        <th class="header">Monitores contratados</th>
-                                        <th class="header">Duración</th>
-                                        <th class="header">Hora de inicio</th>
-                                        <th class="header">Hora de finalización</th>
-                                    </tr>
-                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                        @if (
-                                            $keyPack + 1 !=
-                                                $packs->where('id', $pack['id'])->first()->servicios()->count())
-                                            <tr>
-                                                <td class="izquierda"> {{ $servicioPack->nombre }} </td>
-                                                <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
-                                                <td> {{ $pack['tiempos'][$keyPack] }} h </td>
-                                                <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
-                                                <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }}) </td>
-                                            </tr>
-                                        @else
-                                            <tr>
-                                                <td class="izquierda"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    {{ $servicioPack->nombre }} </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $pack['numero_monitores'][$keyPack] }} monitores </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $pack['tiempos'][$keyPack] }} h </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    ({{ $pack['horas_inicio'][$keyPack] }} </td>
-                                                <td class="derecha"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    {{ $pack['horas_finalizacion'][$keyPack] }})
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                @endforeach
-                            </table>
-                            <h6 class="ms-3"
-                                style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
-                                Servicios individuales</h6>
-                            @if (count($listaServicios) > 0)
-                                <table class="table table-striped table-bordered nowrap">
-                                    <tr>
-                                        <th class="header">Servicio contratado</th>
-                                        <th class="header">Monitores contratados</th>
-                                        <th class="header">Precio</th>
-                                        <th class="header">Duración</th>
-                                        <th class="header">Hora de inicio</th>
-                                        <th class="header">Hora de finalización</th>
-                                        <th class="header">Eliminar</th>
-                                    </tr>
-                                    @foreach ($listaServicios as $servicioIndex => $itemServicio)
-                                        @if ($servicioIndex + 1 == count($listaServicios))
-                                            <tr>
-                                                <td class="izquierda">
-                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                                </td>
-                                                <td>{{ $itemServicio['numero_monitores'] }}</td>
-                                                <td> {{ $itemServicio['precioFinal'] }} €</td>
-                                                <td> {{ $itemServicio['tiempo'] }} h</td>
-                                                <td> {{ $itemServicio['hora_inicio'] }} h</td>
-                                                <td> {{ $itemServicio['hora_finalizacion'] }} h</td>
-                                                <td class="derecha"><button type="button"
-                                                        class="btn btn-sm btn-danger"
-                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                                </td>
-                                            </tr>
-                                        @else
-                                            <tr>
-                                                <td class="izquierda"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                                </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['numero_monitores'] }}</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['precioFinal'] }} €</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['tiempo'] }} h</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['hora_inicio'] }} h</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['hora_finalizacion'] }} h</td>
-                                                <td class="derecha"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    <button type="button" class="btn btn-sm btn-danger"
-                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                </table>
-                            @endif
-                        @else
-                            <table class="table table-striped table-bordered nowrap">
-                                @foreach ($listaPacks as $packIndex => $pack)
-                                    @if ($packIndex == 0)
-                                        <tr>
-                                            <th colspan="3" class="header">Pack de servicio</th>
-                                            <th class="header">Precio final</th>
-                                            <th class="header">Monitores contratados</th>
-                                            <th colspan="2" class="header">Tiempo total</th>
-                                            <th class="header">Eliminar</th>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <th colspan="3" class="header">Pack de servicio</th>
-                                            <th class="header">Precio final</th>
-                                            <th class="header">Monitores contratados</th>
-                                            <th colspan="2" class="header">Tiempo total</th>
-                                            <th class="header">Eliminar</th>
-                                        </tr>
-                                    @endif
-                                    <tr>
-                                        <td class="izquierda" colspan="3">
-                                            {{ $packs->where('id', $pack['id'])->first()->nombre }}
-                                        </td>
-                                        <td>{{ $pack['precioFinal'] }} € </td>
-                                        <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
-                                        <td colspan="2"> {{ $this->sumarTiempos($packIndex) }} h </td>
-                                        <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
-                                                wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="header">Servicio contratado</th>
-                                        <th class="header">Monitores contratados</th>
-                                        <th class="header">Duración</th>
-                                        <th class="header">Duración del montaje</th>
-                                        <th class="header">Duración del desmontaje</th>
-                                        <th class="header">Hora de montaje</th>
-                                        <th class="header">Hora de inicio</th>
-                                        <th class="header">Hora de finalización</th>
-                                    </tr>
-                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                        @if (
-                                            $keyPack + 1 !=
-                                                $packs->where('id', $pack['id'])->first()->servicios()->count())
-                                            <tr>
-                                                <td class="izquierda"> {{ $servicioPack->nombre }} </td>
-                                                <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
-                                                <td> {{ $pack['tiempos'][$keyPack] }} h </td>
-                                                <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
-                                                <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
-                                                <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
-                                                <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
-                                                <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
-                                                </td>
-                                            </tr>
-                                        @else
-                                            <tr>
-                                                <td class="izquierda"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    {{ $servicioPack->nombre }} </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $pack['numero_monitores'][$keyPack] }} monitores </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $pack['tiempos'][$keyPack] }} h </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    ({{ $pack['horas_inicio'][$keyPack] }} </td>
-                                                <td class="derecha"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    {{ $pack['horas_finalizacion'][$keyPack] }})
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                @endforeach
-                            </table>
-                            <h6 class="ms-3"
-                                style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
-                                Servicios individuales</h6>
-                            @if (count($listaServicios) > 0)
-                                <table class="table table-striped table-bordered nowrap">
-                                    <tr>
-                                        <th class="header">Servicio contratado</th>
-                                        <th class="header">Monitores contratados</th>
-                                        <th class="header">Precio</th>
-                                        <th class="header">Duración</th>
-                                        <th class="header">Duración del montaje</th>
-                                        <th class="header">Duración del desmontaje</th>
-                                        <th class="header">Hora de montaje</th>
-                                        <th class="header">Hora de inicio</th>
-                                        <th class="header">Hora de finalización</th>
-                                        <th class="header">Eliminar</th>
-                                    </tr>
-                                    @foreach ($listaServicios as $servicioIndex => $itemServicio)
-                                        @if ($servicioIndex + 1 == count($listaServicios))
-                                            <tr>
-                                                <td class="izquierda">
-                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                                </td>
-                                                <td>{{ $itemServicio['numero_monitores'] }}</td>
-                                                <td> {{ $itemServicio['precioFinal'] }} €</td>
-                                                <td> {{ $itemServicio['tiempo'] }} h</td>
-                                                <td> {{ $itemServicio['tiempo_montaje'] }} h</td>
-                                                <td> {{ $itemServicio['tiempo_desmontaje'] }} h</td>
-                                                <td> {{ $itemServicio['hora_montaje'] }}</td>
-                                                <td> {{ $itemServicio['hora_inicio'] }}</td>
-                                                <td> {{ $itemServicio['hora_finalizacion'] }}</td>
-                                                <td class="derecha"><button type="button"
-                                                        class="btn btn-sm btn-danger"
-                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                                </td>
-                                            </tr>
-                                        @else
-                                            <tr>
-                                                <td class="izquierda"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
-                                                </td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['numero_monitores'] }}</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['precioFinal'] }} €</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['tiempo'] }} h</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['tiempo_montaje'] }} h</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['tiempo_desmontaje'] }} h</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['hora_montaje'] }}</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['hora_inicio'] }} h</td>
-                                                <td style="border-bottom: 1px solid black !important;">
-                                                    {{ $itemServicio['hora_finalizacion'] }} h</td>
-                                                <td class="derecha"
-                                                    style="border-bottom: 1px solid black !important;">
-                                                    <button type="button" class="btn btn-sm btn-danger"
-                                                        wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                </table>
-                            @endif
-                        @endif
-                    </div>
-                    <div class="form-row justify-content-center">
-                        <div class="form-group col-md-3">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">Subtotal</label>
-                            <div class="col-md-12">
-                                <input type="text" wire:model.lazy="precioFinal" class="form-control"
-                                    name="precioFinal" id="precioFinal" disabled placeholder="Precio final">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">Descuento</label>
-                            <div class="col-md-12">
-                                <input type="number" wire:model.lazy="descuento" class="form-control"
-                                    name="descuento" id="descuento" max="{{ $this->precioFinal }}"
-                                    placeholder="Precio final">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">Adelanto</label>
-                            <div class="col-md-12">
-                                <input type="number" wire:model.lazy="adelanto" class="form-control"
-                                    name="adelanto" id="adelanto"
-                                    max="{{ $this->precioFinal - $this->descuento }}" placeholder="Precio final">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                        <h4>Total: {{ $this->precioFinal - $this->descuento }} € @if ($adelanto > 0 || $adelanto != null)
-                                ( {{ $this->adelanto }} € pagado por adelantado. )
-                            @endif
-                        </h4>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Sueldos de monitores y gasoil</h5>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <div class="row">
-                                @foreach ($listaPacks as $packIndex => $pack)
-                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                        <div class="row text-center">
+                                        <div class="form-group col-md-11">
+                                            <label for="articulo_seleccionado"
+                                                class="col-sm-12 col-form-label">Artículo relacionado al
+                                                servicio</label>
                                             <div class="col-md-12">
-                                                <label for="adelantoResumen"
-                                                    class="col-sm-12 col-form-label">Servicio</label>
-                                                <input type="text" id="adelantoResumen"
-                                                    class="form-control text-center"
-                                                    value="{{ $servicioPack->nombre }}" disabled>
+                                                <Select wire:model="articulos_seleccionados.{{ $keyPack }}"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicio->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
                                             </div>
-                                            @for ($i = 0; $i < $pack['numero_monitores'][$keyPack]; $i++)
-                                                <div class="col-md-6">
-                                                    <label for="adelantoResumen"
-                                                        class="col-sm-12 col-form-label">Monitor</label>
-                                                    <select class="form-control text-center"
-                                                        wire:model="listaPacks.{{ $packIndex }}.id_monitores.{{ $keyPack }}.{{ $i }}"
-                                                        name="servicio_seleccionado" id="monitores">
-                                                        <option value="0">Selecciona un monitor.</option>
-                                                        @foreach ($monitores as $keys => $monitor)
+                                        </div>
+                                        <div class="form-group col-md-1">
+                                            &nbsp;
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                        @else
+                                            <div class="form-group col-md-1">
+                                                <a href="{{ route('servicios.edit', $servicio->id) }}" type="button"
+                                                    class="btn btn-circle btn-primary"
+                                                    target="_blank">{{ $keyPack + 1 }}</a>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                    @endif
+                                    <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
+                                        montaje</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="tiemposMontajePack.{{ $keyPack }}"
+                                            wire:change="cambioTiempoPack()" class="form-control" name="tiempo"
+                                            placeholder="00:00:00">
+                                    </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo
+                            desmontaje</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="tiemposDesmontajePack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_finalizacion"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                            montaje</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="horasMontajePack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_inicio"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                            inicio</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="horasInicioPack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_inicio"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                            finalización</label>
+                        <div class="col-md-12">
+                            <input type="time" wire:model="horasFinalizacionPack.{{ $keyPack }}"
+                                wire:change="cambioTiempoPack()" class="form-control" name="hora_finalizacion"
+                                placeholder="00:00:00">
+                        </div>
+                    </div>
+                    @endforeach
+                    <div class="form-group col-md-12">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Precio final
+                            del pack</label>
+                        <div class="col-md-12">
+                            <input type="number" class="form-control" wire:model="precioFinalPack"
+                                placeholder="Evento">
+                        </div>
+                    </div>
+                    @endif
+                @else
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="card m-b-30">
+            <div class="card-body">
+                <div class="form-group col-md-12">
+                    <h5 class="ms-3"
+                        style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                        Servicios contratados</h5>
+                </div>
+                <div class="form-group col-md-12">
+                    <h6 class="ms-3"
+                        style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                        Packs de servicio</h6>
+                    @if (count($listaPacks) > 0)
+                        <table class="table table-striped table-bordered nowrap">
+                            @foreach ($listaPacks as $packIndex => $pack)
+                                @if ($packIndex == 0)
+                                    <tr>
+                                        <th colspan="2">Pack de servicio</th>
+                                        <th colspan="2">Precio final</th>
+                                        <th colspan="2">Monitores contratados</th>
+                                        <th colspan="2">Tiempo total</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <th colspan="2" class="header">Pack de servicio</th>
+                                        <th colspan="2" class="header">Precio final</th>
+                                        <th colspan="2" class="header">Monitores contratados</th>
+                                        <th colspan="2" class="header">Tiempo total</th>
+                                        <th class="header">Eliminar</th>
+                                    </tr>
+                                @endif
+                                <tr>
+                                    <td class="izquierda" colspan="2" >
+                                        {{ $packs->where('id', $pack['id'])->first()->nombre }}
+                                    </td>
+                                    <td colspan="2" >{{ $pack['precioFinal'] }} € </td>
+                                    <td colspan="2" >{{ array_sum($pack['numero_monitores']) }} monitores</td>
+                                    <td colspan="2"> {{ $this->sumarTiempos($packIndex) }} h </td>
+                                    <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
+                                            wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="header">Servicio contratado</th>
+                                    <th class="header">Artículo seleccionado</th>
+                                    <th class="header">Monitores contratados</th>
+                                    <th class="header">Duración</th>
+                                    <th class="header">Duración del montaje</th>
+                                    <th class="header">Duración del desmontaje</th>
+                                    <th class="header">Hora de montaje</th>
+                                    <th class="header">Hora de inicio</th>
+                                    <th class="header">Hora de finalización</th>
+                                </tr>
+                                @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                                    @if (
+                                        $keyPack + 1 !=
+                                            $packs->where('id', $pack['id'])->first()->servicios()->count())
+                                        <tr>
+                                            <td class="izquierda"> {{ $servicioPack->nombre }}
+                                            </td>
+                                            <td>
+                                                @if (isset($pack['articulos_seleccionados'][$keyPack]) && $pack['articulos_seleccionados'][$keyPack] != null)
+                                                    <Select
+                                                        wire:model="listaPacks.{{ $packIndex }}.articulos_seleccionados.{{ $keyPack }}"
+                                                        class="form-control" name="articulo_seleccionado"
+                                                        id="articulo_seleccionado">
+                                                        <option value="0">Selecciona un artículo.</option>
+                                                        @foreach ($servicioPack->articulos()->get() as $keys => $articulo)
                                                             <option class="dropdown-item"
-                                                                value="{{ $monitor->id }}">
-                                                                {{ $monitor->nombre }}
+                                                                value="{{ $articulo->id }}">
+                                                                {{ $articulo->name }}
                                                             </option>
                                                         @endforeach
                                                     </Select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="adelantoResumen"
-                                                        class="col-sm-12 col-form-label">Sueldo</label>
-                                                    <input type="number" id="adelantoResumen"
-                                                        wire:model="listaPacks.{{ $packIndex }}.sueldos_monitores.{{ $keyPack }}.{{ $i }}"
-                                                        class="form-control text-center">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="adelantoResumen"
-                                                        class="col-sm-12 col-form-label">Pendiente</label>
-                                                    <input type="number"
-                                                        wire:model="listaPacks.{{ $packIndex }}.pagos_pendientes.{{ $keyPack }}.{{ $i }}"
-                                                        class="form-control text-center">
-                                                </div>
-                                            @endfor
-                                        </div>
-                                    @endforeach
+                                                @else
+                                                    Sin artículos asignados
+                                                @endif
+                                            </td>
+                                            <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                            <td> {{ $pack['tiempos'][$keyPack] }} h </td>
+                                            <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
+                                            <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
+                                            <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
+                                            <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                            <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
+                                            </td>
+                                        </tr>
+                                    @else
+                                        <tr>
+                                            <td class="izquierda"> {{ $servicioPack->nombre }}
+                                            </td>
+                                            <td>
+                                                @if (isset($pack['articulos_seleccionados'][$keyPack]) && $pack['articulos_seleccionados'][$keyPack] != null)
+                                                    <Select
+                                                        wire:model="listaPacks.{{ $packIndex }}.articulos_seleccionados.{{ $keyPack }}"
+                                                        class="form-control" name="articulo_seleccionado"
+                                                        id="articulo_seleccionado">
+                                                        <option value="0">Selecciona un artículo.</option>
+                                                        @foreach ($servicioPack->articulos()->get() as $keys => $articulo)
+                                                            <option class="dropdown-item"
+                                                                value="{{ $articulo->id }}">
+                                                                {{ $articulo->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </Select>
+                                                @else
+                                                    Sin artículos asignados
+                                                @endif
+                                            </td>
+                                            <td>{{ $pack['numero_monitores'][$keyPack] }} monitores </td>
+                                            <td> {{ $pack['tiempos'][$keyPack] }} h </td>
+                                            <td> {{ $pack['tiempos_montaje'][$keyPack] }} h </td>
+                                            <td> {{ $pack['tiempos_desmontaje'][$keyPack] }} h </td>
+                                            <td> {{ $pack['horas_montaje'][$keyPack] }} h </td>
+                                            <td>({{ $pack['horas_inicio'][$keyPack] }} </td>
+                                            <td class="derecha">{{ $pack['horas_finalizacion'][$keyPack] }})
+                                            </td>
+
+                                        </tr>
+                                    @endif
                                 @endforeach
-                                @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                            @endforeach
+                        </table>
+                    @endif
+                    <h6 class="ms-3"
+                        style="border-bottom: 1px lightgray solid !important; padding-bottom: 10px !important;">
+                        Servicios individuales</h6>
+                    @if (count($listaServicios) > 0)
+                        <table class="table table-striped table-bordered nowrap">
+                            <tr>
+                                <th class="header">Servicio contratado</th>
+                                <th class="header">Artículo seleccionado</th>
+                                <th class="header">Monitores contratados</th>
+                                <th class="header">Precio</th>
+                                <th class="header">Duración</th>
+                                <th class="header">Duración del montaje</th>
+                                <th class="header">Duración del desmontaje</th>
+                                <th class="header">Hora de montaje</th>
+                                <th class="header">Hora de inicio</th>
+                                <th class="header">Hora de finalización</th>
+                                <th class="header">Eliminar</th>
+                            </tr>
+                            @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                                @if ($servicioIndex + 1 == count($listaServicios))
+                                    <tr>
+                                        <td class="izquierda">
+                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                        </td>
+                                        <td>
+                                            @if (isset($itemServicio['articulo_seleccionado']) && $itemServicio['articulo_seleccionado'] > 0)
+                                                <Select
+                                                    wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicios->where('id', $itemServicio['id'])->first()->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            @else
+                                                Sin artículos asignados
+                                            @endif
+                                        </td>
+                                        <td>{{ $itemServicio['numero_monitores'] }}</td>
+                                        <td> {{ $itemServicio['precioFinal'] }} €</td>
+                                        <td> {{ $itemServicio['tiempo'] }} h</td>
+                                        <td> {{ $itemServicio['tiempo_montaje'] }} h</td>
+                                        <td> {{ $itemServicio['tiempo_desmontaje'] }} h</td>
+                                        <td> {{ $itemServicio['hora_montaje'] }}</td>
+                                        <td> {{ $itemServicio['hora_inicio'] }}</td>
+                                        <td> {{ $itemServicio['hora_finalizacion'] }}</td>
+                                        <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
+                                                wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                        </td>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <td class="izquierda" style="border-bottom: 1px solid black !important;">
+                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                        </td>
+                                        <td>
+                                            @if (isset($itemServicio['articulo_seleccionado']) && $itemServicio['articulo_seleccionado'] > 0)
+                                                <Select
+                                                    wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
+                                                    class="form-control" name="articulo_seleccionado"
+                                                    id="articulo_seleccionado">
+                                                    <option value="0">Selecciona un artículo.</option>
+                                                    @foreach ($servicios->where('id', $itemServicio['id'])->first()->articulos()->get() as $keys => $articulo)
+                                                        <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                            {{ $articulo->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </Select>
+                                            @else
+                                                Sin artículos asignados
+                                            @endif
+                                        </td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['numero_monitores'] }}</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['precioFinal'] }} €</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['tiempo'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['tiempo_montaje'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['tiempo_desmontaje'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['hora_montaje'] }}</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['hora_inicio'] }} h</td>
+                                        <td style="border-bottom: 1px solid black !important;">
+                                            {{ $itemServicio['hora_finalizacion'] }} h</td>
+                                        <td class="derecha" style="border-bottom: 1px solid black !important;">
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                wire:click.prevent="deleteServicio('{{ $servicioIndex }}')">X</button>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </table>
+                    @endif
+                </div>
+                <div class="form-row justify-content-center">
+                    <div class="form-group col-md-3">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Subtotal</label>
+                        <div class="col-md-12">
+                            <input type="text" wire:model.lazy="precioFinal" class="form-control"
+                                name="precioFinal" id="precioFinal" disabled placeholder="Precio final">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Descuento</label>
+                        <div class="col-md-12">
+                            <input type="number" wire:model.lazy="descuento" class="form-control" name="descuento"
+                                id="descuento" max="{{ $this->precioFinal }}" placeholder="Precio final">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="precioServicio" class="col-sm-12 col-form-label">Adelanto</label>
+                        <div class="col-md-12">
+                            <input type="number" wire:model.lazy="adelanto" class="form-control" name="adelanto"
+                                id="adelanto" max="{{ $this->precioFinal - $this->descuento }}"
+                                placeholder="Precio final">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                    <h4>Total: {{ $this->precioFinal - $this->descuento }} € @if ($adelanto > 0 || $adelanto != null)
+                            ( {{ $this->adelanto }} € pagado por adelantado. )
+                        @endif
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="card m-b-30">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h5 class="ms-3"
+                            style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                            Sueldos de monitores y gasoil</h5>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <div class="row">
+                            @foreach ($listaPacks as $packIndex => $pack)
+                                @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
                                     <div class="row text-center">
                                         <div class="col-md-12">
                                             <label for="adelantoResumen"
                                                 class="col-sm-12 col-form-label">Servicio</label>
                                             <input type="text" id="adelantoResumen"
-                                                class="form-control text-center"
-                                                value="{{ $servicios->find($itemServicio['id'])->nombre }}" disabled>
+                                                class="form-control text-center" value="{{ $servicioPack->nombre }}"
+                                                disabled>
                                         </div>
-                                        @for ($i = 0; $i < $itemServicio['numero_monitores']; $i++)
+                                        @for ($i = 0; $i < $pack['numero_monitores'][$keyPack]; $i++)
                                             <div class="col-md-6">
                                                 <label for="adelantoResumen"
                                                     class="col-sm-12 col-form-label">Monitor</label>
                                                 <select class="form-control text-center"
-                                                    wire:model="listaServicios.{{ $servicioIndex }}.id_monitores.{{ $i }}"
+                                                    wire:model="listaPacks.{{ $packIndex }}.id_monitores.{{ $keyPack }}.{{ $i }}"
                                                     name="servicio_seleccionado" id="monitores">
                                                     <option value="0">Selecciona un monitor.</option>
                                                     @foreach ($monitores as $keys => $monitor)
@@ -1188,165 +1119,202 @@
                                                 <label for="adelantoResumen"
                                                     class="col-sm-12 col-form-label">Sueldo</label>
                                                 <input type="number" id="adelantoResumen"
-                                                    wire:model='listaServicios.{{ $servicioIndex }}.sueldo_monitores.{{ $i }}'
-                                                    value="{{ $servicios->find($itemServicio['id'])->precioMonitor }}"
+                                                    wire:model="listaPacks.{{ $packIndex }}.sueldos_monitores.{{ $keyPack }}.{{ $i }}"
                                                     class="form-control text-center">
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="adelantoResumen"
-                                                    class="col-sm-12 col-form-label">Pendiente de
-                                                    pago</label>
-                                                <input type="number" id="adelantoResumen"
-                                                    wire:model='listaServicios.{{ $servicioIndex }}.pago_pendiente.{{ $i }}'
+                                                    class="col-sm-12 col-form-label">Pendiente</label>
+                                                <input type="number"
+                                                    wire:model="listaPacks.{{ $packIndex }}.pagos_pendientes.{{ $keyPack }}.{{ $i }}"
                                                     class="form-control text-center">
                                             </div>
                                         @endfor
                                     </div>
                                 @endforeach
-                                </form>
-                            </div>
+                            @endforeach
+                            @foreach ($listaServicios as $servicioIndex => $itemServicio)
+                                <div class="row text-center">
+                                    <div class="col-md-12">
+                                        <label for="adelantoResumen" class="col-sm-12 col-form-label">Servicio</label>
+                                        <input type="text" id="adelantoResumen" class="form-control text-center"
+                                            value="{{ $servicios->find($itemServicio['id'])->nombre }}" disabled>
+                                    </div>
+                                    @for ($i = 0; $i < $itemServicio['numero_monitores']; $i++)
+                                        <div class="col-md-6">
+                                            <label for="adelantoResumen"
+                                                class="col-sm-12 col-form-label">Monitor</label>
+                                            <select class="form-control text-center"
+                                                wire:model="listaServicios.{{ $servicioIndex }}.id_monitores.{{ $i }}"
+                                                name="servicio_seleccionado" id="monitores">
+                                                <option value="0">Selecciona un monitor.</option>
+                                                @foreach ($monitores as $keys => $monitor)
+                                                    <option class="dropdown-item" value="{{ $monitor->id }}">
+                                                        {{ $monitor->nombre }}
+                                                    </option>
+                                                @endforeach
+                                            </Select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="adelantoResumen"
+                                                class="col-sm-12 col-form-label">Sueldo</label>
+                                            <input type="number" id="adelantoResumen"
+                                                wire:model='listaServicios.{{ $servicioIndex }}.sueldo_monitores.{{ $i }}'
+                                                value="{{ $servicios->find($itemServicio['id'])->precioMonitor }}"
+                                                class="form-control text-center">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="adelantoResumen" class="col-sm-12 col-form-label">Pendiente de
+                                                pago</label>
+                                            <input type="number" id="adelantoResumen"
+                                                wire:model='listaServicios.{{ $servicioIndex }}.pago_pendiente.{{ $i }}'
+                                                class="form-control text-center">
+                                        </div>
+                                    @endfor
+                                </div>
+                            @endforeach
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card m-b-30">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h5 class="ms-3"
+                            style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                            Datos para la creación del contrato</h5>
+                    </div>
+                    <div class="col-sm-11 align-items-center ms-5">
+                        <label for="observaciones" class="col-form-label">Observaciones</label>
+                        <textarea class="form-control" wire:model="observaciones" id="observaciones"></textarea>
+                    </div>
+                    <div class="col-sm-5 align-items-center ms-5">
+                        <label for="metodoPago" class="col-form-label">Método de pago</label>
+                        <select class="form-control text-center" wire:model="metodoPago" name="metodoPago"
+                            id="metodoPago">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Bizum">Bizum</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-5 align-items-center ms-5">
+                        @if ($metodoPago == 'Transferencia')
+                            <label for="cuentaTransferencia" class="col-form-label">Cuenta para la
+                                transferencia</label>
+                            <select class="form-control text-center" wire:model="cuentaTransferencia"
+                                name="cuentaTransferencia" id="cuentaTransferencia">
+                                <option value="Deutsche Bank">Deutsche Bank</option>
+                                <option value="Caixabank">Caixabank</option>
+                            </select>
+                        @endif
+                    </div>
+                    <div class="form-group col-12">
+                        <div class="col-sm-10 d-inline-flex align-items-center ms-5">
+                            <input class="form-check-input mt-0" wire:model="authImagen" type="checkbox"
+                                id="authImagen">
+                            <label for="confEmail" class=" col-form-label">Autorizo la captación y difusión de
+                                imágenes en medios propios.</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <div class="col-sm-10 d-inline-flex align-items-center ms-5">
+                            <input class="form-check-input mt-0" wire:model="authMenores" type="checkbox"
+                                id="authMenores">
+                            <label for="confEmail" class=" col-form-label">En caso afirmativo, deseo que se
+                                muestren los rostros de los menores. </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 justify-content-center">
+        <div class="position-fixed">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <h5>Opciones de guardado</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
+                                presupuesto</button>
+                            <button class="w-100 btn btn-danger mb-2" wire:click.prevent="alertaEliminar">Eliminar
+                                presupuesto</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card m-b-30">
                 <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Datos para la creación del contrato</h5>
-                        </div>
-                        <div class="col-sm-11 align-items-center ms-5">
-                            <label for="observaciones" class="col-form-label">Observaciones</label>
-                            <textarea class="form-control" wire:model="observaciones" id="observaciones"></textarea>
-                        </div>
-                        <div class="col-sm-5 align-items-center ms-5">
-                            <label for="metodoPago" class="col-form-label">Método de pago</label>
-                            <select class="form-control text-center" wire:model="metodoPago" name="metodoPago"
-                                id="metodoPago">
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Bizum">Bizum</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-5 align-items-center ms-5">
-                            @if ($metodoPago == 'Transferencia')
-                                <label for="cuentaTransferencia" class="col-form-label">Cuenta para la
-                                    transferencia</label>
-                                <select class="form-control text-center" wire:model="cuentaTransferencia"
-                                    name="cuentaTransferencia" id="cuentaTransferencia">
-                                    <option value="Deutsche Bank">Deutsche Bank</option>
-                                    <option value="Caixabank">Caixabank</option>
-                                </select>
-                            @endif
-                        </div>
-                        <div class="form-group col-12">
-                            <div class="col-sm-10 d-inline-flex align-items-center ms-5">
-                                <input class="form-check-input mt-0" wire:model="authImagen" type="checkbox"
-                                    id="authImagen">
-                                <label for="confEmail" class=" col-form-label">Autorizo la captación y difusión de
-                                    imágenes en medios propios.</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group col-12">
-                            <div class="col-sm-10 d-inline-flex align-items-center ms-5">
-                                <input class="form-check-input mt-0" wire:model="authMenores" type="checkbox"
-                                    id="authMenores">
-                                <label for="confEmail" class=" col-form-label">En caso afirmativo, deseo que se
-                                    muestren los rostros de los menores. </label>
-                            </div>
+                    <h5>Opciones de impresión</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="w-100 btn btn-info mb-2" wire:click.prevent="alertaAceptar">Imprimir
+                                datos de
+                                presupuesto</button>
+                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">
+                                @if ($contrato_id != null)
+                                    Imprimir
+                                @else
+                                    Generar
+                                @endif
+                                contrato
+                            </button>
+                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar2">
+                                @if ($contrato_id != null)
+                                    Ver
+                                @else
+                                    Generar
+                                @endif
+                                página del contrato
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 justify-content-center">
-            <div class="position-fixed">
-                <div class="card m-b-30">
-                    <div class="card-body">
-                        <h5>Opciones de guardado</h5>
-                        <div class="row">
-                            <div class="col-12">
-                                <button class="w-100 btn btn-success mb-2"
-                                    wire:click.prevent="alertaGuardar">Guardar
-                                    presupuesto</button>
-                                <button class="w-100 btn btn-danger mb-2"
-                                    wire:click.prevent="alertaEliminar">Eliminar
-                                    presupuesto</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card m-b-30">
-                    <div class="card-body">
-                        <h5>Opciones de impresión</h5>
-                        <div class="row">
-                            <div class="col-12">
-                                <button class="w-100 btn btn-info mb-2" wire:click.prevent="alertaAceptar">Imprimir
-                                    datos de
-                                    presupuesto</button>
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar">
-                                    @if ($contrato_id != null)
-                                        Imprimir
-                                    @else
-                                        Generar
-                                    @endif
-                                    contrato
-                                </button>
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaCancelar2">
-                                    @if ($contrato_id != null)
-                                        Ver
-                                    @else
-                                        Generar
-                                    @endif
-                                    página del contrato
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <style>
-            fieldset.scheduler-border {
-                border: 1px groove #ddd !important;
-                padding: 0 1.4em 1.4em 1.4em !important;
-                margin: 0 0 1.5em 0 !important;
-                -webkit-box-shadow: 0px 0px 0px 0px #000;
-                box-shadow: 0px 0px 0px 0px #000;
-            }
-
-            table {
-                border: 1px black solid !important;
-            }
-
-            th {
-                border-bottom: 1px black solid !important;
-                border: 1px black solid !important;
-                border-top: 1px black solid !important;
-            }
-
-            th.header {
-                border-bottom: 1px black solid !important;
-                border: 1px black solid !important;
-                border-top: 2px black solid !important;
-            }
-
-            td.izquierda {
-                border-left: 1px black solid !important;
-
-            }
-
-            td.derecha {
-                border-right: 1px black solid !important;
-
-            }
-
-            td.suelo {}
-        </style>
     </div>
+    <style>
+        fieldset.scheduler-border {
+            border: 1px groove #ddd !important;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+        table {
+            border: 1px black solid !important;
+        }
+
+        th {
+            border-bottom: 1px black solid !important;
+            border: 1px black solid !important;
+            border-top: 1px black solid !important;
+        }
+
+        th.header {
+            border-bottom: 1px black solid !important;
+            border: 1px black solid !important;
+            border-top: 2px black solid !important;
+        }
+
+        td.izquierda {
+            border-left: 1px black solid !important;
+
+        }
+
+        td.derecha {
+            border-right: 1px black solid !important;
+
+        }
+
+        td.suelo {}
+    </style>
+</div>
 </div>
 
 

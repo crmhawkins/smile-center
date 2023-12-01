@@ -4,9 +4,12 @@ namespace App\Http\Livewire\Presupuestos;
 
 use App\Models\Cliente;
 use App\Models\Evento;
+use App\Models\Articulos;
 use App\Models\TipoEvento;
 use App\Models\CategoriaEvento;
 use App\Models\ServicioEvento;
+use App\Models\ServicioPresupuesto;
+use App\Models\PackPresupuesto;
 use App\Models\Monitor;
 use App\Models\Presupuesto;
 use App\Models\Contrato;
@@ -221,7 +224,8 @@ class EditComponent extends Component
     public $gastosGasoil = [];
     public $pagosPendientes = [];
     public $nombreGestor;
-
+    public $articulo_seleccionado;
+    public $articulos_seleccionados = [];
 
     public function mount()
     {
@@ -241,7 +245,7 @@ class EditComponent extends Component
         $this->gestor_id = $this->presupuesto->gestor_id ? $this->presupuesto->gestor_id : Auth::id();
         $gestor = User::firstWhere('id', $this->gestor_id);
         $this->nombreGestor = $gestor->name . " " . $gestor->surname;
-
+        $this->articulos = Articulos::all();
         //Cliente
         $this->id_cliente = $this->presupuesto->id_cliente;
         $this->clientes = Cliente::all(); // datos que se envian al select2
@@ -293,6 +297,7 @@ class EditComponent extends Component
             $defaultArray = array_fill(0, $numMonitores, '0');
 
             $this->listaServicios[] = [
+                'id_pivot' => ServicioPresupuesto::where('servicio_id', $servicio->id)->where('presupuesto_id', $this->identificador)->first(),
                 'id' => $servicio->id,
                 'numero_monitores' => $numMonitores,
                 'precioFinal' => $servicio->pivot->precio_final ?? '0',
@@ -306,6 +311,7 @@ class EditComponent extends Component
                 'hora_montaje' => $servicio->pivot->hora_montaje ?? '0',
                 'tiempo_montaje' => $servicio->pivot->tiempo_montaje ?? '0',
                 'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje ?? '0',
+                'articulo_seleccionado' => $servicio->pivot->articulo_seleccionado ?? '0',
                 'existente' => 1
             ];
         }
@@ -320,6 +326,7 @@ class EditComponent extends Component
             }, $numMonitores);
 
             $this->listaPacks[] = [
+                'id_pivot' => PackPresupuesto::where('pack_id', $pack->id)->where('presupuesto_id', $this->identificador)->first(),
                 'id' => $pack->id,
                 'numero_monitores' => $numMonitores,
                 'precioFinal' => $pack->pivot->precio_final ?? '0',
@@ -333,6 +340,7 @@ class EditComponent extends Component
                 'tiempos_montaje' => $pack->pivot->tiempos_montaje ? json_decode($pack->pivot->tiempos_montaje, true) : $defaultDoubleArray,
                 'tiempos_desmontaje' => $pack->pivot->tiempos_desmontaje ? json_decode($pack->pivot->tiempos_desmontaje, true) : $defaultDoubleArray,
                 'pagos_pendientes' => $pack->pivot->pagos_pendientes ? json_decode($pack->pivot->pagos_pendientes, true) : $defaultArray,
+                'articulos_seleccionados' => $pack->pivot->articulos_seleccionados ? json_decode($pack->pivot->articulos_seleccionados, true) : $defaultArray,
                 'existente' => 1
             ];
         }
@@ -1398,8 +1406,11 @@ class EditComponent extends Component
                         'id_monitores' => json_encode($servicio['id_monitores']),
                         'gasto_gasoil' => json_encode($servicio['gasto_gasoil']),
                         'pago_pendiente' => json_encode($servicio['pago_pendiente']),
+                        'articulo_seleccionado' => $servicio['articulo_seleccionado'],
                     ]
                 );
+            } else {
+                ServicioPresupuesto::where('id', $servicio['id_pivot'])->update(['articulo_seleccionado' => $servicio['articulo_seleccionado'],]);
             }
         }
 
@@ -1418,7 +1429,10 @@ class EditComponent extends Component
                     'id_monitores' => json_encode($pack['id_monitores']),
                     'gastos_gasoil' => json_encode($pack['gastos_gasoil']),
                     'pagos_pendientes' => json_encode($pack['pagos_pendientes']),
+                    'articulos_seleccionados' => json_encode($pack['articulos_seleccionados']),
                 ]);
+            }else{
+                PackPresupuesto::where('id', $pack['id_pivot'])->update(['articulos_seleccionados' => json_encode($pack['articulos_seleccionados']),]);
             }
         }
 
@@ -1664,8 +1678,14 @@ class EditComponent extends Component
     {
         if ($this->servicio_seleccionado != 0) {
             $servicio = $this->servicios->where('id', $this->servicio_seleccionado)->first();
-            $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
-            $this->numero_monitores = $servicio->minMonitor;
+            if (($this->precioFinalServicio == 0 || $this->precioFinalServicio == $servicio->minMonitor || $this->precioFinalServicio == ($servicio->precioBase + (($this->numero_monitores - 1) * $servicio->precioMonitor))) ||
+                ($this->precioFinalServicio == ($servicio->precioBase + (($this->numero_monitores + 1) * $servicio->precioMonitor)))
+            ) {
+                $this->precioFinalServicio = ($servicio->precioBase + ($this->numero_monitores * $servicio->precioMonitor));
+            }
+            if ($this->numero_monitores < $servicio->minMonitor) {
+                $this->numero_monitores = $servicio->minMonitor;
+            }
             try {
                 $this->tiempoMontaje = Carbon::createFromFormat('H:i:s', $servicio->tiempoMontaje)->format('H:i');
             } catch (\Exception $e) {
@@ -1708,33 +1728,23 @@ class EditComponent extends Component
     public function cambioTiempoServicio()
     {
         if ($this->servicio_seleccionado != 0) {
-            if ($this->indicador_montaje == 1) {
-                if (isset($this->tiempoMontaje) && isset($this->horaMontaje) && ($this->tiempoMontaje != 0) && ($this->horaMontaje != 0)) {
-                    $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
-                    $fin = Carbon::createFromFormat('H:i', $this->tiempoMontaje);
-                    list($horas, $minutos) = explode(':', $fin->format('H:i'));
-                    $this->hora_inicio = $inicio->addHours($horas)->addMinutes($minutos)->format('H:i');
+            if (isset($this->tiempoMontaje) && isset($this->horaMontaje) && ($this->tiempoMontaje != 0) && ($this->horaMontaje != 0)) {
+                $inicio = Carbon::createFromFormat('H:i', $this->horaMontaje);
+                $fin = Carbon::createFromFormat('H:i', $this->tiempoMontaje);
+                list($horas, $minutos) = explode(':', $fin->format('H:i'));
+                $this->hora_inicio = $inicio->addHours($horas)->addMinutes($minutos)->format('H:i');
+                $this->emit('refresh');
+            }
+            if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio != 0)) {
+                if (isset($this->tiempoDesmontaje) && ($this->tiempoDesmontaje != 0)) {
+                    $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
+                    $medio = Carbon::createFromFormat('H:i', $this->tiempoDesmontaje);
+                    $fin = Carbon::createFromFormat('H:i', $this->tiempo);
+                    list($horas, $minutos) = explode(':', $medio->format('H:i'));
+                    list($horas2, $minutos2) = explode(':', $fin->format('H:i'));
+                    $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->addMinutes((int)$minutos2)->addHours((int)$horas2)->format('H:i');
                     $this->emit('refresh');
-                }
-                if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio != 0)) {
-                    if (isset($this->tiempoDesmontaje) && ($this->tiempoDesmontaje != 0)) {
-                        $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
-                        $medio = Carbon::createFromFormat('H:i', $this->tiempoDesmontaje);
-                        $fin = Carbon::createFromFormat('H:i', $this->tiempo);
-                        list($horas, $minutos) = explode(':', $medio->format('H:i'));
-                        list($horas2, $minutos2) = explode(':', $fin->format('H:i'));
-                        $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->addMinutes((int)$minutos2)->addHours((int)$horas2)->format('H:i');
-                        $this->emit('refresh');
-                    } else {
-                        $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
-                        $fin = Carbon::createFromFormat('H:i', $this->tiempo);
-                        list($horas, $minutos) = explode(':', $fin->format('H:i'));
-                        $this->hora_finalizacion = $inicio->addMinutes((int)$minutos)->addHours((int)$horas)->format('H:i');
-                        $this->emit('refresh');
-                    }
-                }
-            } else {
-                if (isset($this->tiempo) && isset($this->hora_inicio) && ($this->tiempo != 0) && ($this->hora_inicio     != 0)) {
+                } else {
                     $inicio = Carbon::createFromFormat('H:i', $this->hora_inicio);
                     $fin = Carbon::createFromFormat('H:i', $this->tiempo);
                     list($horas, $minutos) = explode(':', $fin->format('H:i'));
@@ -1772,28 +1782,26 @@ class EditComponent extends Component
             // Variable para rastrear si el stock se supera
             $stockSeSupera = false;
             // Obtener los artículos relacionados con el servicio
-            foreach ($this->packs->where('id', $packId)->first()->servicios()->get() as $servicio) {
-                $servicioId = $servicio->id;
-                $articulosDelServicio = DB::table('servicio_articulo')
-                    ->where('servicio_id', $servicioId)
-                    ->get();
-                // Iterar a través de los artículos del servicio y verificar el stock para cada uno
-                foreach ($articulosDelServicio as $articuloDelServicio) {
-                    $articuloId = $articuloDelServicio->articulo_id;
+            foreach ($this->packs->where('id', $packId)->first()->servicios()->get() as $servicioIndex => $servicio) {
+                if (isset($this->articulos_seleccionados[$servicioIndex])) {
+                    $servicioId = $servicio->id;
+                    $articulo = $this->articulos->where('id', $this->articulos_seleccionados[$servicioIndex])->first();
+                    // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+                    $articuloId = $articulo->id;
 
                     // Obtener la cantidad total utilizada de este artículo en la fecha indicada
                     $cantidadTotalUtilizada = DB::table('presupuestos')
-                        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
-                        ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                        ->join('pack_presupuesto', 'presupuestos.id', '=', 'pack_presupuesto.presupuesto_id')
+                        ->join('servicios', 'pack_presupuesto.pack_id', '=', 'servicios.id_pack')
                         ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
                         ->where('presupuestos.fechaEmision', $fechaEvento)
-                        ->where('servicio_articulo.articulo_id', $articuloId)
-                        ->sum('servicio_articulo.stock_usado');
+                        ->whereJsonContains('pack_presupuesto.articulos_seleccionados', $articuloId)
+                        ->count();
                     // Obtener el stock total fijo del artículo
                     $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
 
                     // Obtener la cantidad de stock usado por el servicio que deseas agregar
-                    $cantidadStockUsadoNuevoServicio = $articuloDelServicio->stock_usado;
+                    $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
 
                     // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
                     $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
@@ -1803,9 +1811,25 @@ class EditComponent extends Component
                         $stockSeSupera = true;
                         break; // Salir del bucle, ya que no es necesario verificar los otros artículos
                     }
+                    $cantidadTotalUtilizada = DB::table('presupuestos')
+                        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                        ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                        ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                        ->where('presupuestos.fechaEmision', $fechaEvento)
+                        ->where('servicio_presupuesto.articulo_seleccionado', $articuloId)
+                        ->count();
+                    // Obtener el stock total fijo del artículo
+                    $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
+                    // Obtener la cantidad de stock usado por el servicio que deseas agregar
+                    $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
+                    // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+                    $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+                    if ($nuevaCantidadTotal > $stockTotal) {
+                        $stockSeSupera = true;
+                        break; // Salir del bucle, ya que no es necesario verificar los otros artículos
+                    }
                 }
             }
-
             if ($existe) {
                 $this->alert('error', 'Este pack ya está asignado a otro evento en esta fecha.');
             } else if ($stockSeSupera == true) {
@@ -1835,6 +1859,7 @@ class EditComponent extends Component
                     'gastos_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'checks_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
+                    'articulos_seleccionados' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultArray,
                     'existente' => 0
                 ];
                 $this->pack_seleccionado = 0;
@@ -1842,6 +1867,7 @@ class EditComponent extends Component
                 $this->tiemposPack = [];
                 $this->horasInicioPack = [];
                 $this->horasFinalizacionPack = [];
+                $this->articulos_seleccionados = [];
                 $this->tiemposMontajePack = [];
                 $this->tiemposDesmontajePack = [];
                 $this->horasMontajePack = [];
@@ -1870,40 +1896,52 @@ class EditComponent extends Component
                 ->exists();
             $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
             // Obtener los artículos relacionados con el servicio
-            $articulosDelServicio = DB::table('servicio_articulo')
-                ->where('servicio_id', $servicioId)
-                ->get();
+
 
             // Variable para rastrear si el stock se supera
             $stockSeSupera = false;
             // Iterar a través de los artículos del servicio y verificar el stock para cada uno
-            foreach ($articulosDelServicio as $articuloDelServicio) {
-                $articuloId = $articuloDelServicio->articulo_id;
-
-                // Obtener la cantidad total utilizada de este artículo en la fecha indicada
-                $cantidadTotalUtilizada = DB::table('presupuestos')
-                    ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
-                    ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
-                    ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
-                    ->where('presupuestos.fechaEmision', $fechaEvento)
-                    ->where('servicio_articulo.articulo_id', $articuloId)
-                    ->sum('servicio_articulo.stock_usado');
-                // Obtener el stock total fijo del artículo
-                $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
-
-                // Obtener la cantidad de stock usado por el servicio que deseas agregar
-                $cantidadStockUsadoNuevoServicio = $articuloDelServicio->stock_usado;
-
-                // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
-                $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
-
-                if ($nuevaCantidadTotal > $stockTotal) {
-                    // El stock se superaría para al menos uno de los artículos
-                    $stockSeSupera = true;
-                    break; // Salir del bucle, ya que no es necesario verificar los otros artículos
-                }
+            $articulo = $this->articulos->where('id', $this->articulo_seleccionado)->first();
+            // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+            $cantidadTotalUtilizada = DB::table('presupuestos')
+                ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                ->where('presupuestos.fechaEmision', $fechaEvento)
+                ->where('servicio_presupuesto.articulo_seleccionado', $articulo->id)
+                ->count();
+            // Obtener el stock total fijo del artículo
+            $stockTotal = DB::table('articulos')->where('id', $articulo->id)->value('stock');
+            // Obtener la cantidad de stock usado por el servicio que deseas agregar
+            $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
+            // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+            $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+            if ($nuevaCantidadTotal > $stockTotal) {
+                $stockSeSupera = true;
             }
 
+
+
+            $cantidadTotalUtilizada = DB::table('presupuestos')
+                ->join('pack_presupuesto', 'presupuestos.id', '=', 'pack_presupuesto.presupuesto_id')
+                ->join('servicios', 'pack_presupuesto.pack_id', '=', 'servicios.id_pack')
+                ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                ->where('presupuestos.fechaEmision', $fechaEvento)
+                ->whereJsonContains('pack_presupuesto.articulos_seleccionados', $articulo->id)
+                ->count();
+            // Obtener el stock total fijo del artículo
+            $stockTotal = DB::table('articulos')->where('id', $articulo->id)->value('stock');
+
+            // Obtener la cantidad de stock usado por el servicio que deseas agregar
+            $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
+
+            // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+            $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+
+            if ($nuevaCantidadTotal > $stockTotal) {
+                // El stock se superaría para al menos uno de los artículos
+                $stockSeSupera = true;
+            }
 
 
             if ($existe) {
@@ -1931,6 +1969,7 @@ class EditComponent extends Component
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
                     'existente' => 0,
                 ];
                 $this->servicio_seleccionado = 0;
@@ -1943,6 +1982,7 @@ class EditComponent extends Component
                 $this->horaMontaje = 0;
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
+                $this->articulo_seleccionado = 0;
             }
         } else {
             $this->alert('error', '¡Selecciona un servicio!', [
