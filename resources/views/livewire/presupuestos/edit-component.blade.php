@@ -98,11 +98,10 @@
                                     var data = $('#select2-cliente').select2('val');
                                     @this.set('id_cliente', data);
                                 });">
-                                    <select class="form-control" name="id_cliente" id="select2-cliente">
+                                    <select class="form-control" name="id_cliente" id="select2-cliente" wire:model="id_cliente">
                                         <option value="0">-- ELIGE UN CLIENTE --</option>
                                         @foreach ($clientes as $cliente)
-                                            <option value="{{ $cliente->id }}"
-                                                @if ($this->id_cliente == $cliente->id) selected @endif>
+                                            <option value="{{ $cliente->id }}">
                                                 {{ $cliente->nombre }} {{ $cliente->apellidos }}
                                             </option>
                                         @endforeach
@@ -389,7 +388,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- {{var_dump($clienteSeleccionado)}} --}}
+                            {{-- {{var_dump($cliente)}} --}}
                         @endif
                     </div>
                 </div>
@@ -411,7 +410,7 @@
                                     var data = $('#select2-evento').select2('val');
                                     @this.set('eventoNombre', data);
                                 });" wire:ignore>
-                                    <select class="form-control" name="id_cliente" id="select2-evento"
+                                    <select class="form-control" name="eventoNombre" id="select2-evento"
                                         wire:model="eventoNombre">
                                         <option value="0">-- ELIGE UN TIPO DE EVENTO --</option>
                                         @foreach ($tipos_evento as $tipo)

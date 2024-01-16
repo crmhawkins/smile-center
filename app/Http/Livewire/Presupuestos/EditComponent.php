@@ -110,7 +110,8 @@ class EditComponent extends Component
     public $monitores;
     public $id_monitor;
     public $desplazamiento;
-
+    public $timeDif;
+    public $empty;
     //Selector
 
     public $tipo_seleccionado;
@@ -224,6 +225,7 @@ class EditComponent extends Component
     public $gastosGasoil = [];
     public $pagosPendientes = [];
     public $nombreGestor;
+    public $articulos;
     public $articulo_seleccionado;
     public $articulos_seleccionados = [];
 
@@ -249,7 +251,7 @@ class EditComponent extends Component
         //Cliente
         $this->id_cliente = $this->presupuesto->id_cliente;
         $this->clientes = Cliente::all(); // datos que se envian al select2
-        $this->clienteSeleccionado = Cliente::where('id', $this->presupuesto->id_cliente)->first();
+        $this->cliente = Cliente::where('id', $this->presupuesto->id_cliente)->first();
 
         if (Contrato::where('id_presupuesto', $this->identificador)->exists()) {
             $this->contrato_id = Contrato::firstWhere('id_presupuesto', $this->identificador)->id;
@@ -382,6 +384,7 @@ class EditComponent extends Component
 
     public function render()
     {
+        $this->clienteSeleccionado = Cliente::find($this->id_cliente);
         return view('livewire.presupuestos.edit-component');
     }
 
@@ -407,7 +410,6 @@ class EditComponent extends Component
 
     public function updatePresupuestoValidacion()
     {
-        // dd($this->clienteSeleccionado);
         if ($this->diaEvento == null) {
             return $this->alert('error', '¡No se ha selccionado ningun dia de comienzo del evento!', [
                 'position' => 'center',

@@ -139,7 +139,7 @@
                 <tr width="100%">
                     <td width="60%" style="border-right-color: #fff !important;"><b>Localidad:</b>
                         {{ $cliente->ciudad }}</td>
-                    <td width="40%"><b>Provincia:</b> {{ $cliente->ciudad }}</td>
+                    <td width="40%"><b>Provincia:</b> {{ $cliente->provincia }}</td>
                 </tr>
                 <tr width="100%">
                     <td width="50%" style="border-right-color: #fff !important;"><b>Teléfono:</b>

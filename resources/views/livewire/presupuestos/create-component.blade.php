@@ -439,6 +439,9 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('eventoNombre')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 @if ($eventoNombre == 0)
                                     <div class="col-md-2">
@@ -462,6 +465,9 @@
                                 <div class="col-sm-10">
                                     <input type="date" wire:model.lazy="diaEvento" class="form-control"
                                         name="diaEvento" id="diaEvento" placeholder="X">
+                                    @error('diaEvento')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -470,6 +476,9 @@
                                 <div class="col-sm-10">
                                     <input type="date" wire:model.lazy="diaFinal" class="form-control"
                                         name="diaFinal" id="diaFinal" placeholder="X">
+                                    @error('diaFinal')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -478,6 +487,9 @@
                                     <input type="text" wire:model.lazy="eventoProtagonista" class="form-control"
                                         name="eventoProtagonista" id="eventoProtagonista"
                                         placeholder="Protagonistas">
+                                    @error('eventoProtagonista')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -485,6 +497,9 @@
                                 <div class="col-sm-10">
                                     <input type="number" wire:model.lazy="eventoNiños" class="form-control"
                                         name="eventoNiños" id="eventoNiños" placeholder="0">
+                                        @error('eventoNiños')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                 </div>
                             </div>
 
@@ -500,6 +515,9 @@
                                 <div class="col-sm-10">
                                     <input type="text" wire:model.lazy="eventoContacto" class="form-control"
                                         name="eventoContacto" id="eventoContacto" placeholder="Contacto">
+                                        @error('eventoContacto')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -507,6 +525,9 @@
                                 <div class="col-sm-10">
                                     <input type="text" wire:model.lazy="eventoParentesco" class="form-control"
                                         name="eventoParentesco" id="eventoParentesco" placeholder="Parentesco">
+                                        @error('eventoParentesco')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -514,6 +535,9 @@
                                 <div class="col-sm-10">
                                     <input type="text" wire:model.lazy="eventoTelefono" class="form-control"
                                         name="eventoTelefono" id="eventoTelefono" placeholder="Telefono">
+                                        @error('eventoTelefono')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -521,6 +545,9 @@
                                 <div class="col-sm-10">
                                     <input type="text" wire:model.lazy="eventoLugar" class="form-control"
                                         name="eventoLugar" id="eventoLugar" placeholder="Lugar">
+                                        @error('eventoLugar')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
@@ -574,6 +601,9 @@
                                     <input type="text" wire:model.lazy="eventoLocalidad" class="form-control"
                                         name="eventoLocalidad" id="eventoLocalidad" wire:change='checkLocalidad'
                                         placeholder="Localidad">
+                                        @error('eventoLocalidad')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <!-- Confirmacion Email -->

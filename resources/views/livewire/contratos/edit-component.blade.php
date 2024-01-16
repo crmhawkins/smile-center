@@ -127,7 +127,7 @@
                             <div class="col-sm-3">
                                 <label for="diaEvento" class="col-sm-12 col-form-label">Provincia</label>
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" value="{{$cliente->ciudad}}" disabled>
+                                    <input type="text" class="form-control" value="{{$cliente->provincia}}" disabled>
                                     @error('diaEvento')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror

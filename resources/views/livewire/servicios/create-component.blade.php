@@ -86,7 +86,7 @@
                                 <div class="col-sm-11">
                                     <input type="number" wire:model="minMonitor" class="form-control"
                                         name="minMonitors" id="minMonitor" placeholder="1">
-                                    @error('minEmpleados')
+                                    @error('minMonitor')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -222,6 +222,9 @@
                                         <option value="{{ $articulo['id'] }}">{{ $articulo['name'] }}</option>
                                     @endforeach
                                 </select>
+                                @error('listaArticulos')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                         <div class="form-group col-md-3">

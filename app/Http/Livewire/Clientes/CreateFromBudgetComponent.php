@@ -30,6 +30,7 @@ class CreateFromBudgetComponent extends Component
     public $direccionAdicional3 = "";
     public $codigoPostal;
     public $ciudad;
+    public $provincia;
     public $nif;
     public $tlf1;
     public $tlf2 = 0;
@@ -71,6 +72,7 @@ class CreateFromBudgetComponent extends Component
                 'numero' => 'required',
                 'codigoPostal' => 'required',
                 'ciudad' => 'required',
+                'provincia' => 'required',
                 'nif' => 'required',
                 'tlf1' => 'required',
                 'email1' => 'required',
@@ -87,6 +89,7 @@ class CreateFromBudgetComponent extends Component
                 'numero.required' => 'La contraseña es obligatoria.',
                 'codigoPostal.required' => 'El lugar es obligatorio.',
                 'ciudad.required' => 'La localidad es obligatoria.',
+                'provincia.required' => 'La Provincia es obligatoria.',
                 'nif.required' => 'El telefono es obligatorio.',
                 'tlf1.required' => 'El telefono es obligatorio.',
                 'email1.required' => 'El telefono es obligatorio.',

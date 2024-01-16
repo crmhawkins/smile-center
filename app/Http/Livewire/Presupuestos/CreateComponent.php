@@ -34,6 +34,7 @@ class CreateComponent extends Component
 {
 
     use LivewireAlert;
+    public $lowerN;
     public $articulos;
     public $diaMostrar;
     public $contrato_id;
@@ -110,6 +111,7 @@ class CreateComponent extends Component
     public $dias = [];
 
     public $eventoIsSave = false;
+    public $eventoIsSaved;
     public $editarEvento = 0;
 
     //monitores
@@ -174,7 +176,6 @@ class CreateComponent extends Component
     public $tiempoMontaje;
     public $tiempoDesmontaje;
     public $horaMontaje;
-
     public $tiemposMontajePack = [];
     public $tiemposDesmontajePack = [];
 
@@ -308,10 +309,6 @@ class CreateComponent extends Component
         $this->getDias();
     }
 
-    public function prueba()
-    {
-        $this->id_cliente = 0;
-    }
     public function clienteNuevoFunction()
     {
         $this->clienteNuevo = true;
@@ -326,32 +323,6 @@ class CreateComponent extends Component
     }
     public function setupCliente($id)
     {
-        // $this->cliente = $this->clientes->find($id);
-        // if ($this->cliente) {
-        //     $this->trato = $this->cliente->trato;
-        //     $this->nombre = $this->cliente->nombre;
-        //     $this->apellido = $this->cliente->apellido;
-        //     $this->tipoCalle = $this->cliente->tipoCalle;
-        //     $this->calle = $this->cliente->calle;
-        //     $this->numero = $this->cliente->numero;
-        //     $this->direccionAdicional1 = $this->cliente->direccionAdicional1;
-        //     $this->direccionAdicional2 = $this->cliente->direccionAdicional2;
-        //     $this->direccionAdicional3 = $this->cliente->direccionAdicional3;
-        //     $this->codigoPostal = $this->cliente->codigoPostal;
-        //     $this->ciudad = $this->cliente->ciudad;
-        //     $this->nif = $this->cliente->nif;
-        //     $this->tlf1 = $this->cliente->tlf1;
-        //     $this->tlf2 = $this->cliente->tlf2;
-        //     $this->tlf3 = $this->cliente->tlf3;
-        //     $this->email1 = $this->cliente->email1;
-        //     $this->email2 = $this->cliente->email2;
-        //     $this->email3 = $this->cliente->email3;
-        //     $this->confPostal = $this->cliente->confPostal;
-        //     $this->confEmail = $this->cliente->confEmail;
-        //     $this->confSms = $this->cliente->confSms;
-        // }else {
-        //     $this->id_cliente = 0;
-        // }
 
         dd($id);
         $this->clienteSeleccionado = Cliente::find($id);
@@ -497,36 +468,10 @@ class CreateComponent extends Component
     }
 
     //Selecciona un cliente y rellena los campos con los datos del mismo
-    public function selectCliente()
-    {
-        // $cliente = $this->clientes->where("id", $this->id_cliente)->first();
-        // $this->trato = $cliente->trato;
-        // $this->nombre = $cliente->nombre;
-        // $this->apellido = $cliente->apellido;
-        // $this->tipoCalle = $cliente->tipoCalle;
-        // $this->calle = $cliente->calle;
-        // $this->numero = $cliente->numero;
-        // $this->direccionAdicional1 = $cliente->direccionAdicional1;
-        // $this->direccionAdicional2 = $cliente->direccionAdicional2;
-        // $this->direccionAdicional3 = $cliente->direccionAdicional3;
-        // $this->codigoPostal = $cliente->codigoPostal;
-        // $this->ciudad = $cliente->ciudad;
-        // $this->nif = $cliente->nif;
-        // $this->tlf1 = $cliente->tlf1;
-        // $this->tlf2 = $cliente->tlf2;
-        // $this->tlf3 = $cliente->tlf3;
-        // $this->email1 = $cliente->email1;
-        // $this->email2 = $cliente->email2;
-        // $this->email3 = $cliente->email3;
-        // $this->emit("refreshComponent");
 
-        $this->clienteSeleccionado = Cliente::find($this->id_cliente);
-    }
 
     public function primerPaso()
     {
-        // dd($this->clienteSeleccionado);
-
         if ($this->clienteSeleccionado == null) {
             return $this->alert('error', '¡No se ha seleccionado a ningun cliente!', [
                 'position' => 'center',
@@ -539,7 +484,6 @@ class CreateComponent extends Component
 
     public function segundoPaso()
     {
-        // dd($this->clienteSeleccionado);
         if ($this->diaEvento == null) {
             return $this->alert('error', '¡No se ha selccionado ningun dia de comienzo del evento!', [
                 'position' => 'center',
@@ -729,7 +673,7 @@ class CreateComponent extends Component
             ],
             // Mensajes de error
             [
-                'eventoNombre.required' => "El nombre del evento es obligatorio",
+                'eventoNombre.required' => "El evento es obligatorio",
                 'eventoProtagonista.required' => "Los protagonistas son obligatorios",
                 'eventoNiños.required' => "La cantidad de niños es obligatoria",
                 'eventoContacto.required' => "El nombre del contacto es obligatorio",
@@ -742,10 +686,10 @@ class CreateComponent extends Component
             ]
         );
 
-        $this->eventoIsSave = Evento::create($eventValidate);
-        event(new \App\Events\LogEvent(Auth::user(), 11, $this->eventoIsSave->id));
+        $this->eventoIsSaved = Evento::create($eventValidate);
+        event(new \App\Events\LogEvent(Auth::user(), 11, $this->eventoIsSaved->id));
 
-        if ($this->eventoIsSave) {
+        if ($this->eventoIsSaved) {
             $this->submit();
         }
     }
@@ -1401,7 +1345,7 @@ class CreateComponent extends Component
     {
         $this->precioBase = $this->precioFinal;
         $this->precioFinal = $this->precioBase - $this->descuento;
-        $this->id_evento = $this->eventoIsSave->id;
+        $this->id_evento = $this->eventoIsSaved->id;
         $this->nPresupuesto = $this->nPresupuesto . Carbon::now()->addYears($this->year)->format('Y');
 
         $validatedData = $this->validate(
@@ -1426,7 +1370,7 @@ class CreateComponent extends Component
             [
                 'fechaEmision' => 'El número de presupuesto es obligatorio.',
                 'id_evento.required' => 'La fecha de emision es obligatoria.',
-                'id_cliente.required' => 'El alumno es obligatorio.',
+                'id_cliente.required' => 'El cliente es obligatorio.',
                 'precioBase.required' => 'El curso es obligatorio.',
                 'precioFinal.required' => 'Los detalles son obligatorios',
 

@@ -17,8 +17,8 @@ class EditComponent extends Component
     public $trato;
     public $nombre;
     public $apellido;
-    public $tipoCalle; 
-    public $tipo_cliente; 
+    public $tipoCalle;
+    public $tipo_cliente;
     public $codigo_organo_gestor;
     public $codigo_unidad_tramitadora;
     public $codigo_oficina_contable;
@@ -29,6 +29,7 @@ class EditComponent extends Component
     public $direccionAdicional3;
     public $codigoPostal;
     public $ciudad;
+    public $provincia;
     public $nif;
     public $tlf1;
     public $tlf2;
@@ -63,6 +64,7 @@ class EditComponent extends Component
         $this->direccionAdicional3 = $cliente->direccionAdicional3;
         $this->codigoPostal = $cliente->codigoPostal;
         $this->ciudad = $cliente->ciudad;
+        $this->provincia = $cliente->provincia;
         $this->nif = $cliente->nif;
         $this->tlf1 = $cliente->tlf1;
         $this->tlf2 = $cliente->tlf2;
@@ -75,7 +77,7 @@ class EditComponent extends Component
         $this->confSms = $cliente->confSms ;
     }
 
-    
+
     public function render()
     {
         return view('livewire.clientes.edit-component');
@@ -98,6 +100,7 @@ class EditComponent extends Component
             'codigo_oficina_contable' => 'nullable',
             'codigoPostal'=> 'required',
             'ciudad' => 'required',
+            'provincia' => 'required',
             'nif' => 'required',
             'tlf1' => 'required',
             'email1' => 'required',
@@ -114,10 +117,11 @@ class EditComponent extends Component
                 'numero.required' => 'La contraseña es obligatoria.',
                 'codigoPostal.required' => 'El lugar es obligatorio.',
                 'ciudad.required' => 'La localidad es obligatoria.',
+                'provincia.required' => 'La Provincia es obligatoria.',
                 'nif.required' => 'El telefono es obligatorio.',
                 'tlf1.required' => 'El telefono es obligatorio.',
                 'email1.required' => 'El telefono es obligatorio.',
-            
+
             ]);
 
         // Encuentra el identificador
@@ -138,6 +142,7 @@ class EditComponent extends Component
             'direccionAdicional3' => $this->direccionAdicional3,
             'codigoPostal' => $this->codigoPostal,
             'ciudad' => $this->ciudad,
+            'provincia' => $this->provincia,
             'nif'=>$this->nif,
             'tlf1'=>$this->tlf1,
             'tlf2'=>$this->tlf2,

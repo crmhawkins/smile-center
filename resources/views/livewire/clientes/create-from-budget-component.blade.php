@@ -278,6 +278,23 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <!-- Provincia -->
+                                <div class="col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Provincia</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" wire:model="provincia" class="form-control"
+                                            name="provincia" id="provincia" placeholder="Provincia">
+                                        @error('provincia')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .provincia {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
 

@@ -24,6 +24,7 @@ class Cliente extends Model
         "direccionAdicional2",
         "codigoPostal",
         "ciudad",
+        "provincia",
         "nif",
         "tlf3",
         "tlf1",

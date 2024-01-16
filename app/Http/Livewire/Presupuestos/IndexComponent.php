@@ -26,6 +26,10 @@ class IndexComponent extends Component
     }
 
     public function getClienteNombre($id){
+
+        if($id == 0){
+            return "Presupuesto sin cliente";
+        }
         $cliente = $this->clientes->find($id);
 
         $nombre = $cliente->nombre;

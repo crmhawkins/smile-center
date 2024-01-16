@@ -116,6 +116,7 @@ class CreateComponent extends Component
                 'tiempoMontaje' => 'required',
                 'tiempoDesmontaje' => 'required',
                 'tiempoServicio' => 'required',
+                'listaArticulos' => 'required|array|min:1',
 
 
             ],
@@ -129,7 +130,7 @@ class CreateComponent extends Component
                 'tiempoMontaje.required' => 'El tiempo de montaje es obligatorio.',
                 'tiempoDesmontaje.required' => 'El tiempo de desmontaje es obligatorio.',
                 'tiempoServicio.required' => 'La duración del servicio es obligatorio.',
-
+                'listaArticulos.required' => 'Debe seleccionar al menos un artículo.',
             ]
         );
 
