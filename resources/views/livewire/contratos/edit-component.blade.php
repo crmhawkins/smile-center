@@ -268,7 +268,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            @foreach($packs->where('id', $paquete->id)->first()->servicios as $servicioIndex => $servicio)
+                            @foreach($packs->where('id', $paquete->id)->first()->servicios() as $servicioIndex => $servicio)
                             <div class="col-sm-1">
                                 &nbsp;
                             </div>

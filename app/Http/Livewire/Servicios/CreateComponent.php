@@ -24,6 +24,7 @@ class CreateComponent extends Component
     public $precioMonitor;
     public $servicioCategorias;
     public $servicioPacks;
+    public $selectedPacks = [];
     public $stock_usado;
     public $articulo_seleccionado;
     public $numero_articulos;
@@ -140,6 +141,8 @@ class CreateComponent extends Component
         foreach ($this->listaArticulos as $servicio) {
             $usuariosSave->articulos()->attach($servicio['id'], ['stock_usado' => $servicio['stock_usado']]);
         }
+        $usuariosSave->id_pack = $this->selectedPacks;
+        $usuariosSave->save();
         // Alertas de guardado exitoso
         if ($usuariosSave) {
             $this->alert('success', 'Servicio registrado correctamente!', [

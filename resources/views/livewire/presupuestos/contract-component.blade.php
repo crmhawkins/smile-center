@@ -190,19 +190,19 @@
                 @foreach ($listaPacks as $pack)
                 <tr width="100%">
                     <td colspan="3"><b>Pack de servicio:
-                        </b>{{ $packs->where('id', $pack->id)->first()->nombre }} </td>
-                    <td><b>Importe: </b>{{ $pack->pivot->precio_final }} €</td>
+                        </b>{{ $packs->where('id', $pack['id'])->first()->nombre }} </td>
+                    <td><b>Importe: </b>{{ $pack['precioFinal']}} €</td>
                 </tr>
-                @foreach ($packs->where('id', $pack['id'])->first()->servicios as $servicioIndex => $servicio)
+                @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $servicioIndex => $servicio)
                 <tr width="100%">
                     <td>{{ $servicioIndex + 1 }} - </td>
                     <td>Servicio: {{ $servicio->nombre }}
                     </td>
-                    @if (!isset(json_decode($pack->pivot->numero_monitores, true)[$servicioIndex]))
+                    @if (!isset($pack['numero_monitores'][$servicioIndex]))
                     <td>Monitores: 0</td>
                     @else
                     <td>Monitores:
-                        {{ json_decode($pack->pivot->numero_monitores, true)[$servicioIndex] }}
+                        {{ $pack['numero_monitores'][$servicioIndex] }}
                     </td>
                     @endif
                     <td>Importe base del servicio:

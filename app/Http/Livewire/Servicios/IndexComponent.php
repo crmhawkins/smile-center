@@ -31,9 +31,15 @@ class IndexComponent extends Component
         return $this->serviciosCategoria->where("id", $id)->first()->nombre;
     }
 
-    public function nombrePack(int $id){
-        return $this->serviciosPack->find($id)->nombre;
+    public function nombrePacks($ids)
+{
+    if (!is_array($ids)) {
+        return 'Packs no asignados correctamente';
     }
+
+    $packs = $this->serviciosPack->whereIn('id', $ids)->pluck('nombre')->all();
+    return implode(', ', $packs); // Devuelve los nombres de los packs separados por comas
+}
 
     public function render()
     {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\ServicioPack;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +12,10 @@ class Servicio extends Model
     use HasFactory;
 
     protected $table = "servicios";
+
+    protected $casts = [
+        'id_pack' => 'json',
+    ];
 
     protected $fillable = [
         'nombre',
@@ -37,8 +42,8 @@ class Servicio extends Model
         return $this->belongsToMany('app\Models\Articulos', 'servicio_articulo', 'servicio_id', 'articulo_id')->withPivot('stock_usado');
     }
 
-    public function pack(){
-        return $this->belongsTo("app\Models\ServicioPack");
+    public function getPacksAttribute() {
+        return ServicioPack::whereIn('id', $this->id_pack)->get();
     }
 
     public function categoria(){

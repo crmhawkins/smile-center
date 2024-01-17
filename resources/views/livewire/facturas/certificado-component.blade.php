@@ -120,7 +120,7 @@
                         <th>{{ $pack['precioFinal'] }} € </th>
                     </tr>
 
-                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                    @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $keyPack => $servicioPack)
                         <tr>
                             <td>{{ $servicioPack->nombre }} </td>
                             <td>{{ $pack['numero_monitores'][$keyPack] }} monitores</td>

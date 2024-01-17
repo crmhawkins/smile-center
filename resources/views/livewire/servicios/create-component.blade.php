@@ -62,24 +62,19 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row" wire:ignore>
                             <div class="col-sm-12">
-                                <label for="id_pack" class="col-sm-12 col-form-label">Pack </label>
+                                <label for="minMonitor" class="col-sm-12 col-form-label">Seleccione los Packs </label>
                                 <div class="col-sm-11">
-                                    <select class="form-control" name="id_pack" required id="id_pack"
-                                        wire:model="id_pack">
-                                        <option value="">-- No pertenece a un pack de servicios --</option>
+                                    <select class="form-control select-multiple-checkboxes" multiple="multiple">
                                         @foreach ($servicioPacks as $pack)
-                                            <option value="{{ $pack->id }}">{{ $pack->nombre }}
-                                            </option>
+                                            <option value="{{ $pack->id }}">{{ $pack->nombre }}</option>
                                         @endforeach
-                                        @error('id_pack')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
                                     </select>
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group row">
                             <div class="col-sm-12">
                                 <label for="minMonitor" class="col-sm-12 col-form-label">Nº minimo de monitores </label>
@@ -312,5 +307,18 @@
                 }
             });
         });
+
+        $(document).ready(function() {
+    $('.select-multiple-checkboxes').select2({
+        // Opciones para el plugin Select2
+        closeOnSelect: false,
+        placeholder: "Selecciona los packs"
+    });
+});
+
+$('.select-multiple-checkboxes').on('change', function (e) {
+    var data = $(this).val();
+    @this.set('selectedPacks', data);
+});
     </script>
 @endsection

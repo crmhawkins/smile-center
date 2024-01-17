@@ -46,7 +46,7 @@
                                 @if($servicio->id_pack == null)
                                 <td> No pertenece a ningún pack </td>
                                 @else
-                                <td>{{ $this->nombrePack($servicio->id_pack) }}</td>
+                                <td>{{ $this->nombrePacks($servicio->id_pack) }}</td>
                                 @endif
                                 <td>{{ $servicio->precioBase }}</td>
                                 <td>{{ $servicio->minMonitor }}</td>

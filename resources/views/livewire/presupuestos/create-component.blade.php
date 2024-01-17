@@ -624,8 +624,7 @@
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Tipo
-                                de servicio a contratar</h5>
+                                Tipo de servicio a contratar</h5>
                         </div>
                         <div class="col-md-12 ms-1" style="margin-top: -10px !important;">
                             <fieldset class="row ms-1 scheduler-border justify-content-center">
@@ -761,13 +760,11 @@
                                         name="hora_finalizacion" placeholder="00:00:00">
                                 </div>
                             </div>
-                        @elseif($tipo_seleccionado == 'pack')
+                            @elseif($tipo_seleccionado == 'pack')
                             <div class="form-group col-md-10">
-                                <label for="diaEvento" class="col-sm-12 col-form-label">Packs de
-                                    servicios</label>
+                                <label for="diaEvento" class="col-sm-12 col-form-label">Packs de servicios</label>
                                 <div class="col-md-12">
-                                    <Select wire:model="pack_seleccionado" class="form-control"
-                                        name="pack_seleccionado" id="pack_seleccionado">
+                                    <Select wire:model="pack_seleccionado" class="form-control" name="pack_seleccionado" id="pack_seleccionado">
                                         <option value="0">Selecciona un paquete de servicios.</option>
                                         @foreach ($packs as $keys => $pack)
                                             <option class="dropdown-item" value="{{ $pack->id }}" selected>
@@ -779,11 +776,21 @@
                             </div>
                             <div class="form-group col-md-2 text-center">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-
                                 <button class="btn btn-primary w-100" wire:click.prevent="addPack()">Añadir</button>
                             </div>
                             @if ($pack_seleccionado != null)
-                                @foreach ($packs->where('id', $pack_seleccionado)->first()->servicios()->get() as $keyPack => $servicio)
+                            @php
+
+                            $serviciosDelPack = collect([]);
+
+                            if ($pack_seleccionado) {
+                                $servicios = \App\Models\Servicio::whereJsonContains('id_pack', $pack_seleccionado)->get();
+                                foreach ($servicios as $servicio) {
+                                    $serviciosDelPack->push($servicio);
+                                }
+                            }
+                            @endphp
+                                @foreach ($serviciosDelPack as $keyPack => $servicio)
                                     <div class="form-group col-md-1">
                                         &nbsp;
                                     </div>
@@ -950,11 +957,11 @@
                                 </tr>
                             @endif
                             <tr>
-                                <td class="izquierda" colspan="3">
+                                <td class="izquierda" colspan="2">
                                     {{ $packs->where('id', $pack['id'])->first()->nombre }}
                                 </td>
-                                <td>{{ $pack['precioFinal'] }} € </td>
-                                <td>{{ array_sum($pack['numero_monitores']) }} monitores</td>
+                                <td colspan="2">{{ $pack['precioFinal'] }} € </td>
+                                <td colspan="2">{{ array_sum($pack['numero_monitores']) }} monitores</td>
                                 <td colspan="2"> {{ $this->sumarTiempos($packIndex) }} h </td>
                                 <td class="derecha"><button type="button" class="btn btn-sm btn-danger"
                                         wire:click.prevent="deletePack('{{ $packIndex }}')">X</button>
@@ -971,13 +978,10 @@
                                 <th class="header">Hora de inicio</th>
                                 <th class="header">Hora de finalización</th>
                             </tr>
-                            @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                @if (
-                                    $keyPack + 1 !=
-                                        $packs->where('id', $pack['id'])->first()->servicios()->count())
+                            @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $keyPack => $servicioPack)
+                                @if ( $keyPack + 1 != $packs->where('id', $pack['id'])->first()->servicios()->count())
                                     <tr>
-                                        <td class="izquierda"> {{ $servicioPack->nombre }}
-                                        </td>
+                                        <td class="izquierda"> {{ $servicioPack->nombre }}</td>
                                         <td>
                                             @if (isset($pack['articulos_seleccionados'][$keyPack]) && $pack['articulos_seleccionados'][$keyPack] != null)
                                                 <Select

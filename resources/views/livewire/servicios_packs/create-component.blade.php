@@ -39,7 +39,7 @@
                             <div class="col-sm-11">
                                 <label for="servicio" class="col-sm-12 col-form-label">Servicio </label>
                                 <div class="col-sm-11">
-                                    <select class="w-100 input-group-text" name="servicio" id="servicio" wire:model="servicio">
+                                    <select class="w-100 input-group-text" name="servicio" id="servicioSeleccionado" wire:model="servicioSeleccionado">
                                         <option class="dropdown-item" value="">Servicio</option>
                                         @foreach ($servicios as $i => $servicio)
                                         <option class="dropdown-item" value="{{ $servicio->id }}">
@@ -57,20 +57,22 @@
 
                         <div class="form-group row">
                             <div class="col-sm-12">
-                                @if(count($serviciosPack) >= 1) <h5> Servicios añadidos </h5> @endif
+                                @if(count($serviciosSeleccionados) > 0) <h5> Servicios añadidos </h5> @endif
                                 <div class="col-sm-11">
                                     <ul class="list-style">
-                                        @foreach ($serviciosPack as $key => $servicio)
-                                        <li for="servicio.{{ $key }}" class="row">
-                                            <div class="col-sm-2">{{($key + 1)}} -
-                                                {{ $servicio["nombre"] }}
-                                            </div>
-                                            <div class="col-sm-1">&nbsp;</div>
-                                            <div class="col-sm-2 me-auto">
-                                                <button type="button" wire:click="removeServ({{ $key }})" class="btn btn-outline-danger">Eliminar</button>
-                                            </div>
-                                        </li>
-                                        @endforeach
+                                        @foreach ($serviciosSeleccionados as $servicioId)
+                    @php
+                    $servicio = $servicios->firstWhere('id', $servicioId);
+                    @endphp
+                    @if($servicio)
+                        <li class="row">
+                            <div class="col-sm-2">{{ $servicio->nombre }}</div>
+                            <div class="col-sm-2 me-auto">
+                                <button type="button" wire:click="removeServ({{ $servicio->id }})" class="btn btn-outline-danger">Eliminar</button>
+                            </div>
+                        </li>
+                    @endif
+                @endforeach
                                     </ul>
                                 </div>
 

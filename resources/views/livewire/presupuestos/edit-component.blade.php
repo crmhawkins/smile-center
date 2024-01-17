@@ -686,7 +686,18 @@
                                 <button class="btn btn-primary w-100" wire:click.prevent="addPack()">Añadir</button>
                             </div>
                             @if ($pack_seleccionado != null)
-                                @foreach ($packs->where('id', $pack_seleccionado)->first()->servicios()->get() as $keyPack => $servicio)
+                            @php
+
+                            $serviciosDelPack = collect([]);
+
+                            if ($pack_seleccionado) {
+                                $servicios = \App\Models\Servicio::whereJsonContains('id_pack', $pack_seleccionado)->get();
+                                foreach ($servicios as $servicio) {
+                                    $serviciosDelPack->push($servicio);
+                                }
+                            }
+                            @endphp
+                                @foreach ($serviciosDelPack as $keyPack => $servicio)
                                     <div class="form-group col-md-1">
                                         &nbsp;
                                     </div>
@@ -873,10 +884,8 @@
                                     <th class="header">Hora de inicio</th>
                                     <th class="header">Hora de finalización</th>
                                 </tr>
-                                @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                    @if (
-                                        $keyPack + 1 !=
-                                            $packs->where('id', $pack['id'])->first()->servicios()->count())
+                                @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $keyPack => $servicioPack)
+                                @if ( $keyPack + 1 != $packs->where('id', $pack['id'])->first()->servicios()->count())
                                         <tr>
                                             <td class="izquierda"> {{ $servicioPack->nombre }}
                                             </td>
@@ -1090,7 +1099,8 @@
                     <div class="form-group col-md-12">
                         <div class="row">
                             @foreach ($listaPacks as $packIndex => $pack)
-                                @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
+                                @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $keyPack => $servicioPack)
+
                                     <div class="row text-center">
                                         <div class="col-md-12">
                                             <label for="adelantoResumen"

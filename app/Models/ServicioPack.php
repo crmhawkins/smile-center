@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Servicio;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,8 +16,9 @@ class ServicioPack extends Model
         'nombre',
     ];
 
-    public function servicios() {
-       return $this->hasMany("App\Models\Servicio", "id_pack", "id");
+    public function servicios()
+    {
+        return Servicio::whereJsonContains('id_pack', strval($this->id))->get();
     }
 
     public function presupuestos()

@@ -70,14 +70,13 @@
                                                 </div>
                                                 <div class="col-sm-1">&nbsp;</div>
                                                 <div class="col-sm-2 me-auto">
-                                                    <button type="button" wire:click="removeServ({{ $key }})"
+                                                    <button type="button" wire:click="removeServ({{ $servicio->id }})"
                                                         class="btn btn-outline-danger">Eliminar</button>
                                                 </div>
                                             </li>
                                         @endforeach
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
                     </form>

@@ -1464,7 +1464,7 @@ class CreateComponent extends Component
     }
     public function cambioPrecioPack()
     {
-        $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+        $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios();
         $this->precioFinalPack = 0;
         foreach ($pack as $keyPack => $servicio) {
             if (isset($this->preciosMonitores[$keyPack])) {
@@ -1510,7 +1510,7 @@ class CreateComponent extends Component
     public function cambioTiempoPack()
     {
         if ($this->pack_seleccionado != 0) {
-            $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+            $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios();
             foreach ($pack as $keyPack => $servicio) {
                 if ($this->indicador_montaje == 1) {
                     if (isset($this->tiemposMontajePack[$keyPack]) && isset($this->horasMontajePack[$keyPack])) {
@@ -1676,7 +1676,7 @@ class CreateComponent extends Component
             // Variable para rastrear si el stock se supera
             $stockSeSupera = false;
             // Obtener los artículos relacionados con el servicio
-            foreach ($this->packs->where('id', $packId)->first()->servicios()->get() as $servicioIndex => $servicio) {
+            foreach ($this->packs->where('id', $packId)->first()->servicios() as $servicioIndex => $servicio) {
                 if (isset($this->articulos_seleccionados[$servicioIndex])) {
                     $servicioId = $servicio->id;
                     $articulo = $this->articulos->where('id', $this->articulos_seleccionados[$servicioIndex])->first();

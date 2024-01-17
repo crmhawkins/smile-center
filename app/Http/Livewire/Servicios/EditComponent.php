@@ -38,17 +38,19 @@ class EditComponent extends Component
     public $precioMonitor;
     public $precioMonitorNocturno;
     public $precioMonitorAnimacion;
+    public $selectedPacks = [];
+
 
     public function mount()
     {
         $servicio = Servicio::find($this->identificador);
+        $this->selectedPacks = $servicio->id_pack;
         $this->servicioCategorias = ServicioCategoria::all();
         $this->servicioPacks = ServicioPack::all();
         $this->articulos = Articulos::all();
         $this->articulosSelect = $this->articulos;
         $this->nombre = $servicio->nombre;
         $this->precioBase = $servicio->precioBase;
-        $this->id_pack = $servicio->id_pack;
         $this->id_categoria = $servicio->id_categoria;
         $this->minMonitor = $servicio->minMonitor;
         $this->precioMonitor = $servicio->precioMonitor;
@@ -161,12 +163,14 @@ class EditComponent extends Component
         $servicio = Servicio::find($this->identificador);
 
         // Guardar datos validados
+
         $servicioSave = $servicio->update([
             'nombre' => $this->nombre,
             'precioBase' => $this->precioBase,
-            'id_pack' => $this->id_pack,
+            'id_pack' => $this->selectedPacks,
             'id_categoria' => $this->id_categoria,
             'minMonitor' => $this->minMonitor,
+
             'precioMonitor' => $this->precioMonitor,
             'tiempoMontaje' => $this->tiempoMontaje,
             'tiempoDesmontaje' => $this->tiempoDesmontaje,

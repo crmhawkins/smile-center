@@ -4,7 +4,6 @@ namespace App\Http\Livewire\ServiciosPacks;
 
 use App\Models\ServicioPack;
 use App\Models\Servicio;
-
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
@@ -18,7 +17,8 @@ class CreateComponent extends Component
     public $servicios;
     public $servicio;
     public $serviciosPack = [];
-
+    public $servicioSeleccionado;
+    public $serviciosSeleccionados = [];
     public $serviciosPackIDs = [];
 
 
@@ -27,23 +27,24 @@ class CreateComponent extends Component
         $this->servicios = Servicio::all();
     }
 
-    public function removeServ($key)
+    public function removeServ($servicioId)
     {
-        unset($this->serviciosPack[$key]);
+        $this->serviciosSeleccionados = array_filter($this->serviciosSeleccionados, function ($id) use ($servicioId) {
+            return $id != $servicioId;
+        });
     }
 
     public function addServ()
     {
-        if (!in_array($this->servicio, $this->serviciosPackIDs)) {
-            $servicio = Servicio::where('id', $this->servicio)->first();
-            $this->serviciosPack[count($this->serviciosPack)] = $servicio;
-            $this->serviciosPackIDs[count($this->serviciosPack)] = $this->servicio;
-        } else {
-            $this->alert('warning', 'Este servicio ya se encuentra en este pack', [
-                'position' => 'center',
-                'timer' => 1000,
-            ]);
+        if (!in_array($this->servicioSeleccionado, $this->serviciosSeleccionados)) {
+            $this->serviciosSeleccionados[] = $this->servicioSeleccionado;
         }
+    }
+
+    private function loadServiciosPack()
+    {
+        // Cargar servicios que pertenecen a este pack
+        $this->serviciosPack = Servicio::whereJsonContains('id_pack', $this->identificador)->get();
     }
     public function render()
     {
@@ -71,8 +72,15 @@ class CreateComponent extends Component
         // Alertas de guardado exitoso
         if ($packSave) {
 
-            foreach ($this->serviciosPack as $servicio) {
-                Servicio::where('id', $servicio["id"])->update(["id_pack" => $packSave->id]);
+            foreach ($this->serviciosSeleccionados as $servicioId) {
+                $servicio = Servicio::find($servicioId);
+                if ($servicio) {
+                    $idPacks = $servicio->id_pack ?? [];
+                    // Castigar el ID a cadena y luego agregarlo al arreglo
+                    $idPacks[] = (string)$packSave->id;
+                    $servicio->id_pack = $idPacks;
+                    $servicio->save();
+                }
             }
 
             $this->alert('success', 'Paquete registrado correctamente!', [

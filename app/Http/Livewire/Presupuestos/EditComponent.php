@@ -1583,7 +1583,7 @@ class EditComponent extends Component
     }
     public function cambioPrecioPack()
     {
-        $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+        $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios();
         $this->precioFinalPack = 0;
         foreach ($pack as $keyPack => $servicio) {
             if (isset($this->preciosMonitores[$keyPack])) {
@@ -1629,7 +1629,7 @@ class EditComponent extends Component
     public function cambioTiempoPack()
     {
         if ($this->pack_seleccionado != 0) {
-            $pack = $this->packs->where('id', $this->pack_seleccionado)->first()->servicios()->get();
+            $pack = Servicio::whereJsonContains('id_pack', $this->pack_seleccionado)->get();;
             foreach ($pack as $keyPack => $servicio) {
                 if ($this->indicador_montaje == 1) {
                     if (isset($this->tiemposMontajePack[$keyPack]) && isset($this->horasMontajePack[$keyPack])) {
@@ -1784,7 +1784,7 @@ class EditComponent extends Component
             // Variable para rastrear si el stock se supera
             $stockSeSupera = false;
             // Obtener los artículos relacionados con el servicio
-            foreach ($this->packs->where('id', $packId)->first()->servicios()->get() as $servicioIndex => $servicio) {
+            foreach (Servicio::whereJsonContains('id_pack', $this->pack_seleccionado)->get() as $servicioIndex => $servicio) {
                 if (isset($this->articulos_seleccionados[$servicioIndex])) {
                     $servicioId = $servicio->id;
                     $articulo = $this->articulos->where('id', $this->articulos_seleccionados[$servicioIndex])->first();
@@ -1832,10 +1832,11 @@ class EditComponent extends Component
                     }
                 }
             }
+
             if ($existe) {
-                $this->alert('error', 'Este pack ya está asignado a otro evento en esta fecha.');
+                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
             } else if ($stockSeSupera == true) {
-                $this->alert('error', 'Todo el stock de un artículo dado de este pack está en uso en esta fecha.');
+                $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
             } else {
                 $numMonitores = $this->preciosMonitores;
 
@@ -1861,18 +1862,19 @@ class EditComponent extends Component
                     'gastos_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'checks_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
-                    'articulos_seleccionados' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultArray,
-                    'existente' => 0
+                    'articulos_seleccionados' => !empty($this->articulos_seleccionados) ? $this->articulos_seleccionados : $defaultDoubleArray,
+                    'existente' => 0,
+
                 ];
                 $this->pack_seleccionado = 0;
                 $this->preciosMonitores = [];
                 $this->tiemposPack = [];
                 $this->horasInicioPack = [];
                 $this->horasFinalizacionPack = [];
-                $this->articulos_seleccionados = [];
                 $this->tiemposMontajePack = [];
                 $this->tiemposDesmontajePack = [];
                 $this->horasMontajePack = [];
+                $this->articulos_seleccionados = [];
                 $this->precioFinal += $this->precioFinalPack;
                 $this->precioFinalPack = 0;
             }

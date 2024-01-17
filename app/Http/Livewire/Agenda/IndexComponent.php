@@ -183,7 +183,7 @@ class IndexComponent extends Component
         $pivote = PackPresupuesto::where('presupuesto_id', $id1)->where('pack_id', $id2)->first();
         if ($pivote != null) {
             if (empty(json_decode($pivote->id_monitores))) {
-                foreach (ServicioPack::where('id', $id2)->first()->servicios()->get() as $servicioIndex => $itemServicio) {
+                foreach (ServicioPack::where('id', $id2)->first()->servicios() as $servicioIndex => $itemServicio) {
                     for ($i = 0; $i < $pivote->numero_monitores[$servicioIndex]; $i++) {
                         $this->datos_pack[$id1][$id2]['id_monitores'][$servicioIndex][$i] = 0;
                     }

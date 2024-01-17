@@ -23,7 +23,7 @@ class EditComponent extends Component
     {
         $pack = ServicioPack::find($this->identificador);
         $this->servicios = Servicio::all();
-        $this->serviciosPack = Servicio::where("id_pack", $this->identificador)->get();
+        $this->serviciosPack = Servicio::whereJsonContains('id_pack', $this->identificador)->get();
         $this->nombre = $pack->nombre;
 
     }
@@ -33,72 +33,98 @@ class EditComponent extends Component
         return view('livewire.servicios_packs.edit-component');
     }
 
-    public function removeServ($key){
-        $servicio = Servicio::where('id', $this->serviciosPack[$key]->id)->first();
-        $servicio->update(["id_pack" => null]);
-        unset($this->serviciosPack[$key]);
+    public function removeServ($servicioId)
+    {
+        $servicio = Servicio::find($servicioId);
+
+        // Eliminar id del pack del array id_pack del servicio
+        // Asegúrate de que id_pack sea un array o trátalo como un array vacío
+        $idPacks = is_array($servicio->id_pack) ? $servicio->id_pack : [];
+        if (($key = array_search($this->identificador, $idPacks)) !== false) {
+            unset($idPacks[$key]);
+            $servicio->id_pack = $idPacks;
+            $servicio->save();
+        }
+
+        // Recargar los servicios del pack
+        $this->loadServiciosPack();
     }
 
     public function addServ()
     {
-        if (!in_array($this->servicio, $this->serviciosPackIDs)) {
-            $servicio = Servicio::where('id', $this->servicio)->first();
-            $this->serviciosPack[count($this->serviciosPack)] = $servicio;
-            $this->serviciosPackIDs[count($this->serviciosPack)] = $this->servicio;
-        } else {
-            $this->alert('warning', 'Este servicio ya se encuentra en este pack', [
-                'position' => 'center',
-                'timer' => 1000,
-            ]);
+        $servicio = Servicio::find($this->servicio);
+        // Asegúrate de que id_pack sea un array o trátalo como un array vacío
+        $idPacks = is_array($servicio->id_pack) ? $servicio->id_pack : [];
+
+        if (!in_array($this->identificador, $idPacks)) {
+            $idPacks[] = $this->identificador;
+            $servicio->id_pack = $idPacks;
+            $servicio->save();
         }
+
+        // Recargar los servicios del pack
+        $this->loadServiciosPack();
+    }
+
+    private function loadServiciosPack()
+    {
+        // Cargar servicios que pertenecen a este pack
+        $this->serviciosPack = Servicio::whereJsonContains('id_pack', $this->identificador)->get();
     }
     // Al hacer update en el formulario
     public function update()
-    {
-        // Validación de datos
-        $this->validate([
-            'nombre' => 'required',
-        ],
-            // Mensajes de error
-            [
-                'nombre.required' => 'El nombre es obligatorio.',
-            ]);
+{
+    // Validación de datos
+    $this->validate([
+        'nombre' => 'required',
+    ],
+    [
+        'nombre.required' => 'El nombre es obligatorio.',
+    ]);
 
-        // Encuentra el identificador
-        $servicioPack = ServicioPack::find($this->identificador);
+    // Encuentra el identificador
+    $servicioPack = ServicioPack::find($this->identificador);
 
-        // Guardar datos validados
-        $servicioSave = $servicioPack->update([
-            'nombre' => $this->nombre,
-        ]);
+    // Guardar datos validados
+    $servicioSave = $servicioPack->update([
+        'nombre' => $this->nombre,
+    ]);
 
-        if ($servicioSave) {
-
-            foreach ($this->serviciosPack as $servicio) {
-                Servicio::where('id', $servicio["id"])->update(["id_pack" => $servicioPack->id]);
+    if ($servicioSave) {
+        // Actualizar id_pack para cada servicio
+        foreach ($this->serviciosPack as $servicio) {
+            $servicioActual = Servicio::find($servicio['id']);
+            if ($servicioActual) {
+                $idPacks = $servicioActual->id_pack ?? [];
+                if (!in_array($servicioPack->id, $idPacks)) {
+                    $idPacks[] = $servicioPack->id;
+                }
+                $servicioActual->id_pack = $idPacks;
+                $servicioActual->save();
             }
-
-            $this->alert('success', 'Usuario actualizado correctamente!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
-            ]);
-        } else {
-            $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-            ]);
         }
 
-        session()->flash('message', 'Pack actualizado correctamente.');
-
-        $this->emit('eventUpdated');
+        $this->alert('success', 'Pack actualizado correctamente!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'ok',
+            'timerProgressBar' => true,
+        ]);
+    } else {
+        $this->alert('error', '¡No se ha podido guardar la información del pack!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+        ]);
     }
+
+    session()->flash('message', 'Pack actualizado correctamente.');
+
+    $this->emit('eventUpdated');
+}
 
       // Eliminación
       public function destroy(){

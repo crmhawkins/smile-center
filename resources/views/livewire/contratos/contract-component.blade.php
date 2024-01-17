@@ -193,7 +193,7 @@
                                 </b>{{ $packs->where('id', $pack['id'])->first()->nombre }} </td>
                             <td><b>Importe: </b>{{ $pack['precio_final'] }} €</td>
                         </tr>
-                        @foreach ($packs->where('id', $pack['id'])->first()->servicios as $servicioIndex => $servicio)
+                        @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $servicioIndex => $servicio)
                             <tr width="100%">
                                 <td style="text-align: center" rowspan="2"> <b> Servicio
                                         {{ $servicioIndex + 1 }} </b> </td>
