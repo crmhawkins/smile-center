@@ -28,7 +28,9 @@ class IndexComponent extends Component
     }
 
     public function nombreCategoria(int $id){
-        return $this->serviciosCategoria->where("id", $id)->first()->nombre;
+        if($this->serviciosCategoria->where("id", $id)->first()->nombre){
+            return $this->serviciosCategoria->where("id", $id)->first()->nombre;
+        }else{return "Categorian inexistente";}
     }
 
     public function nombrePacks($ids)
