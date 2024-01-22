@@ -119,8 +119,7 @@ class EditComponent extends Component
     {
         $articulo = Articulos::find($this->identificador);
         event(new \App\Events\LogEvent(Auth::user(), 25, $articulo->id));
-        $evento = Evento::find($this->identificador);
-        $evento->delete();
+        $articulo->delete();
         return redirect()->route('articulos.index');
     }
 }
