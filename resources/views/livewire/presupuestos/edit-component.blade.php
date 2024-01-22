@@ -558,7 +558,7 @@
                         </div>
                         @if ($tipo_seleccionado == 'articulo')
 
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
                                 <div class="col-md-12">
                                     <Select wire:model="servicio_seleccionado" class="form-control"
