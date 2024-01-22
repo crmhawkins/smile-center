@@ -52,7 +52,8 @@ class Servicio extends Model
 
     public function presupuestos()
     {
-        return $this->belongsToMany(Presupuesto::class, 'servicio_presupuesto', 'servicio_id', 'presupuesto_id')->withPivot('numero_monitores', 'precioFinal', 'tiempo', 'tiempo_montaje', 'tiempo_desmontaje', 'hora_montaje', 'hora_inicio', 'hora_finalizacion', 'id_monitores', 'sueldo_monitores', 'gasto_gasoil', 'pago_pendiente');
+        return $this->belongsToMany(Presupuesto::class, 'servicio_presupuesto', 'servicio_id', 'presupuesto_id')
+        ->withPivot('numero_monitores', 'precioFinal', 'tiempo', 'tiempo_montaje', 'tiempo_desmontaje', 'hora_montaje', 'hora_inicio', 'hora_finalizacion', 'id_monitores', 'sueldo_monitores', 'gasto_gasoil', 'pago_pendiente','num_art_indef');
     }
 
     /**

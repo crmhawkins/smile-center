@@ -35,6 +35,7 @@ class EditComponent extends Component
 
     use LivewireAlert;
 
+    public $num_arti;
     public $identificador;
     public $diaMostrar;
     public $contrato_id;
@@ -314,6 +315,7 @@ class EditComponent extends Component
                 'tiempo_montaje' => $servicio->pivot->tiempo_montaje ?? '0',
                 'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje ?? '0',
                 'articulo_seleccionado' => $servicio->pivot->articulo_seleccionado ?? '0',
+                'num_art_indef' => $servicio->pivot->num_art_indef,
                 'existente' => 1
             ];
         }
@@ -1372,6 +1374,7 @@ class EditComponent extends Component
                 ->wherePivot('id_monitores', json_encode($servicio['id_monitores']))
                 ->wherePivot('gasto_gasoil', json_encode($servicio['gasto_gasoil']))
                 ->wherePivot('pago_pendiente', json_encode($servicio['pago_pendiente']))
+                ->wherePivot('num_art_indef', $servicio['num_art_indef'])
                 ->detach($servicio['id']);
         }
 
@@ -1409,6 +1412,7 @@ class EditComponent extends Component
                         'gasto_gasoil' => json_encode($servicio['gasto_gasoil']),
                         'pago_pendiente' => json_encode($servicio['pago_pendiente']),
                         'articulo_seleccionado' => $servicio['articulo_seleccionado'],
+                        'num_art_indef' => $servicio['num_art_indef'],
                     ]
                 );
             } else {
@@ -1774,68 +1778,69 @@ class EditComponent extends Component
     {
         if ($this->pack_seleccionado != 0) {
             $packId = $this->pack_seleccionado;
-            $existe = Presupuesto::whereHas('packs', function ($query) use ($packId) {
-                $query->where('servicio_packs.id', $packId);
-            })
-                ->where('fechaEmision', $this->diaEvento)
-                ->exists();
+
 
             $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
             // Variable para rastrear si el stock se supera
             $stockSeSupera = false;
             // Obtener los artículos relacionados con el servicio
-            foreach (Servicio::whereJsonContains('id_pack', $this->pack_seleccionado)->get() as $servicioIndex => $servicio) {
+            foreach ($this->packs->where('id', $packId)->first()->servicios() as $servicioIndex => $servicio) {
                 if (isset($this->articulos_seleccionados[$servicioIndex])) {
-                    $servicioId = $servicio->id;
-                    $articulo = $this->articulos->where('id', $this->articulos_seleccionados[$servicioIndex])->first();
-                    // Iterar a través de los artículos del servicio y verificar el stock para cada uno
-                    $articuloId = $articulo->id;
+                    $servicioId = $this->servicio_seleccionado;
+            $articuloId = $this->articulo_seleccionado;
 
-                    // Obtener la cantidad total utilizada de este artículo en la fecha indicada
-                    $cantidadTotalUtilizada = DB::table('presupuestos')
-                        ->join('pack_presupuesto', 'presupuestos.id', '=', 'pack_presupuesto.presupuesto_id')
-                        ->join('servicios', 'pack_presupuesto.pack_id', '=', 'servicios.id_pack')
-                        ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
-                        ->where('presupuestos.fechaEmision', $fechaEvento)
-                        ->whereJsonContains('pack_presupuesto.articulos_seleccionados', $articuloId)
-                        ->count();
-                    // Obtener el stock total fijo del artículo
-                    $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
+            $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
+            // Obtener los artículos relacionados con el servicio
 
-                    // Obtener la cantidad de stock usado por el servicio que deseas agregar
-                    $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
+            // Variable para rastrear si el stock se supera
+            $stockSeSupera = false;
+            // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+            $articulo = DB::table('articulos')->where('id', $articuloId)->first();
+            // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+            $sumaTotalStockUsado = DB::table('presupuestos')
+                ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
+                ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
+                ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+                ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
+                ->where('servicio_presupuesto.articulo_seleccionado', $articulo->id)
+                ->sum('servicio_articulo.stock_usado');
 
-                    // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
-                    $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
+            $sumaTotalStockUsadogeneral = DB::table('presupuestos')
+                ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                ->join('servicio_articulo', 'servicio_presupuesto.articulo_seleccionado', '=', 'servicio_articulo.articulo_id')
+                ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+                ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
+                ->where('servicio_presupuesto.servicio_id', $servicioId)
+                ->selectRaw('SUM(IF(servicio_presupuesto.articulo_seleccionado IS NOT NULL, servicio_articulo.stock_usado, servicio_presupuesto.num_art_indef)) AS total_stock_usado')
+                ->value('total_stock_usado');
 
-                    if ($nuevaCantidadTotal > $stockTotal) {
-                        // El stock se superaría para al menos uno de los artículos
-                        $stockSeSupera = true;
+            $sumaNumArtIndef = DB::table('presupuestos')
+                ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+                ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
+                ->where('servicio_presupuesto.servicio_id', $servicioId)
+                ->sum('servicio_presupuesto.num_art_indef');
+            // Obtener el stock total fijo del artículo
+            $stockTotal = DB::table('articulos')->where('id', $articulo->id)->value('stock');
+            $stockgeneral = DB::table('servicio_articulo')
+            ->where('servicio_id', $servicioId)
+            ->sum('servicio_articulo.stock_usado');
+            // Obtener la cantidad de stock usado por el servicio que deseas agregar
+            $cantidadStockUsadoNuevoServicio = DB::table('servicio_articulo')->where('servicio_id', $servicioId)->where('articulo_id', $articulo->id)->value('stock_usado');
+            // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+            $nuevaCantidadTotal = $sumaTotalStockUsado + $cantidadStockUsadoNuevoServicio;
+            $nuevaCantidadTotalgeneral = $sumaTotalStockUsadogeneral + $cantidadStockUsadoNuevoServicio + $sumaNumArtIndef;
+            if ($nuevaCantidadTotal > $stockTotal ||  $stockgeneral < $nuevaCantidadTotalgeneral) {
+                $stockSeSupera = true;
+
                         break; // Salir del bucle, ya que no es necesario verificar los otros artículos
                     }
-                    $cantidadTotalUtilizada = DB::table('presupuestos')
-                        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
-                        ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
-                        ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
-                        ->where('presupuestos.fechaEmision', $fechaEvento)
-                        ->where('servicio_presupuesto.articulo_seleccionado', $articuloId)
-                        ->count();
-                    // Obtener el stock total fijo del artículo
-                    $stockTotal = DB::table('articulos')->where('id', $articuloId)->value('stock');
-                    // Obtener la cantidad de stock usado por el servicio que deseas agregar
-                    $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
-                    // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
-                    $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
-                    if ($nuevaCantidadTotal > $stockTotal) {
-                        $stockSeSupera = true;
-                        break; // Salir del bucle, ya que no es necesario verificar los otros artículos
-                    }
+
                 }
             }
 
-            if ($existe) {
-                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
-            } else if ($stockSeSupera == true) {
+            if($stockSeSupera == true) {
                 $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
             } else {
                 $numMonitores = $this->preciosMonitores;
@@ -1863,7 +1868,6 @@ class EditComponent extends Component
                     'checks_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
                     'articulos_seleccionados' => !empty($this->articulos_seleccionados) ? $this->articulos_seleccionados : $defaultDoubleArray,
-                    'existente' => 0,
 
                 ];
                 $this->pack_seleccionado = 0;
@@ -1893,64 +1897,55 @@ class EditComponent extends Component
     {
         if ($this->servicio_seleccionado != 0) {
             $servicioId = $this->servicio_seleccionado;
-            $existe = Presupuesto::whereHas('servicios', function ($query) use ($servicioId) {
-                $query->where('servicios.id', $servicioId);
-            })
-                ->where('fechaEmision', $this->diaEvento)
-                ->exists();
+            $articuloId = $this->articulo_seleccionado;
+
             $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
             // Obtener los artículos relacionados con el servicio
-
 
             // Variable para rastrear si el stock se supera
             $stockSeSupera = false;
             // Iterar a través de los artículos del servicio y verificar el stock para cada uno
-            $articulo = $this->articulos->where('id', $this->articulo_seleccionado)->first();
+            $articulo = DB::table('articulos')->where('id', $articuloId)->first();
             // Obtener la cantidad total utilizada de este artículo en la fecha indicada
-            $cantidadTotalUtilizada = DB::table('presupuestos')
+            $sumaTotalStockUsado = DB::table('presupuestos')
                 ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
                 ->join('servicios', 'servicio_presupuesto.servicio_id', '=', 'servicios.id')
                 ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
-                ->where('presupuestos.fechaEmision', $fechaEvento)
+                ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+                ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
                 ->where('servicio_presupuesto.articulo_seleccionado', $articulo->id)
-                ->count();
+                ->sum('servicio_articulo.stock_usado');
+
+            $sumaTotalStockUsadogeneral = DB::table('presupuestos')
+                ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                ->join('servicio_articulo', 'servicio_presupuesto.articulo_seleccionado', '=', 'servicio_articulo.articulo_id')
+                ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+                ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
+                ->where('servicio_presupuesto.servicio_id', $servicioId)
+                ->selectRaw('SUM(IF(servicio_presupuesto.articulo_seleccionado IS NOT NULL, servicio_articulo.stock_usado, servicio_presupuesto.num_art_indef)) AS total_stock_usado')
+                ->value('total_stock_usado');
+
+            $sumaNumArtIndef = DB::table('presupuestos')
+                ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+                ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+                ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
+                ->where('servicio_presupuesto.servicio_id', $servicioId)
+                ->sum('servicio_presupuesto.num_art_indef');
             // Obtener el stock total fijo del artículo
             $stockTotal = DB::table('articulos')->where('id', $articulo->id)->value('stock');
+            $stockgeneral = DB::table('servicio_articulo')
+            ->where('servicio_id', $servicioId)
+            ->sum('servicio_articulo.stock_usado');
             // Obtener la cantidad de stock usado por el servicio que deseas agregar
-            $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
+            $cantidadStockUsadoNuevoServicio = DB::table('servicio_articulo')->where('servicio_id', $servicioId)->where('articulo_id', $articulo->id)->value('stock_usado');
             // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
-            $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
-            if ($nuevaCantidadTotal > $stockTotal) {
+            $nuevaCantidadTotal = $sumaTotalStockUsado + $cantidadStockUsadoNuevoServicio;
+            $nuevaCantidadTotalgeneral = $sumaTotalStockUsadogeneral + $cantidadStockUsadoNuevoServicio + $sumaNumArtIndef;
+            if ($nuevaCantidadTotal > $stockTotal ||  $stockgeneral < $nuevaCantidadTotalgeneral) {
                 $stockSeSupera = true;
             }
 
-
-
-            $cantidadTotalUtilizada = DB::table('presupuestos')
-                ->join('pack_presupuesto', 'presupuestos.id', '=', 'pack_presupuesto.presupuesto_id')
-                ->join('servicios', 'pack_presupuesto.pack_id', '=', 'servicios.id_pack')
-                ->join('servicio_articulo', 'servicios.id', '=', 'servicio_articulo.servicio_id')
-                ->where('presupuestos.fechaEmision', $fechaEvento)
-                ->whereJsonContains('pack_presupuesto.articulos_seleccionados', $articulo->id)
-                ->count();
-            // Obtener el stock total fijo del artículo
-            $stockTotal = DB::table('articulos')->where('id', $articulo->id)->value('stock');
-
-            // Obtener la cantidad de stock usado por el servicio que deseas agregar
-            $cantidadStockUsadoNuevoServicio = $articulo->stock_usado;
-
-            // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
-            $nuevaCantidadTotal = $cantidadTotalUtilizada + $cantidadStockUsadoNuevoServicio;
-
-            if ($nuevaCantidadTotal > $stockTotal) {
-                // El stock se superaría para al menos uno de los artículos
-                $stockSeSupera = true;
-            }
-
-
-            if ($existe) {
-                $this->alert('error', 'Este servicio ya está asignado a otro evento en esta fecha.');
-            } else if ($stockSeSupera == true) {
+            if($stockSeSupera == true) {
                 $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
             } else {
                 for ($i = 0; $i > $this->numero_monitores; $i++) {
@@ -1973,8 +1968,7 @@ class EditComponent extends Component
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
-                    'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
-                    'existente' => 0,
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? $defaultArray,
                 ];
                 $this->servicio_seleccionado = 0;
                 $this->numero_monitores = 0;
@@ -1999,6 +1993,88 @@ class EditComponent extends Component
         }
     }
 
+    public function addServicioSinArticulo()
+    {
+        if ($this->servicio_seleccionado != 0) {
+            $servicioId = $this->servicio_seleccionado;
+
+            $fechaEvento = $this->diaEvento; // Fecha en la que deseas verificar el stock
+
+
+            // Variable para rastrear si el stock se supera
+            $stockSeSupera = false;
+            // Iterar a través de los artículos del servicio y verificar el stock para cada uno
+
+            // Obtener la cantidad total utilizada de este artículo en la fecha indicada
+            $sumaTotalStockUsado = DB::table('presupuestos')
+            ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+            ->join('servicio_articulo', 'servicio_presupuesto.articulo_seleccionado', '=', 'servicio_articulo.articulo_id')
+            ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id')
+            ->whereRaw('? BETWEEN eventos.diaEvento AND eventos.diaFinal', [$fechaEvento])
+            ->where('servicio_presupuesto.servicio_id', $servicioId)
+            ->selectRaw('SUM(IF(servicio_presupuesto.articulo_seleccionado IS NOT NULL, servicio_articulo.stock_usado, servicio_presupuesto.num_art_indef)) AS total_stock_usado')
+            ->value('total_stock_usado');
+            // Obtener el stock total fijo del artículo
+            $stockTotal = DB::table('servicio_articulo')
+                ->where('servicio_id', $servicioId)
+                ->sum('servicio_articulo.stock_usado');
+            // Obtener la cantidad de stock usado por el servicio que deseas agregar
+            $cantidadStockUsadoNuevoServicio = $this->num_arti ;
+            // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+            $nuevaCantidadTotal = $sumaTotalStockUsado + $cantidadStockUsadoNuevoServicio;
+            if ($nuevaCantidadTotal > $stockTotal) {
+                $stockSeSupera = true;
+            }
+
+            if($stockSeSupera == true) {
+                $this->alert('error', 'Todo el stock de un artículo dado de este servicio está en uso en esta fecha.');
+            } else {
+                for ($i = 0; $i > $this->numero_monitores; $i++) {
+                    $this->sueldoMonitores[] = $this->servicios->firstWhere('id', $this->servicio_seleccionado)->get('precioMonitor');
+                }
+                $defaultArray = array_fill(0, $this->numero_monitores, '0');
+
+                $this->listaServicios[] = [
+                    'id' => $this->servicio_seleccionado,
+                    'numero_monitores' => $this->numero_monitores,
+                    'precioFinal' => $this->precioFinalServicio ?? '0',
+                    'tiempo' => $this->tiempo ?? '00:00',
+                    'hora_inicio' => $this->hora_inicio ?? '00:00',
+                    'hora_finalizacion' => $this->hora_finalizacion ?? '00:00',
+                    'hora_montaje' => $this->horaMontaje ?? '00:00',
+                    'tiempo_montaje' => $this->tiempoMontaje ?? '00:00',
+                    'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '00:00',
+                    'sueldo_monitores' => $this->sueldoMonitores ?? $defaultArray,
+                    'id_monitores' => $this->idMonitores ?? $defaultArray,
+                    'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
+                    'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
+                    'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? $defaultArray,
+                    'num_art_indef' => $this->num_arti ,
+                ];
+                $this->servicio_seleccionado = 0;
+                $this->numero_monitores = 0;
+                $this->tiempo = 0;
+                $this->tiempoMontaje = 0;
+                $this->tiempoDesmontaje = 0;
+                $this->hora_inicio = 0;
+                $this->hora_finalizacion = 0;
+                $this->horaMontaje = 0;
+                $this->precioFinal += $this->precioFinalServicio;
+                $this->precioFinalServicio = 0;
+                $this->articulo_seleccionado = 0;
+                $this->num_arti = 0;
+            }
+        } else {
+            $this->alert('error', '¡Selecciona un servicio!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        }
+    }
     public function deletePack($indice)
     {
         if ($this->listaPacks[$indice]['existente'] == 1) {

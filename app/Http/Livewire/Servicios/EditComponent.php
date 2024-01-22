@@ -22,7 +22,7 @@ class EditComponent extends Component
     public $articulo_seleccionado;
     public $numero_articulos;
     public $listaArticulos;
-    public $listaArticulosEliminar;
+    public $listaArticulosEliminar = [];
     public $articulos;
     public $articulosSelect;
     public $stock_usado;
@@ -180,8 +180,7 @@ class EditComponent extends Component
 
         if(!empty($this->listaArticulosEliminar)){
             foreach ($this->listaArticulosEliminar as $articulo) {
-                $servicio->articulos()->wherePivot('stock_usado',  $servicio['stock_usado'])
-                    ->detach($articulo['id']);
+                $servicio->articulos()->detach($articulo['id']);
             }
         }
 

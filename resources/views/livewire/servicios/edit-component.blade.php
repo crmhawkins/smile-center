@@ -211,9 +211,9 @@
                             $('#select2-cat').on('change', function(e) {
                                 var data = $('#select2-cat').select2('val');
                                 @this.set('articulo_seleccionado', data);
-                            });" wire:key="{{ rand() }}">
+                            });">
                                 <label for="fechaVencimiento">Elige un artículo para asignarlo al servicio:</label>
-                                <select class="form-control" name="estado" id="select2-cat">
+                                <select class="form-control" name="estado" id="select2-cat" wire:model="articulo_seleccionado">
                                     <option value="">-- SELECCIONE UN ARTÍCULO --</option>
                                     @foreach ($articulosSelect as $articulo)
                                         <option value="{{ $articulo['id'] }}">{{ $articulo['name'] }}</option>
@@ -248,7 +248,7 @@
                                             <td>{{ $articulos->where('id', $articulo['id'])->first()->name }}</td>
                                             <td>{{ $articulo['stock_usado'] }}</td>
                                             <td><button class="btn btn-danger"
-                                                    wire:click.prevent="deleteStock('{{ $articuloIndex }}')">X</button>
+                                                    wire:click.prevent="deleteArticulos('{{ $articuloIndex }}')">X</button>
                                         </tr>
                                     @endforeach
                                 </tbody>

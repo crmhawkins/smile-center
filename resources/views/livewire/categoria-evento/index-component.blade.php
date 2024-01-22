@@ -36,7 +36,7 @@
                                 @foreach ($categorias_evento as $categoria)
                                     <tr>
                                         <td>{{ $categoria->nombre }}</td>
-                                        <td> <a href="categoria-evento-edit/{{ $categoria->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                                        <td> <a href="categoria-contrato-edit/{{ $categoria->id }}" class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>
                                 @endforeach
                             </tbody>

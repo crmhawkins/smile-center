@@ -26,7 +26,9 @@ class ServicioPresupuesto extends Model
         'sueldo_monitores',
         'gasto_gasoil',
         'pago_pendiente',
-        'articulo_seleccionado'
+        'articulo_seleccionado',
+        'articulo_indefinido',
+        'num_art_indef'
     ];
 
     public function servicios() {
