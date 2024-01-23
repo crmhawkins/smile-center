@@ -75,6 +75,7 @@
                         @if($id_presupuesto != 0)
                         <div class="form-group row">
                             <h6 class="card-header mb-2"> Datos del solicitante </h6>
+                            @if($cliente->tipo_cliente != 1)
                             <div class="col-sm-7">
                                 <label for="nContrato" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-md-12">
@@ -94,6 +95,56 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <div class="col-sm-7">
+                            <label for="nContrato" class="col-sm-12 col-form-label">Entidad</label>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" value="{{$cliente->nombre}}" disabled>
+                                @error('nContrato')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <label for="diaEvento" class="col-sm-12 col-form-label">CIF</label>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" value="{{$cliente->nif}}" disabled>
+                                @error('diaEvento')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="example-text-input" class="col-sm-12 col-form-label">Código Órgano Gestor</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ $cliente->codigo_organo_gestor }}"
+                                    class="form-control" name="codigo_organo_gestor" placeholder="Código Órgano Gestor" disabled>
+                                @error('codigo_organo_gestor')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="example-text-input" class="col-sm-12 col-form-label">Código Unidad Tramitadora</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ $cliente->codigo_unidad_tramitadora }}"
+                                    class="form-control" name="codigo_unidad_tramitadora" placeholder="Código Unidad Tramitadora" disabled>
+                                @error('codigo_unidad_tramitadora')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="example-text-input" class="col-sm-12 col-form-label">Código Oficina Contable</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ $cliente->codigo_oficina_contable }}"
+                                    class="form-control" name="codigo_oficina_contable" placeholder="Código Oficina Contable" disabled>
+                                @error('codigo_oficina_contable')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif
                         <div class="form-group row">
                             <div class="col-sm-9">
                                 <label for="nContrato" class="col-sm-12 col-form-label">Domicilio</label>

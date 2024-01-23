@@ -35,7 +35,7 @@ class Cliente extends Model
         "confPostal",
         "confEmail",
         "confSms",
-        'tipoCliente',
+        'tipo_cliente',
         'codigo_organo_gestor',
         'codigo_unidad_tramitadora',
         'codigo_oficina_contable'

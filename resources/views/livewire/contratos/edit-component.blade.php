@@ -75,6 +75,7 @@
                         @if($id_presupuesto != 0)
                         <div class="form-group row">
                             <h6 class="card-header mb-2"> Datos del solicitante </h6>
+                            @if($cliente->tipo_cliente != 1)
                             <div class="col-sm-7">
                                 <label for="nContrato" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-md-12">
@@ -94,6 +95,57 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <div class="col-sm-7">
+                            <label for="nContrato" class="col-sm-12 col-form-label">Entidad</label>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" value="{{$cliente->nombre}}" disabled>
+                                @error('nContrato')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <label for="diaEvento" class="col-sm-12 col-form-label">CIF</label>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" value="{{$cliente->nif}}" disabled>
+                                @error('diaEvento')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="example-text-input" class="col-sm-12 col-form-label">Código Órgano Gestor</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ $cliente->codigo_organo_gestor }}"
+                                    class="form-control" name="codigo_organo_gestor" placeholder="Código Órgano Gestor" disabled>
+                                @error('codigo_organo_gestor')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="example-text-input" class="col-sm-12 col-form-label">Código Unidad Tramitadora</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ $cliente->codigo_unidad_tramitadora }}"
+                                    class="form-control" name="codigo_unidad_tramitadora" placeholder="Código Unidad Tramitadora" disabled>
+                                @error('codigo_unidad_tramitadora')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="example-text-input" class="col-sm-12 col-form-label">Código Oficina Contable</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ $cliente->codigo_oficina_contable }}"
+                                    class="form-control" name="codigo_oficina_contable" placeholder="Código Oficina Contable" disabled>
+                                @error('codigo_oficina_contable')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        </div>
+                        @endif
                         <div class="form-group row">
                             <div class="col-sm-9">
                                 <label for="nContrato" class="col-sm-12 col-form-label">Domicilio</label>
@@ -237,12 +289,18 @@
                         <div class="form-group row">
                             <div class="col-sm-9">
                                 <label for="nContrato" class="col-sm-12 col-form-label">Posibilidad de montaje</label>
+
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" value="NO" disabled>
+                                    @if($evento->eventoMontaje != null)
+                                    <input type="text" class="form-control" value="{{$evento->eventoMontaje}}" disabled>
+                                    @else
+                                    <input type="text" class="form-control" value="" disabled>
+                                    @endif
                                     @error('nContrato')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+
                             </div>
                         </div>
                         <hr />
@@ -356,9 +414,15 @@
                             <div class="col-sm-12 mt-2">
                                 <h6>Sirva el presente contrato como comprobante del pago en concepto de reserva, de los servicios anteriormente descritos.</h6>
                             </div>
+                            @if ($cliente->tipo_cliente == 1)
                             <div class="col-sm-5 mt-3">
-                                <h5>Total de los servicios contratados: &nbsp; {{$presupuesto->precioFinal}} € </h5>
+                                <h5>Total del evento: &nbsp; {{$presupuesto->precioFinal}} €  (Sin IVA)</h5>
                             </div>
+                            @else
+                            <div class="col-sm-5 mt-3">
+                                <h5>Total del evento: &nbsp; {{$presupuesto->precioFinal}} €</h5>
+                            </div>
+                            @endif
                             <div class="col-sm-4 mt-3">
                                 <h5>Entrega: &nbsp; {{ $presupuesto->adelanto}} € ({{round(($presupuesto->adelanto / $presupuesto->precioFinal) * 100, 2)}}%)</h5>
                             </div>
@@ -370,6 +434,11 @@
                                     <option value="Transferencia">Transferencia</option>
                                 </select>
                             </div>
+                            @if ($cliente->tipo_cliente == 1)
+                            <div class="col-sm-12 mt-3">
+                                <h5>Total del evento: &nbsp; {{($presupuesto->precioFinal)*1.21}} €  (IVA Incluido)</h5>
+                            </div>
+                            @endif
                         </div>
                         <div class="form-group row">
                             <h6 class="card-header mb-2"> Suministros de luz, agua y permisos. </h6>

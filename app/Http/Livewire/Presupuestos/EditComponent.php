@@ -696,7 +696,7 @@ class EditComponent extends Component
             [
                 'eventoNombre' => 'required',
                 'eventoProtagonista' => 'required',
-                'eventoNiños' => 'required',
+                'eventoNiños' => 'nullable',
                 'eventoContacto' => 'required',
                 'eventoParentesco' => 'required',
                 'eventoTelefono' => 'required',
@@ -1854,7 +1854,7 @@ class EditComponent extends Component
                     'checks_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
                     'articulos_seleccionados' => !empty($this->articulos_seleccionados) ? $this->articulos_seleccionados : $defaultDoubleArray,
-
+                    'existente' => 0,
                 ];
                 $this->pack_seleccionado = 0;
                 $this->preciosMonitores = [];
@@ -1948,8 +1948,9 @@ class EditComponent extends Component
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
-                    'articulo_seleccionado' => $this->articulo_seleccionado ?? $defaultArray,
-                    'num_art_indef' => $this->num_arti
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
+                    'num_art_indef' => $this->num_arti,
+                    'existente' => 0,
                 ];
                 $this->servicio_seleccionado = 0;
                 $this->numero_monitores = 0;
@@ -2030,8 +2031,9 @@ class EditComponent extends Component
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
-                    'articulo_seleccionado' => $this->articulo_seleccionado ?? $defaultArray,
-                    'num_art_indef' => $this->num_arti
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
+                    'num_art_indef' => $this->num_arti,
+                    'existente' => 0,
                 ];
                 $this->servicio_seleccionado = 0;
                 $this->numero_monitores = 0;
@@ -2214,10 +2216,11 @@ class EditComponent extends Component
             $listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precioFinal' => $pack->pivot->precio_final, 'existente' => 1];
         }
 
+        $nombreEvento = TipoEvento::find($evento->eventoNombre);
 
         $datos =  [
             'presupuesto' => $presupuesto, 'cliente' => $cliente, 'id_presupuesto' => $presupuesto->id, 'fechaEmision' => $this->fechaEmision, 'fechaVencimiento' => $this->fechaVencimiento,
-            'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'servicios' => Servicio::all(),
+            'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '','nombreEvento' => $nombreEvento->nombre, 'servicios' => Servicio::all(),
         ];
 
         $pdf = Pdf::loadView('livewire.presupuestos.contract-component', $datos)->setPaper('a4', 'vertical')->output(); //
@@ -2292,6 +2295,7 @@ class EditComponent extends Component
         $presupuesto = Presupuesto::find($this->identificador);
         $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
         $evento = Evento::where('id', $presupuesto->id_evento)->first();
+        $nombreEvento = TipoEvento::find($evento->eventoNombre);
         $packs = ServicioPack::all();
         foreach ($presupuesto->servicios()->get() as $servicio) {
             $listaServicios[] = ['id' => $servicio->id, 'nombre' => $servicio->nombre, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
@@ -2311,24 +2315,28 @@ class EditComponent extends Component
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
                 'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento,
             ];
         } else if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) <= 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
                 'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento,
             ];
         } else if (count($presupuesto->packs) <= 0 && count($presupuesto->servicios) > 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
                 'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento,
             ];
         } else {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'packs' => $packs, 'observaciones' => '', 'gestor' => User::firstWhere('id', $this->gestor_id),
                 'nContrato' => $this->nPresupuesto, 'fechaContrato' => $this->fechaEmision, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento,
             ];
         }
 

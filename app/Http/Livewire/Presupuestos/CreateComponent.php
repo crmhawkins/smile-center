@@ -99,7 +99,7 @@ class CreateComponent extends Component
     public $evento;
     public $eventoNombre;
     public $eventoProtagonista;
-    public $eventoNiños;
+    public $eventoNiños = 0;
     public $eventoAdulto;
     public $eventoContacto;
     public $eventoParentesco;
@@ -662,7 +662,7 @@ class CreateComponent extends Component
             [
                 'eventoNombre' => 'required',
                 'eventoProtagonista' => 'required',
-                'eventoNiños' => 'required',
+                'eventoNiños' => 'nullable',
                 'eventoContacto' => 'required',
                 'eventoParentesco' => 'required',
                 'eventoTelefono' => 'required',

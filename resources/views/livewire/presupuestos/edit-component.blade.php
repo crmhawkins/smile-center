@@ -146,9 +146,9 @@
                     <div class="form-row">
                         @if ($id_cliente != 0 || $id_cliente != null)
                             <div class="form-row">
-                                <!-- Tratamiento -->
-                                <!-- Nombre -->
-                                <div class="form-group col-md-4">
+                                @if( $clienteSeleccionado->tipo_cliente != 1 )
+
+                                    <div class="form-group col-md-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label"
                                         disabled>Nombre</label>
                                     <div class="col-sm-10">
@@ -160,24 +160,20 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
-
-                                <!-- Apellido -->
-                                <div class="form-group col-md-4">
+                                    </div>
+                                    <!-- Apellido -->
+                                    <div class="form-group col-md-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Apellido</label>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-11">
                                         <input type="text" value="{{ $clienteSeleccionado->apellido }}"
                                             class="form-control" name="apellido" placeholder="Apellido" disabled>
                                         @error('apellido')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <!-- NIF/DNI -->
-                                <div class="form-group col-md-4">
+                                    </div>
+                                    <!-- NIF/DNI -->
+                                    <div class="form-group col-md-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label"
                                         disabled>NIF/DNI</label>
                                     <div class="col-sm-10">
@@ -187,8 +183,63 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
-
+                                    </div>
+                                @else
+                                    <div class="form-group col-md-8">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>Entidad</label>
+                                    <div class="col-sm-11">
+                                        {{-- <input class="form-control" type="text" value="Artisanal kale" id="example-text-input"> --}}
+                                        <input type="text" value="{{ $clienteSeleccionado->nombre }}"
+                                            class="form-control" name="nombre" aria-label="Nombre"
+                                            placeholder="Nombre" disabled>
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label"
+                                        disabled>CIF</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->nif }}"
+                                            class="form-control" name="nif" placeholder="CIF" disabled>
+                                        @error('nif')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Código Órgano Gestor</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->codigo_organo_gestor }}"
+                                            class="form-control" name="codigo_organo_gestor" placeholder="Código Órgano Gestor" disabled>
+                                        @error('codigo_organo_gestor')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Código Unidad Tramitadora</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->codigo_unidad_tramitadora }}"
+                                            class="form-control" name="codigo_unidad_tramitadora" placeholder="Código Unidad Tramitadora" disabled>
+                                        @error('codigo_unidad_tramitadora')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Código Oficina Contable</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" value="{{ $clienteSeleccionado->codigo_oficina_contable }}"
+                                            class="form-control" name="codigo_oficina_contable" placeholder="Código Oficina Contable" disabled>
+                                        @error('codigo_oficina_contable')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    </div>
+                                @endif
                                 <!-- Tipo de Calle -->
                                 <div class="form-group col-md-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label" disabled>Tipo de
@@ -388,7 +439,6 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- {{var_dump($cliente)}} --}}
                         @endif
                     </div>
                 </div>
@@ -601,27 +651,8 @@
                             </div>
                             <div class="form-group col-md-2 text-center">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                                <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
+                                <button class="btn btn-primary w-100" wire:click.prevent="addServicioSinArticulo()">Añadir</button>
                             </div>
-                            @if (
-                                $servicio_seleccionado > 0 &&
-                                    $servicios->where('id', $servicio_seleccionado)->first()->articulos()->count() > 0)
-                                <div class="form-group col-md-12">
-                                    <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
-                                        relacionado al servicio</label>
-                                    <div class="col-md-12">
-                                        <Select wire:model="articulo_seleccionado" class="form-control"
-                                            name="articulo_seleccionado" id="articulo_seleccionado">
-                                            <option value="0">Selecciona un artículo.</option>
-                                            @foreach ($servicios->where('id', $servicio_seleccionado)->first()->articulos()->get() as $keys => $articulo)
-                                                <option class="dropdown-item" value="{{ $articulo->id }}">
-                                                    {{ $articulo->name }}
-                                                </option>
-                                            @endforeach
-                                        </Select>
-                                    </div>
-                                </div>
-                            @endif
                             <div class="form-group col-md-2">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
                                 <div class="col-md-12">
@@ -711,7 +742,7 @@
                             </div>
                             <div class="form-group col-md-2 text-center">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                                <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
+                                <button class="btn btn-primary w-100" wire:click.prevent="addServicio()">Añadir</button>
                             </div>
                             @if (
                                 $servicio_seleccionado > 0 &&

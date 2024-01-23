@@ -142,6 +142,7 @@ class EditComponent extends Component
             'direccionAdicional3' => $this->direccionAdicional3,
             'codigoPostal' => $this->codigoPostal,
             'ciudad' => $this->ciudad,
+            'tipo_cliente'=> $this->tipo_cliente,
             'provincia' => $this->provincia,
             'nif'=>$this->nif,
             'tlf1'=>$this->tlf1,

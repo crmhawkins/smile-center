@@ -222,7 +222,7 @@
                             </div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="stock" class="col-sm-12 col-form-label">Stock</label>
+                            <label for="stock" class="col-sm-12 col-form-label">Stock usado</label>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control" name="stock" id="stock"
                                     wire:model="stock_usado">
@@ -238,7 +238,7 @@
                                 <thead>
                                     <tr>
                                         <th>Artículo</th>
-                                        <th>Stock</th>
+                                        <th>Stock Usado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

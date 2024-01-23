@@ -158,7 +158,7 @@
                 </tr>
                 <tr width="100%">
                     <th>DATOS DEL EVENTO</th>
-                    <td colspan="3">{{ $evento->eventoNombre }}</th>
+                    <td colspan="3">{{ $nombreEvento}}</th>
                 </tr>
                 <tr width="100%">
                     <th>Lugar</th>
@@ -167,9 +167,9 @@
                     <th>Horario</th>
                 </tr>
                 <tr width="100%">
-                    <td></td>
-                    <td>{{$evento->eventoFecha}}</td>
-                    <td></td>
+                    <td>{{$evento->eventoLugar}}</td>
+                    <td>{{$evento->diaEvento}}</td>
+                    <td>{{$evento->eventoContacto}}</td>
                     <td></td>
                 </tr>
             </tbody>

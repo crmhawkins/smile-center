@@ -532,6 +532,7 @@ class EditComponent extends Component
         $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
         $evento = Evento::where('id', $presupuesto->id_evento)->first();
         $packs = ServicioPack::all();
+        $nombreEvento = TipoEvento::find($evento->eventoNombre);
         $gestor = User::where('id', $presupuesto->gestor_id)->first();
 
         foreach ($presupuesto->servicios()->get() as $servicio) {
@@ -552,24 +553,28 @@ class EditComponent extends Component
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
                 'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento->nombre,
             ];
         } else if (count($presupuesto->packs) > 0 && count($presupuesto->servicios) <= 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
                 'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento->nombre,
             ];
         } else if (count($presupuesto->packs) <= 0 && count($presupuesto->servicios) > 0) {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'listaServicios' => $listaServicios, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
                 'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento->nombre,
             ];
         } else {
             $datos =  [
                 'presupuesto' => $presupuesto, 'cliente' => $cliente, 'metodoPago' => $this->metodoPago, 'servicios' => Servicio::all(),
                 'evento' => $evento, 'packs' => $packs, 'observaciones' => $this->observaciones, 'gestor' => $gestor,
                 'nContrato' => $presupuesto->nPresupuesto, 'fechaContrato' => $evento->diaEvento, 'authImagen' => $this->authImagen, 'authMenores' => $this->authMenores, 'fechaMostrar' => $this->diaMostrar,
+                'nombreEvento' =>$nombreEvento->nombre,
             ];
         }
 

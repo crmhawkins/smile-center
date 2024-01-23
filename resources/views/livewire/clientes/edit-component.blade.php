@@ -104,9 +104,9 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">NIF/DNI</label>
+                                <label for="example-text-input" class="col-sm-12 col-form-label">CIF</label>
                                 <div class="col-sm-10">
-                                    <input type="text" wire:model="nif" class="form-control" name="nif" id="nif" placeholder="Nif">
+                                    <input type="text" wire:model="nif" class="form-control" name="nif" id="nif" placeholder="CIF">
                                     @error('nif')
                                     <span class="text-danger">{{ $message }}</span>
 
@@ -263,7 +263,7 @@
                                 </div>
 
                                 <!-- Ciudad -->
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Ciudad</label>
                                     <div class="col-sm-10">
                                         <input type="text" wire:model="ciudad" class="form-control" name="ciudad" id="ciudad" placeholder="Ciudad">
