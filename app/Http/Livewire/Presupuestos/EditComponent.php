@@ -438,12 +438,12 @@ class EditComponent extends Component
                 'toast' => false,
             ]);
         }
-        if ($this->eventoNiños == null) {
+        /*if ($this->eventoNiños == null) {
             return $this->alert('error', '¡El campo de Numero de niños no puede estar vacio!', [
                 'position' => 'center',
                 'toast' => false,
             ]);
-        }
+        }*/
 
         if ($this->eventoContacto == null) {
             return $this->alert('error', '¡El campo de Contacto no puede estar vacio!', [

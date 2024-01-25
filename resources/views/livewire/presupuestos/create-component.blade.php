@@ -1226,9 +1226,8 @@
                                             {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
                                         </td>
                                         <td>
-                                            @if (isset($itemServicio['num_art_indef']))
+                                            @if (isset($itemServicio['num_art_indef']) && $itemServicio['num_art_indef'] > 0)
                                                 {{ $itemServicio['num_art_indef'] }}
-
                                             @else
                                                 @if (isset($itemServicio['articulo_seleccionado']) && $itemServicio['articulo_seleccionado'] > 0)
                                                     <Select
@@ -1265,6 +1264,9 @@
                                             {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
                                         </td>
                                         <td>
+                                        @if (isset($itemServicio['num_art_indef']) && $itemServicio['num_art_indef'] > 0)
+                                            {{ $itemServicio['num_art_indef'] }}
+                                        @else
                                             @if (isset($itemServicio['articulo_seleccionado']) && $itemServicio['articulo_seleccionado'] > 0)
                                                 <Select
                                                     wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
@@ -1278,8 +1280,9 @@
                                                     @endforeach
                                                 </Select>
                                             @else
-                                                Sin artículos asignados
+                                            Sin artículos asignados
                                             @endif
+                                        @endif
                                         </td>
                                         <td style="border-bottom: 1px solid black !important;">
                                             {{ $itemServicio['numero_monitores'] }}</td>

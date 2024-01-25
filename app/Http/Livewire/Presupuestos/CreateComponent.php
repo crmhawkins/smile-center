@@ -236,7 +236,7 @@ class CreateComponent extends Component
 
     public function mount()
     {
-
+        $this->num_arti = 0;
         $this->clientes = Cliente::all(); // datos que se envian al select2
         $this->monitores = Monitor::all();
         $this->servicios = Servicio::all();
@@ -511,12 +511,12 @@ class CreateComponent extends Component
                 'toast' => false,
             ]);
         }
-        if ($this->eventoNiños == null) {
+        /*if ($this->eventoNiños == null) {
             return $this->alert('error', '¡El campo de Numero de niños no puede estar vacio!', [
                 'position' => 'center',
                 'toast' => false,
             ]);
-        }
+        }*/
 
         if ($this->eventoContacto == null) {
             return $this->alert('error', '¡El campo de Contacto no puede estar vacio!', [
@@ -1374,7 +1374,6 @@ class CreateComponent extends Component
                 'id_cliente.required' => 'El cliente es obligatorio.',
                 'precioBase.required' => 'El curso es obligatorio.',
                 'precioFinal.required' => 'Los detalles son obligatorios',
-
                 'estado.required' => 'El estado es obligatorio',
             ]
         );
@@ -1388,7 +1387,6 @@ class CreateComponent extends Component
         event(new \App\Events\LogEvent(Auth::user(), 3, $presupuesosSave->id));
 
         foreach ($this->listaServicios as $servicio) {
-
             $presupuesosSave->servicios()->attach(
                 $servicio['id'],
                 [
@@ -1842,7 +1840,7 @@ class CreateComponent extends Component
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
-                    'articulo_seleccionado' => $this->articulo_seleccionado ?? $defaultArray,
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
                     'num_art_indef' => $this->num_arti
                 ];
                 $this->servicio_seleccionado = 0;
@@ -1938,7 +1936,7 @@ class CreateComponent extends Component
                     'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
-                    'articulo_seleccionado' => $this->articulo_seleccionado ?? $defaultArray,
+                    'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
                     'num_art_indef' => $this->num_arti
                 ];
                 $this->servicio_seleccionado = 0;
@@ -1952,6 +1950,7 @@ class CreateComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
+                $this->num_arti = 0;
             }
         } else {
             $this->alert('error', '¡Selecciona un servicio!', [
