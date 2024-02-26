@@ -276,6 +276,18 @@ class CreateComponent extends Component
             $this->fechaVencimiento = session('datos')['fechaVencimiento'];
             $this->eventoNombre = session('datos3');
         }
+
+        $this->servicios->each(function ($servicio) {
+            // Usar Carbon para manejar fechas más fácilmente
+            $serviciosTotales = Articulos::where('id_categoria', $servicio->id)->count();
+            // dd($serviciosTotales);
+            $servicioUpdate = Servicio::find($servicio->id);
+
+            $servicioUpdate->stock =  $serviciosTotales;
+            $servicioUpdate->save();
+            // Asumiendo que 'cantidad' es la columna que quieres sumar
+        });
+        var_dump($this->servicios);
     }
 
     public function cambiarPresupuesto()
@@ -291,7 +303,6 @@ class CreateComponent extends Component
     }
     public function render()
     {
-        $this->diaEvento  === null ? '' : $this->cargarServicios();
 
         $this->dispatchBrowserEvent('initializeMapKit');
         $this->clienteSeleccionado = Cliente::find($this->id_cliente);
@@ -317,10 +328,12 @@ class CreateComponent extends Component
             // Asumiendo que 'cantidad' es la columna que quieres sumar
         });
 
-        dd($servicios);
+        // dd($servicios);
 
         $this->servicios = $servicios;
     }
+
+
 
     public function setupEvento($id)
     {
@@ -2012,6 +2025,9 @@ class CreateComponent extends Component
         if (!isset($this->diaFinal)) {
             $this->diaFinal = $this->diaEvento;
         }
+        $this->diaEvento  === null ? '' : $this->cargarServicios();
+        dd($this->servicios);
+        // $this->cargarServicios();
     }
 
 
