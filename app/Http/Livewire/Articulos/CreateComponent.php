@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Articulos;
 
 use App\Models\Articulos;
+use App\Models\Servicio;
 use App\Models\ServicioCategoria;
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -19,14 +20,14 @@ class CreateComponent extends Component
 
     public function mount()
     {
-        $this->servicioCategorias = ServicioCategoria::all();
+        $this->servicioCategorias = Servicio::all();
     }
 
     public function render()
     {
         return view('livewire.articulos.create-component');
     }
-   
+
     public function submit()
     {
         // Validación de datos
@@ -75,7 +76,7 @@ class CreateComponent extends Component
                 'toast' => false,
             ]);
         }
-        
+
     }
 
      // Función para cuando se llama a la alerta
@@ -86,7 +87,7 @@ class CreateComponent extends Component
              'submit'
          ];
      }
- 
+
      // Función para cuando se llama a la alerta
      public function confirmed()
      {

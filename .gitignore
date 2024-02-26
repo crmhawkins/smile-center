@@ -1,3 +1,5 @@
 .env
-app.blade.php
+/vendor
+/node_modules
 .htaccess
+

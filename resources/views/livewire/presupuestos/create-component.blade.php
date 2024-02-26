@@ -705,8 +705,7 @@
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Datos
-                                del servicio a contratar</h5>
+                                Datos del servicio a contratar</h5>
                         </div>
                         @if ($tipo_seleccionado == 'articulo')
 
@@ -811,7 +810,7 @@
                         @elseif($tipo_seleccionado == 'individual')
 
                             <div class="form-group col-md-6">
-                                <label for="diaEvento" class="col-sm-12 col-form-label">Categorias</label>
+                                <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
                                 <div class="col-md-12">
                                     <Select wire:model="servicio_seleccionado" class="form-control"
                                         wire:change='cambioPrecioServicio()' name="servicio_seleccionado"
@@ -819,7 +818,7 @@
                                         <option value="0">Selecciona un servicio.</option>
                                         @foreach ($servicios as $keys => $servicio)
                                             <option class="dropdown-item" value="{{ $servicio->id }}">
-                                                {{ $servicio->nombre }}
+                                                {{ $servicio->nombre }} - {{ $servicio->count }}
                                             </option>
                                         @endforeach
                                     </Select>
@@ -856,7 +855,8 @@
                                     <div class="col-md-12">
                                         <Select wire:model="articulo_seleccionado" class="form-control"
                                             name="articulo_seleccionado" id="articulo_seleccionado">
-                                            <option value="0">Selecciona un artículo.</option>
+                                            <option value="{{null}}">Selecciona un artículo.</option>
+                                            <option value="{{0}}">Sin definir</option>
                                             @foreach ($servicios->where('id', $servicio_seleccionado)->first()->articulos()->get() as $keys => $articulo)
                                                 <option class="dropdown-item" value="{{ $articulo->id }}">
                                                     {{ $articulo->name }}

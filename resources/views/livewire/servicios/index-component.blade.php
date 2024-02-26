@@ -29,6 +29,7 @@
                                 <th scope="col">Servicio</th>
                                 <th scope="col">Categoria</th>
                                 <th scope="col">Pack</th>
+                                <th scope="col">Stock</th>
                                 <th scope="col">Precio Base</th>
                                 <th scope="col">Nº mínimo de monitores</th>
                                 <th scope="col">Precio por monitor</th>
@@ -48,6 +49,7 @@
                                 @else
                                 <td>{{ $this->nombrePacks($servicio->id_pack) }}</td>
                                 @endif
+                                <td>{{ $servicio->stock }}</td>
                                 <td>{{ $servicio->precioBase }}</td>
                                 <td>{{ $servicio->minMonitor }}</td>
                                 <td>{{ $servicio->precioMonitor }} €</td>

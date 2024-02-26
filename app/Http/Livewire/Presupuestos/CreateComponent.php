@@ -14,6 +14,7 @@ use App\Models\Programa;
 use App\Models\Servicio;
 use App\Models\Articulos;
 use App\Models\ServicioPack;
+use App\Models\ServicioPresupuesto;
 use App\Models\Settings;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Arr;
@@ -232,6 +233,7 @@ class CreateComponent extends Component
     public $mensajeCliente = false;
     public $nombreGestor;
     public $year;
+    public $contadorServicios;
     protected $listeners = ['rerender' => '$refresh'];
 
     public function mount()
@@ -240,6 +242,8 @@ class CreateComponent extends Component
         $this->clientes = Cliente::all(); // datos que se envian al select2
         $this->monitores = Monitor::all();
         $this->servicios = Servicio::all();
+
+        $this->contadorServicios = Servicio::all();
         $this->articulos = Articulos::all();
         $this->tipos_evento = TipoEvento::all();
         $this->categorias_evento = CategoriaEvento::all();
@@ -287,9 +291,35 @@ class CreateComponent extends Component
     }
     public function render()
     {
+        $this->diaEvento  === null ? '' : $this->cargarServicios();
+
         $this->dispatchBrowserEvent('initializeMapKit');
         $this->clienteSeleccionado = Cliente::find($this->id_cliente);
         return view('livewire.presupuestos.create-component');
+    }
+
+    public function cargarServicios()
+    {
+        // Obtener todos los servicios
+        $servicios = Servicio::all();
+
+        // Recorrer cada servicio y añadir la propiedad count
+        $servicios->each(function ($servicio) {
+            // Usar Carbon para manejar fechas más fácilmente
+            $fecha = Carbon::createFromFormat('Y-m-d', $this->diaEvento);
+            $cuenta = ServicioPresupuesto::where('servicio_id', $servicio->id)
+            ->whereDate('created_at', $fecha)
+            ->count();
+            $serviciosTotales = Articulos::where('id_categoria', $servicio->id)->get();
+            // dd($serviciosTotales);
+
+            $servicio->count =  $serviciosTotales->count() - $cuenta;
+            // Asumiendo que 'cantidad' es la columna que quieres sumar
+        });
+
+        dd($servicios);
+
+        $this->servicios = $servicios;
     }
 
     public function setupEvento($id)

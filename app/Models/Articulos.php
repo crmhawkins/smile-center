@@ -22,7 +22,10 @@ class Articulos extends Model
     {
         return $this->belongsToMany('app\Models\Servicio', 'servicio_articulo', 'articulo_id', 'servicio_id')->withPivot('stock_usado');
     }
-
+    public function categoriaServicio()
+    {
+        return $this->belongsTo(Servicio::class, 'id_categoria');
+    }
     /**
      * Mutaciones de fecha.
      *

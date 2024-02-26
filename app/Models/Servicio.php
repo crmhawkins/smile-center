@@ -28,8 +28,8 @@ class Servicio extends Model
         'precioMonitor',
         'precioMonitorNocturno',
         'precioMonitorAnimacion',
-        'minMonitor'
-
+        'minMonitor',
+        'stock'
     ];
 
     public function programas()

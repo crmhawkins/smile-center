@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Servicios;
 
+use App\Models\Articulos;
 use App\Models\Servicio;
 use App\Models\ServicioCategoria;
 use App\Models\ServicioPack;
@@ -17,6 +18,13 @@ class IndexComponent extends Component
     public function mount()
     {
         $this->servicios = Servicio::all();
+        foreach($this->servicios as $servicioItem){
+            if ($servicioItem->stock === null | $servicioItem->stock <= 0) {
+                $articulos = Articulos::where('id_categoria', $servicioItem->id)->get();
+                $servicioItem->stock = $articulos->count();
+                $servicioItem->save();
+            }
+        }
         $this->serviciosCategoria = ServicioCategoria::all();
         $this->serviciosPack = ServicioPack::all();
     }
