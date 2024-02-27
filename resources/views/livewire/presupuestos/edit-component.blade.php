@@ -1260,7 +1260,7 @@
                     </div>
                     <div class="form-group col-md-12">
                         <div class="row">
-                            @foreach ($listaPacks as $packIndex => $pack)
+                            @foreach ($listaPacks as $packIndex => $packs)
                                 @foreach ($packs->where('id', $pack['id'])->first()->servicios() as $keyPack => $servicioPack)
 
                                     <div class="row text-center">
