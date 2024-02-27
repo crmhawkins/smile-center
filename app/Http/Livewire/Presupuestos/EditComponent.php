@@ -1393,8 +1393,8 @@ class EditComponent extends Component
                 ->wherePivot('pagos_pendientes', json_encode($pack['pagos_pendientes']))
                 ->detach($pack['id']);
         }
-        dd($this->listaServicios);
         foreach ($this->listaServicios as $servicio) {
+            dd($servicio);
             if ($servicio['existente'] == 0) {
                 $this->presupuesto->servicios()->attach(
                     $servicio['id'],
