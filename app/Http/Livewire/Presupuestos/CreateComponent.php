@@ -287,7 +287,7 @@ class CreateComponent extends Component
             $servicioUpdate->save();
             // Asumiendo que 'cantidad' es la columna que quieres sumar
         });
-        var_dump($this->servicios);
+        // var_dump($this->servicios);
     }
 
     public function cambiarPresupuesto()
@@ -2026,7 +2026,7 @@ class CreateComponent extends Component
             $this->diaFinal = $this->diaEvento;
         }
         $this->diaEvento  === null ? '' : $this->cargarServicios();
-        dd($this->servicios);
+        // dd($this->servicios);
         // $this->cargarServicios();
     }
 

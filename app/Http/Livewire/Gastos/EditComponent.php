@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class EditComponent extends Component
 {
@@ -26,6 +27,7 @@ class EditComponent extends Component
     public $identificador;
 
     public $tipo_gasto;
+    public $gastos;
     public $tipos_gasto;
 
     public $nombre_gasto;
@@ -75,7 +77,7 @@ class EditComponent extends Component
         $gastosSave = $this->gastos->update($validatedData);
         event(new \App\Events\LogEvent(Auth::user(), 45, $factura->id));
 
-        if ($GastosSave) {
+        if ($gastosSave) {
             $this->alert('success', '¡Gasto actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -126,7 +128,7 @@ class EditComponent extends Component
             'desactivarGasto',
         ];
     }
-   
+
     // Función para cuando se llama a la alerta
     public function confirmed()
     {
@@ -160,5 +162,5 @@ class EditComponent extends Component
     }
 
 
-    
+
 }

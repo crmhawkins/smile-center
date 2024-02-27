@@ -25,7 +25,7 @@ class CreateComponent extends Component
 
     public function mount()
     {
-        $this->tipos_gasto = TipoGasto::all();
+        $this->tipo_gasto = TipoGasto::all();
     }
 
     public function render()

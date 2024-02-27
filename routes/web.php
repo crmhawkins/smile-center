@@ -171,13 +171,6 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('iva/create', [IvaController::class, 'create'])->name('iva.create');
     Route::get('iva/edit/{id}', [IvaController::class, 'edit'])->name('iva.edit');
 
-    // Clients
-    Route::get('clients', [ClientController::class, 'index'])->name('client.index');
-    Route::get('clients-create', [ClientController::class, 'create'])->name('client.create');
-    Route::post('clients-store', [ClientController::class, 'store'])->name('client.store');
-    Route::get('clients-edit', [ClientController::class, 'edit'])->name('client.edit');
-    Route::post('clients-updated', [ClientController::class, 'updated'])->name('client.updated');
-    Route::delete('clients-delete', [ClientController::class, 'delete'])->name('client.delete');
 
     // Clients
     Route::get('clients-emails', [ClientsEmailController::class, 'index'])->name('clientEmail.index');
@@ -302,7 +295,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
      Route::get('caja', [CajaController::class, 'index'])->name('caja.index');
      Route::get('caja-create-ingreso', [CajaController::class, 'createIngreso'])->name('caja.create-ingreso');
      Route::get('caja-create-gasto', [CajaController::class, 'createGasto'])->name('caja.create-gasto');
-     Route::get('caja-edit/{id}', [CajaController::class, 'edit'])->name('categoria-evento.edit');
+     Route::get('caja-edit/{id}', [CajaController::class, 'edit'])->name('caja.edit');
 
      Route::get('/service/jwt', [MapKitController::class, 'getJwt']);
 

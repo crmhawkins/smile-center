@@ -1414,6 +1414,7 @@ class EditComponent extends Component
                         'articulo_seleccionado' => $servicio['articulo_seleccionado'],
                         'num_art_indef' => $servicio['num_art_indef'],
                     ]
+
                 );
             } else {
                 ServicioPresupuesto::where('id', $servicio['id_pivot'])->update(['articulo_seleccionado' => $servicio['articulo_seleccionado'],]);
