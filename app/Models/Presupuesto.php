@@ -64,4 +64,17 @@ class Presupuesto extends Model
         return $this->belongsToMany(ServicioPack::class, 'pack_presupuesto', 'presupuesto_id', 'pack_id')
         ->withPivot('numero_monitores', 'precio_final', 'tiempos', 'tiempos_montaje', 'tiempos_desmontaje', 'horas_montaje','horas_inicio', 'horas_finalizacion', 'id_monitores', 'sueldos_monitores', 'gastos_gasoil', 'pagos_pendientes', 'articulos_seleccionados');
     }
+
+
+
+    public function evento()
+    {
+        return $this->belongsTo(Evento::class, 'id_evento');
+    }
+
+    public function serviciosPresupuesto()
+    {
+        return $this->hasMany(ServicioPresupuesto::class, 'presupuesto_id');
+    }
+
 }

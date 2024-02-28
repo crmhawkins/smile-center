@@ -88,17 +88,23 @@ class EditComponent extends Component
         $this->vecesContratado = count($this->programas);
     }
     public function cargarEventos()
-{
-    $query = ServicioPresupuesto::query();
+    {
+        $query = ServicioPresupuesto::query();
 
-    if ($this->fechaInicio && $this->fechaFin) {
-        $query->whereBetween('fecha_servicio', [$this->fechaInicio, $this->fechaFin]);
+        // Realiza un join con presupuesto y luego con evento para acceder a diaEvento
+        $query->join('presupuestos', 'servicio_presupuestos.presupuesto_id', '=', 'presupuestos.id')
+            ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id');
+
+        // Aplica el filtro de fechas si se han especificado
+        if ($this->fechaInicio && $this->fechaFin) {
+            $query->whereBetween('eventos.diaEvento', [$this->fechaInicio, $this->fechaFin]);
+        }
+
+        $query->whereJsonContains('servicio_presupuestos.id_monitores', $this->identificador);
+
+        // Asegúrate de seleccionar solo los campos de servicio_presupuestos que necesitas, para evitar conflictos de columnas
+        $this->eventos = $query->select('servicio_presupuestos.*')->get()->groupBy('servicio_id')->toArray();
     }
-
-    $query->whereJsonContains('id_monitores', $this->identificador);
-
-    $this->eventos = $query->get()->groupBy('servicio_id')->toArray();
-}
     public function getEventoFromIdServicioEvento($id)
     {
         $servicioEvento = ServicioEvento::where("id", $id)->first();

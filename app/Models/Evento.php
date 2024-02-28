@@ -53,4 +53,10 @@ class Evento extends Model
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    public function presupuestos()
+    {
+        // Asume que el modelo Presupuesto tiene una clave foránea 'id_evento' que apunta a 'id' en Evento
+        return $this->hasMany(Presupuesto::class, 'id_evento');
+    }
 }
