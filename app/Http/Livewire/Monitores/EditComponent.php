@@ -100,10 +100,10 @@ class EditComponent extends Component
             $query->whereBetween('eventos.diaEvento', [$this->fechaInicio, $this->fechaFin]);
         }
 
-        $query->whereJsonContains('servicio_presupuestos.id_monitores', $this->identificador);
+        $query->whereJsonContains('servicio_presupuesto.id_monitores', $this->identificador);
 
         // Asegúrate de seleccionar solo los campos de servicio_presupuestos que necesitas, para evitar conflictos de columnas
-        $this->eventos = $query->select('servicio_presupuestos.*')->get()->groupBy('servicio_id')->toArray();
+        $this->eventos = $query->select('servicio_presupuesto.*')->get()->groupBy('servicio_id')->toArray();
     }
     public function getEventoFromIdServicioEvento($id)
     {
