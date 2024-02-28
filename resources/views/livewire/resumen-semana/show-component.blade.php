@@ -313,7 +313,7 @@
                                                 <th colspan="7">
                                                     </td>
                                             </tr>
-                                            @foreach ($pack->servicios()->get() as $servicioIndex => $servicio)
+                                            @foreach ($pack->servicios() as $servicioIndex => $servicio)
                                                 @foreach (json_decode($pack->pivot->id_monitores, true)[$servicioIndex] as $monitoresIndex => $monitores)
                                                     @if ($monitoresIndex == 0)
                                                         <tr>
