@@ -90,7 +90,7 @@ class EditComponent extends Component
     public function filtrarPorFecha()
     {
         // Asegúrate de validar o establecer valores predeterminados para las fechas
-        $this->eventos = Evento::whereBetween('fecha', [$this->fechaInicio, $this->fechaFin])->get();
+        $this->eventos = Evento::whereBetween('diaEvento', [$this->fechaInicio, $this->fechaFin])->get();
         // Aquí deberías ajustar la consulta a tus necesidades, por ejemplo, uniendo con otras tablas o filtrando por ID de monitor
     }
     public function getEventoFromIdServicioEvento($id)
