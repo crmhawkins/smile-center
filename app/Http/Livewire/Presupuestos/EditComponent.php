@@ -1394,7 +1394,6 @@ class EditComponent extends Component
                 ->detach($pack['id']);
         }
         foreach ($this->listaServicios as $servicio) {
-            dd($servicio);
             if ($servicio['existente'] == 0) {
                 $this->presupuesto->servicios()->attach(
                     $servicio['id'],
@@ -1417,7 +1416,13 @@ class EditComponent extends Component
 
                 );
             } else {
-                ServicioPresupuesto::where('id', $servicio['id_pivot'])->update(['articulo_seleccionado' => $servicio['articulo_seleccionado'],]);
+                ServicioPresupuesto::where('id', $servicio['id_pivot'])->update([
+                    'articulo_seleccionado' => $servicio['articulo_seleccionado'],
+                    'sueldo_monitores' => json_encode($servicio['sueldo_monitores']),
+                    'id_monitores' => json_encode($servicio['id_monitores']),
+                    'gasto_gasoil' => json_encode($servicio['gasto_gasoil']),
+                    'pago_pendiente' => json_encode($servicio['pago_pendiente']),
+                ]);
             }
         }
 dd($this->listaPacks);
@@ -1439,7 +1444,12 @@ dd($this->listaPacks);
                     'articulos_seleccionados' => json_encode($pack['articulos_seleccionados']),
                 ]);
             }else{
-                PackPresupuesto::where('id', $pack['id_pivot'])->update(['articulos_seleccionados' => json_encode($pack['articulos_seleccionados']),]);
+                PackPresupuesto::where('id', $pack['id_pivot'])->update([
+                    'articulos_seleccionados' => json_encode($pack['articulos_seleccionados']),
+                    'id_monitores' => json_encode($pack['id_monitores']),
+                    'gastos_gasoil' => json_encode($pack['gastos_gasoil']),
+                    'pagos_pendientes' => json_encode($pack['pagos_pendientes']),
+                ]);
             }
         }
 
