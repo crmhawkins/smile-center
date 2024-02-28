@@ -1445,6 +1445,7 @@ class EditComponent extends Component
             }else{
                 PackPresupuesto::where('id', $pack['id_pivot'])->update([
                     'articulos_seleccionados' => json_encode($pack['articulos_seleccionados']),
+                    'sueldos_monitores' => json_encode($pack['sueldos_monitores']),
                     'id_monitores' => json_encode($pack['id_monitores']),
                     'gastos_gasoil' => json_encode($pack['gastos_gasoil']),
                     'pagos_pendientes' => json_encode($pack['pagos_pendientes']),
