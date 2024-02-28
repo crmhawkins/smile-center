@@ -87,12 +87,18 @@ class EditComponent extends Component
 
         $this->vecesContratado = count($this->programas);
     }
-    public function filtrarPorFecha()
-    {
-        // Asegúrate de validar o establecer valores predeterminados para las fechas
-        $this->eventos = Evento::whereBetween('diaEvento', [$this->fechaInicio, $this->fechaFin])->get();
-        // Aquí deberías ajustar la consulta a tus necesidades, por ejemplo, uniendo con otras tablas o filtrando por ID de monitor
+    public function cargarEventos()
+{
+    $query = ServicioPresupuesto::query();
+
+    if ($this->fechaInicio && $this->fechaFin) {
+        $query->whereBetween('fecha_servicio', [$this->fechaInicio, $this->fechaFin]);
     }
+
+    $query->whereJsonContains('id_monitores', $this->identificador);
+
+    $this->eventos = $query->get()->groupBy('servicio_id')->toArray();
+}
     public function getEventoFromIdServicioEvento($id)
     {
         $servicioEvento = ServicioEvento::where("id", $id)->first();

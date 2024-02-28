@@ -213,7 +213,7 @@
                         <input type="date" wire:model="fechaFin" class="form-control">
                     </div>
                     <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary mb-2" wire:click="filtrarPorFecha">Filtrar</button>
+                    <button type="button" class="btn btn-primary mb-2" wire:click="cargarEventos">Filtrar</button>
                     </div>
                 </div>
                 <div class="accordion" id="accordionExample">
