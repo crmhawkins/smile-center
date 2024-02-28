@@ -205,7 +205,7 @@
                         <h5>Servicios realizados por el monitor</h5>
                     </div>
                 </div>
-                <div>
+                <div class="form-group row">
                     <div class="col-sm-4">
                         <input type="date" wire:model="fechaInicio" class="form-control">
                     </div>
