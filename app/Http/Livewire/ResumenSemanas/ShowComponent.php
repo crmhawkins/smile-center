@@ -223,19 +223,19 @@ class ShowComponent extends Component
                 break;
             case 'packHoraMontaje':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $this->datoEdicion['value'] = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_montaje)[$id3];
+                $this->datoEdicion['value'] = (PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_montaje)[$id3];
                 break;
             case 'packHoraInicio':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $this->datoEdicion['value'] =  json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_inicio)[$id3];
+                $this->datoEdicion['value'] =  (PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_inicio)[$id3];
                 break;
             case 'packTiempo':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $this->datoEdicion['value'] =  json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->tiempos)[$id3];
+                $this->datoEdicion['value'] =  (PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->tiempos)[$id3];
                 break;
             case 'packHoraTiempoMontaje':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $this->datoEdicion['value'] =  json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->tiempos_montaje)[$id3];
+                $this->datoEdicion['value'] =  (PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->tiempos_montaje)[$id3];
                 break;
 
             default:
@@ -369,19 +369,19 @@ class ShowComponent extends Component
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
                 $monitores = json_decode(ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->id_monitores, true);
                 $monitores[$this->datoEdicion['id']['monitor']] = $this->datoEdicion['value'];
-                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['id_monitores' => json_encode($monitores)]);
+                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['id_monitores' => $monitores]);
                 break;
             case 'sueldoMonitor':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
                 $monitores = json_decode(ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->sueldo_monitores, true);
                 $monitores[$this->datoEdicion['id']['monitor']] = $this->datoEdicion['value'];
-                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['sueldo_monitores' => json_encode($monitores)]);
+                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['sueldo_monitores' => $monitores]);
                 break;
             case 'gasto_gasoil':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
                 $monitores = json_decode(ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->gasto_gasoil, true);
                 $monitores[$this->datoEdicion['id']['monitor']] = $this->datoEdicion['value'];
-                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['gasto_gasoil' => json_encode($monitores)]);
+                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['gasto_gasoil' => $monitores]);
                 break;
             default:
                 # code...
@@ -398,15 +398,15 @@ class ShowComponent extends Component
             switch ($this->datoEdicion['column']) {
                 case 'packHoraMontaje':
                     $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
-                    $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_montaje, true);
+                    $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_montaje;
                     $monitores[$this->datoEdicion['id']['servicio']] = $this->datoEdicion['value'];
-                    $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['horas_montaje' => json_encode($monitores)]);
+                    $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['horas_montaje' => ($monitores)]);
                     break;
                 case 'packHoraInicio':
                     $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
-                    $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_inicio, true);
+                    $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->horas_inicio;
                     $monitores[$this->datoEdicion['id']['servicio']] = $this->datoEdicion['value'];
-                    $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['horas_inicio' => json_encode($monitores)]);
+                    $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['horas_inicio' => ($monitores)]);
                     break;
                 case 'servicioTiempo':
                     $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
@@ -432,21 +432,21 @@ class ShowComponent extends Component
         switch ($this->datoEdicion['column']) {
             case 'monitorNombrePack':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
-                $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->id_monitores, true);
+                $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->id_monitores;
                 $monitores[$this->datoEdicion['id']['servicio']][$this->datoEdicion['id']['monitor']] = $this->datoEdicion['value'];
-                $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['id_monitores' => json_encode($monitores)]);
+                $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['id_monitores' => ($monitores)]);
                 break;
             case 'sueldoMonitorPack':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
-                $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->sueldos_monitores, true);
+                $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->sueldos_monitores;
                 $monitores[$this->datoEdicion['id']['servicio']][$this->datoEdicion['id']['monitor']] = $this->datoEdicion['value'];
-                $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['sueldos_monitores' => json_encode($monitores)]);
+                $monitoresSave = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->update(['sueldos_monitores' => ($monitores)]);
                 break;
             case 'gasto_gasoil':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $this->datoEdicion['id']['presupuesto'])->id;
-                $monitores = json_decode(ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->gasto_gasoil, true);
+                $monitores = (ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->gasto_gasoil);
                 $monitores[$this->datoEdicion['id']['monitor']] = $this->datoEdicion['value'];
-                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['gasto_gasoil' => json_encode($monitores)]);
+                $monitoresSave = ServicioPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->update(['gasto_gasoil' => ($monitores)]);
                 break;
             default:
                 # code...
