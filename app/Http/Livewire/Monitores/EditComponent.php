@@ -92,7 +92,7 @@ class EditComponent extends Component
         $query = ServicioPresupuesto::query();
 
         // Realiza un join con presupuesto y luego con evento para acceder a diaEvento
-        $query->join('presupuestos', 'servicio_presupuestos.presupuesto_id', '=', 'presupuestos.id')
+        $query->join('presupuestos', 'servicio_presupuesto.presupuesto_id', '=', 'presupuestos.id')
             ->join('eventos', 'presupuestos.id_evento', '=', 'eventos.id');
 
         // Aplica el filtro de fechas si se han especificado
