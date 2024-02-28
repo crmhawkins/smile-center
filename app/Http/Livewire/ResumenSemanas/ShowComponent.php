@@ -283,17 +283,17 @@ class ShowComponent extends Component
         switch ($this->datoEdicion['column']) {
             case 'monitorNombrePack':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->id_monitores, true);
+                $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->id_monitores;
                 $this->datoEdicion['value'] = $monitores[$id3][$id4];
                 break;
             case 'sueldoMonitorPack':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->sueldos_monitores, true);
+                $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('pack_id', $this->datoEdicion['id']['pack'])->first()->sueldos_monitores;
                 $this->datoEdicion['value'] = $monitores[$id3][$id4];
                 break;
             case 'gasto_gasoilPack':
                 $id_presupuesto = $this->presupuestos->firstWhere('id_evento', $id)->id;
-                $monitores = json_decode(PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->gastos_gasoil, true);
+                $monitores = PackPresupuesto::where('presupuesto_id', $id_presupuesto)->where('servicio_id', $this->datoEdicion['id']['servicio'])->first()->gastos_gasoil;
                 $this->datoEdicion['value'] = $monitores[$id3][$id4];
                 break;
             default:
@@ -324,7 +324,7 @@ class ShowComponent extends Component
         $this->datoEdicion['id'] = null;
         $this->datoEdicion['column'] = null;
         $this->datoEdicion['value'] = null;
-        $reload;
+        // $reload;
     }
 
     public function terminarEdicionServicio()
@@ -360,7 +360,7 @@ class ShowComponent extends Component
         $this->datoEdicion['id'] = null;
         $this->datoEdicion['column'] = null;
         $this->datoEdicion['value'] = null;
-        $reload;
+        // $reload;
     }
     public function terminarEdicionMonitores()
     {
@@ -390,7 +390,7 @@ class ShowComponent extends Component
         $this->datoEdicion['id'] = null;
         $this->datoEdicion['column'] = null;
         $this->datoEdicion['value'] = null;
-        $reload;
+        // $reload;
     }
     public function terminarEdicionServicioPack()
     {
@@ -425,7 +425,7 @@ class ShowComponent extends Component
         $this->datoEdicion['id'] = null;
         $this->datoEdicion['column'] = null;
         $this->datoEdicion['value'] = null;
-        $reload;
+        // $reload;
     }
     public function terminarEdicionMonitoresPack()
     {
@@ -455,7 +455,7 @@ class ShowComponent extends Component
         $this->datoEdicion['id'] = null;
         $this->datoEdicion['column'] = null;
         $this->datoEdicion['value'] = null;
-        $reload;
+        // $reload;
     }
     public function getMonitor($id)
     {
