@@ -206,9 +206,9 @@
                     </div>
                 </div>
                 <div>
-                    <input type="date" wire:model="fechaInicio">
-                    <input type="date" wire:model="fechaFin">
-                    <button wire:click="filtrarPorFecha">Filtrar</button>
+                    <input type="date" wire:model="fechaInicio" class="form-control">
+                    <input type="date" wire:model="fechaFin" class="form-control">
+                    <button type="button" class="btn btn-primary mb-2" wire:click="filtrarPorFecha">Filtrar</button>
                 </div>
                 <div class="accordion" id="accordionExample">
                     @foreach ($eventos as $entradasIndex => $entradas)
