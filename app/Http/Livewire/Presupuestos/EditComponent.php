@@ -1425,7 +1425,6 @@ class EditComponent extends Component
                 ]);
             }
         }
-dd($this->listaPacks);
         foreach ($this->listaPacks as $pack) {
             if ($pack['existente'] == 0) {
                 $this->presupuesto->packs()->attach($pack['id'], [
