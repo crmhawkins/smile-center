@@ -1281,7 +1281,7 @@
                                                     <option value="0">Selecciona un monitor.</option>
                                                     @foreach ($monitores as $keys => $monitor)
                                                         <option class="dropdown-item" value="{{ $monitor->id }}">
-                                                            {{ $monitor->nombre }}
+                                                            {{ $monitor->nombre }} {{ $monitor->apellidos }}
                                                         </option>
                                                     @endforeach
                                                 </Select>
