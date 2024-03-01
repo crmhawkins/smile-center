@@ -200,54 +200,56 @@
                 </div>
             </div>
             <div class="card m-b-30">
-                <div class="form-group row">
-                    <div class="col-sm-12">
-                        <h5>Servicios realizados por el monitor</h5>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <h5>Servicios realizados por el monitor</h5>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <input type="date" wire:model="fechaInicio" class="form-control">
+                    <div class="form-group row">
+                        <div class="col-sm-4">
+                            <input type="date" wire:model="fechaInicio" class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="date" wire:model="fechaFin" class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                        <button type="button" class="btn btn-primary mb-2" wire:click="cargarEventos">Filtrar</button>
+                        </div>
                     </div>
-                    <div class="col-sm-4">
-                        <input type="date" wire:model="fechaFin" class="form-control">
-                    </div>
-                    <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary mb-2" wire:click="cargarEventos">Filtrar</button>
-                    </div>
-                </div>
-                <div class="accordion" id="accordionExample">
-                    @foreach ($eventos as $entradasIndex => $entradas)
-                        <div class="card">
-                            <div class="card-header" id="heading{{ $entradasIndex }}">
-                                <h2 class="mb-0">
-                                    <button class="btn btn-link" data-toggle="collapse"
-                                        data-target="#collapse{{ $entradasIndex }}" aria-expanded="true"
-                                        aria-controls="collapse{{ $entradasIndex }}" wire:click.prevent="">
-                                        Servicio -
-                                        {{ $this->servicios->firstWhere('id', $entradas[0]['servicio_id'])->nombre }}:
-                                        Ha realizado este servicio {{ count($entradas) }} veces
-                                    </button>
-                                </h2>
-                            </div>
+                    <div class="accordion" id="accordionExample">
+                        @foreach ($eventos as $entradasIndex => $entradas)
+                            <div class="card">
+                                <div class="card-header" id="heading{{ $entradasIndex }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" data-toggle="collapse"
+                                            data-target="#collapse{{ $entradasIndex }}" aria-expanded="true"
+                                            aria-controls="collapse{{ $entradasIndex }}" wire:click.prevent="">
+                                            Servicio -
+                                            {{ $this->servicios->firstWhere('id', $entradas[0]['servicio_id'])->nombre }}:
+                                            Ha realizado este servicio {{ count($entradas) }} veces
+                                        </button>
+                                    </h2>
+                                </div>
 
-                            <div id="collapse{{ $entradasIndex }}" class="collapse"
-                                aria-labelledby="heading{{ $entradasIndex }}" data-parent="#accordionExample">
-                                <div class="card-body">
-                                    <ul>
-                                        @foreach ($entradas as $entrada)
-                                            <li><a class="dropdown-item"
-                                                    href="{{ route('presupuestos.edit', $entrada['presupuesto_id']) }}">(#{{ $presupuestos->firstWhere('id', $entrada['presupuesto_id'])->first()->nPresupuesto }})
-                                                    {{ $categorias->firstWhere('id', $eventos_id->firstWhere('id', $presupuestos->firstWhere('id', $entrada['presupuesto_id'])->id_evento)->eventoNombre)->nombre }}
-                                                    -
-                                                    {{ $this->getCliente($entrada['presupuesto_id']) }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                                <div id="collapse{{ $entradasIndex }}" class="collapse"
+                                    aria-labelledby="heading{{ $entradasIndex }}" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <ul>
+                                            @foreach ($entradas as $entrada)
+                                                <li><a class="dropdown-item"
+                                                        href="{{ route('presupuestos.edit', $entrada['presupuesto_id']) }}">(#{{ $presupuestos->firstWhere('id', $entrada['presupuesto_id'])->first()->nPresupuesto }})
+                                                        {{ $categorias->firstWhere('id', $eventos_id->firstWhere('id', $presupuestos->firstWhere('id', $entrada['presupuesto_id'])->id_evento)->eventoNombre)->nombre }}
+                                                        -
+                                                        {{ $this->getCliente($entrada['presupuesto_id']) }}</a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
