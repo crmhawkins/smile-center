@@ -818,7 +818,7 @@
                                         <option value="0">Selecciona un servicio.</option>
                                         @foreach ($servicios as $keys => $servicio)
                                             <option class="dropdown-item" value="{{ $servicio->id }}">
-                                                {{ $servicio->nombre }} - {{ $servicio->count }}
+                                                {{ $servicio->nombre }}
                                             </option>
                                         @endforeach
                                     </Select>
@@ -846,9 +846,7 @@
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
                                 <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
                             </div>
-                            @if (
-                                $servicio_seleccionado > 0 &&
-                                    $servicios->where('id', $servicio_seleccionado)->first()->articulos()->count() > 0)
+                            @if ($servicio_seleccionado > 0 && $articulos->where('id_categoria', $servicio_seleccionado)->count() > 0)
                                 <div class="form-group col-md-12">
                                     <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
                                         relacionado al servicio</label>
@@ -857,7 +855,7 @@
                                             name="articulo_seleccionado" id="articulo_seleccionado">
                                             <option value="{{null}}">Selecciona un artículo.</option>
                                             <option value="{{0}}">Sin definir</option>
-                                            @foreach ($servicios->where('id', $servicio_seleccionado)->first()->articulos()->get() as $keys => $articulo)
+                                            @foreach ($articulos->where('id_categoria', $servicio_seleccionado)->get() as $keys => $articulo)
                                                 <option class="dropdown-item" value="{{ $articulo->id }}">
                                                     {{ $articulo->name }}
                                                 </option>
