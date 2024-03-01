@@ -18,14 +18,14 @@ class CreateComponent extends Component
 
     use LivewireAlert;
 
-    public $tipo_gasto;
+    public $tipos_gasto;
     public $nombre_gasto;
     public $date;
     public $cuantia;
 
     public function mount()
     {
-        $this->tipo_gasto = TipoGasto::all();
+        $this->tipos_gasto = TipoGasto::all();
     }
 
     public function render()
