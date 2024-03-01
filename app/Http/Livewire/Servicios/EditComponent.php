@@ -138,12 +138,10 @@ class EditComponent extends Component
                 'nombre' => 'required',
                 'precioBase' => 'required',
                 'id_pack' => 'nullable',
-                'id_categoria' => 'required',
                 'minMonitor' => 'required',
                 'precioMonitor' => 'required',
                 'tiempoMontaje' => 'required',
                 'tiempoDesmontaje' => 'required',
-                'tiempoServicio' => 'required',
 
             ],
             // Mensajes de error
@@ -168,13 +166,10 @@ class EditComponent extends Component
             'nombre' => $this->nombre,
             'precioBase' => $this->precioBase,
             'id_pack' => $this->selectedPacks,
-            'id_categoria' => $this->id_categoria,
             'minMonitor' => $this->minMonitor,
-
             'precioMonitor' => $this->precioMonitor,
             'tiempoMontaje' => $this->tiempoMontaje,
             'tiempoDesmontaje' => $this->tiempoDesmontaje,
-            'tiempoServicio' => $this->tiempoServicio,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 30, $servicio->id));
 

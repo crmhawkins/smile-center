@@ -111,13 +111,13 @@ class CreateComponent extends Component
                 'nombre' => 'required',
                 'precioBase' => 'required',
                 'id_pack' => 'nullable',
-                'id_categoria' => 'required',
+                'id_categoria' => 'nullable',
                 'minMonitor' => 'required',
                 'precioMonitor' => 'required',
                 'tiempoMontaje' => 'required',
                 'tiempoDesmontaje' => 'required',
                 'tiempoServicio' => 'required',
-                'listaArticulos' => 'required|array|min:1',
+                'listaArticulos' => 'nullable|array|min:1',
 
 
             ],
