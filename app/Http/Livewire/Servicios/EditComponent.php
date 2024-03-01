@@ -173,24 +173,24 @@ class EditComponent extends Component
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 30, $servicio->id));
 
-        if(!empty($this->listaArticulosEliminar)){
-            foreach ($this->listaArticulosEliminar as $articulo) {
-                $servicio->articulos()->detach($articulo['id']);
-            }
-        }
+        // if(!empty($this->listaArticulosEliminar)){
+        //     foreach ($this->listaArticulosEliminar as $articulo) {
+        //         $servicio->articulos()->detach($articulo['id']);
+        //     }
+        // }
 
 
 
-        foreach ($this->listaArticulos as $servicioAttach) {
-            if ($servicioAttach['existente'] == 0) {
-                $servicio->articulos()->attach(
-                    $servicioAttach['id'],
-                    [
-                        'stock_usado' => $servicioAttach['stock_usado'],
-                    ]
-                );
-            }
-        }
+        // foreach ($this->listaArticulos as $servicioAttach) {
+        //     if ($servicioAttach['existente'] == 0) {
+        //         $servicio->articulos()->attach(
+        //             $servicioAttach['id'],
+        //             [
+        //                 'stock_usado' => $servicioAttach['stock_usado'],
+        //             ]
+        //         );
+        //     }
+        // }
 
 
 

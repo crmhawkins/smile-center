@@ -138,9 +138,9 @@ class CreateComponent extends Component
         // Guardar datos validados
         $usuariosSave = Servicio::create($validatedData);
         event(new \App\Events\LogEvent(Auth::user(), 29, $usuariosSave->id));
-        foreach ($this->listaArticulos as $servicio) {
-            $usuariosSave->articulos()->attach($servicio['id'], ['stock_usado' => $servicio['stock_usado']]);
-        }
+        // foreach ($this->listaArticulos as $servicio) {
+        //     $usuariosSave->articulos()->attach($servicio['id'], ['stock_usado' => $servicio['stock_usado']]);
+        // }
         $usuariosSave->id_pack = $this->selectedPacks;
         $usuariosSave->save();
         // Alertas de guardado exitoso
