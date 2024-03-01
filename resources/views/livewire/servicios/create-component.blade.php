@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <div class="col-sm-12">
                                 <label for="id_categoria" class="col-sm-12 col-form-label">Categoria </label>
                                 <div class="col-sm-11">
@@ -60,7 +60,7 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="form-group row" wire:ignore>
                             <div class="col-sm-12">
@@ -194,7 +194,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card mt-5">
+            {{-- <div class="card mt-5">
                 <div class="card-body">
                     <div class="form-group row">
                         <div class="col-sm-12">
@@ -258,7 +258,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="col-md-3 justify-content-center">
             <div class="position-fixed">
                 <div class="card m-b-30">

@@ -92,14 +92,13 @@
                     </ul>
                 </li>
                 <li class="menu-title">Servicios</li>
-                <li>
+                {{-- <li>
                     <a href="javascript:void(0);" class="waves-effect"><i class="ti-tag"></i><span> Servicios Categoria <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
                         <li><a href="/admin/servicios-categorias">Ver Todos</a></li>
                         <li><a href="/admin/servicios-categorias-create">Crear Servicios Categoria </a></li>
-                        {{-- <li><a href="email-compose.html">Email Compose</a></li> --}}
                     </ul>
-                </li>
+                </li> --}}
                 <li>
                     <a href="javascript:void(0);" class="waves-effect"><i class="ti-settings"></i><span> Servicios <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
