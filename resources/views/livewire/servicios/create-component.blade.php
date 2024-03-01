@@ -257,8 +257,8 @@
                         @endif
                     </div>
                 </div>
-            </div>
-        </div> --}}
+            </div>--}}
+        </div>
         <div class="col-md-3 justify-content-center">
             <div class="position-fixed">
                 <div class="card m-b-30">
