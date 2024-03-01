@@ -19,6 +19,7 @@ class CreateComponent extends Component
     use LivewireAlert;
 
     public $tipos_gasto;
+    public $tipo_gasto;
     public $nombre_gasto;
     public $date;
     public $cuantia;
