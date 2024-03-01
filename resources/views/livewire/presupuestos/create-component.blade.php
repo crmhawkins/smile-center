@@ -855,7 +855,7 @@
                                             name="articulo_seleccionado" id="articulo_seleccionado">
                                             <option value="{{null}}">Selecciona un artículo.</option>
                                             <option value="{{0}}">Sin definir</option>
-                                            @foreach ($articulos->where('id_categoria', $servicio_seleccionado)->get() as $keys => $articulo)
+                                            @foreach ($articulos->where('id_categoria', $servicio_seleccionado) as $keys => $articulo)
                                                 <option class="dropdown-item" value="{{ $articulo->id }}">
                                                     {{ $articulo->name }}
                                                 </option>
