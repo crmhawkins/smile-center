@@ -45,6 +45,7 @@
                         <div class="form-group row">
                             <div class="col-sm-5">
                                 <label for="name" class="col-sm-5 col-form-label">¿Stock ilimitado?</label>
+                                {{var_dump($stock)}}
                                 <input type="checkbox" wire:model="stock" class="form-check-input" name="stock" id="stock" aria-label="Stock" placeholder="Stock">
                                 @error('stock')
                                 <span class="text-danger">{{ $message }}</span>
