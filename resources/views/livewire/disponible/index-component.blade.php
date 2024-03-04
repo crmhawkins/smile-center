@@ -52,7 +52,7 @@
                                                 <ul>
                                                     @foreach ($articulos as $articulo)
                                                         @if ($articulo->id_categoria == $servicio->id)
-                                                            <li>{{ $articulo->nombre }}</li>
+                                                            <li>{{ $articulo->name }}</li>
                                                         @endif
                                                     @endforeach
                                                 </ul>
