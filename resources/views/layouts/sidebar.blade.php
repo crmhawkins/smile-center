@@ -19,6 +19,9 @@
                     <a href="/admin/agenda" class="waves-effect"><i class="fas fa-book"></i><span> Agenda </span></a>
                 </li>
                 <li>
+                    <a href="/admin/servicios-disponibles" class="waves-effect"><i class="fa-solid fa-bars"></i><span> Servicios Disponibles </span></a>
+                </li>
+                <li>
                     <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-chart-bar"></i><span> Cuadrante <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
                         <li><a href="/admin/cuadrante-semanas">Cuadrante Semanal</a></li>
