@@ -77,13 +77,21 @@
     });
 </script>
 <script>
-$(document).ready(function() {
-    $('#datatable-buttons').DataTable({
-        paging: false, // Esto deshabilita la paginación
-        // Otras opciones de configuración...
+    $(document).ready(function() {
+        // Inicializar DataTables
+        $('#datatable-buttons').DataTable({
+            paging: false, // Deshabilita la paginación
+            searching: true, // Habilita la búsqueda (opcional, ajústalo según tus necesidades)
+            ordering: true, // Habilita el ordenamiento de columnas (opcional, ajústalo según tus necesidades)
+            // Quitar o ajustar según la necesidad de exportar datos (PDF, Excel)
+            dom: 'Bfrtip', // Define los elementos presentes en el DOM de DataTables y su orden
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print' // Define los botones a mostrar
+            ],
+            responsive: true // Asegura que la tabla sea responsive
+        });
     });
-});
-</script>
+    </script>
 <!-- Required datatable js -->
 <script src="../assets/js/jquery.slimscroll.js"></script>
 
@@ -101,7 +109,7 @@ $(document).ready(function() {
 <!-- Responsive examples -->
 <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
-<script src="../assets/pages/datatables.init.js"></script>
+
 
 
 @endsection
