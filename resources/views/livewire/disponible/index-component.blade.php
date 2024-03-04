@@ -39,7 +39,7 @@
                                     $sumatorio = 0;
                                     foreach ($articulos as $articulo) {
                                         if ($articulo->id_categoria == $servicio->id) {
-                                            $sumatorio += $articulo->stock;
+                                            $sumatorio += 1;
                                         }
                                     }
                                     echo $sumatorio; // Mostramos el sumatorio
