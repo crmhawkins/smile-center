@@ -1,8 +1,3 @@
-<script src="//unpkg.com/alpinejs" defer></script>
-    <?php
-
-    use Carbon\Carbon;
-    ?>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
