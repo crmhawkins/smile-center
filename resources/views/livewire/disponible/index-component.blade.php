@@ -108,6 +108,33 @@
     initDatatable();
 });
     </script>
+    <script>
+        document.addEventListener('livewire:load', function () {
+            // Función para inicializar o reinicializar DataTables
+            function initDataTables() {
+                // Verificar si la instancia de DataTables ya existe
+                if ($.fn.DataTable.isDataTable('#datatable-buttons')) {
+                    $('#datatable-buttons').DataTable().destroy(); // Destruir la instancia existente
+                }
+                $('#datatable-buttons').DataTable({
+                    paging: false,
+                    searching: true,
+                    ordering: true,
+                    dom: 'Bfrtip',
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                    responsive: true,
+                });
+            }
+
+            // Inicializar DataTables la primera vez
+            initDataTables();
+
+            // Reinicializar DataTables después de que Livewire procese mensajes
+            window.livewire.hook('message.processed', function (message, component) {
+                initDataTables();
+            });
+        });
+        </script>
 <!-- Required datatable js -->
 <script src="../assets/js/jquery.slimscroll.js"></script>
 
