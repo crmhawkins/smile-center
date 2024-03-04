@@ -39,14 +39,9 @@ class IndexComponent extends Component
                 ELSE servicio_presupuesto.num_art_indef
                 END) AS total_stock_usado')
             ->value('total_stock_usado');
-        dd($sumaTotalStockUsado);
             // Obtener el stock total fijo del artículo
-            $stockTotal = DB::table('servicio_articulo')
-                ->where('servicio_id', $servicioId)
-                ->sum('servicio_articulo.stock_usado');
-            // Obtener la cantidad de stock usado por el servicio que deseas agregar
-            $cantidadStockUsadoNuevoServicio = $this->num_arti ;
-            // Calcular la cantidad total que se usaría si se agrega el nuevo servicio
+            $stockTotal = $this->articulos::where('id_categoria' == $servicioId)->count();
+            dd( $stockTotal);
             $nuevaCantidadTotal = $sumaTotalStockUsado + $cantidadStockUsadoNuevoServicio;
             if ($nuevaCantidadTotal > $stockTotal) {
                 $stockSeSupera = true;
