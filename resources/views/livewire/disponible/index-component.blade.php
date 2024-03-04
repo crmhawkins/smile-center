@@ -77,19 +77,31 @@
     });
 </script>
 <script>
-    $(document).ready(function() {
-        // Inicializar DataTables
-        $('#datatable-buttons').DataTable({
-            paging: false, // Deshabilita la paginación
-            searching: true, // Habilita la búsqueda (opcional, ajústalo según tus necesidades)
-            ordering: true, // Habilita el ordenamiento de columnas (opcional, ajústalo según tus necesidades)
-            // Quitar o ajustar según la necesidad de exportar datos (PDF, Excel)
-            dom: 'Bfrtip', // Define los elementos presentes en el DOM de DataTables y su orden
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print' // Define los botones a mostrar
-            ],
-            responsive: true // Asegura que la tabla sea responsive
+    document.addEventListener('DOMContentLoaded', function () {
+        // Función para inicializar DataTables
+        function initDatatable() {
+            if ($.fn.DataTable.isDataTable('#datatable-buttons')) {
+                // Si la tabla ya fue inicializada, destruirla primero
+                $('#datatable-buttons').DataTable().clear().destroy();
+            }
+            // Reinicialización de DataTables
+            $('#datatable-buttons').DataTable({
+                paging: false,
+                searching: true,
+                ordering: true,
+                responsive: true,
+                // Aquí puedes agregar cualquier otra opción necesaria
+            });
+        }
+
+        // Escuchar eventos de Livewire
+        window.livewire.hook('afterDomUpdate', () => {
+            // Reinicializar DataTables después de cada actualización de Livewire
+            initDatatable();
         });
+
+        // Inicialización inicial
+        initDatatable();
     });
     </script>
 <!-- Required datatable js -->
