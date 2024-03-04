@@ -16,7 +16,7 @@
             <div class="card m-b-30">
                 <div class="card-body">
                     <h4 class="mt-0 header-title">Listado de todos los servicios</h4>
-                    <p class="sub-title">Listado completo de todos nuestros eventos</p> {{$dia}}-{{$test}}
+                    <p class="sub-title">Listado completo de todos nuestros eventos</p> {{$dia}}
                     @if (count($servicios) > 0)
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
@@ -71,22 +71,16 @@
                         <div class="col-12">
                             <input type="date" class="form-control" wire:model="dia">
                         </div>
-                        <div class="col-12">
-                            <input type="date" class="form-control" wire:model.lazy="dia">
-                        </div>
-                        <div class="col-12">
-                            <input type="date" class="form-control" wire:model="test">
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-{{-- <script>
+<script>
     document.querySelectorAll('.details-control').forEach(function(element) {
         element.addEventListener('click', function() {
             var articulos = this.querySelector('.articulos');
             articulos.style.display = articulos.style.display === 'none' ? 'block' : 'none';
         });
     });
-</script> --}}
+</script>

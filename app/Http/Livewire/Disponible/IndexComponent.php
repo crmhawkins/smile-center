@@ -15,7 +15,6 @@ class IndexComponent extends Component
     public $servicios;
     public $articulos;
     public $dia;
-    public $test;
 
 
 
