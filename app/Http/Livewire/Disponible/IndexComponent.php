@@ -25,10 +25,10 @@ class IndexComponent extends Component
         $this->dia = Carbon::now()->format('Y-m-d');
     }
 
-    public function stock($id,$date){
+    public function stock($id){
         $servicioId = $id;
 
-        $fechaEvento = $date;
+        $fechaEvento = $this->dia;
 
         $sumaTotalStockUsado = DB::table('presupuestos')
             ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
