@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('presupuestos', function (Blueprint $table) {
-            $table->date("diaEvento");
-            $table->date("diaFinal");
+            $table->date('diaEvento')->nullable();
+            $table->date('diaFinal')->nullable();
         });
     }
 
@@ -27,8 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('presupuestos', function (Blueprint $table) {
-            $table->dropColumn("diaEvento");
-            $table->dropColumn("diaFinal");
+            $table->dropColumn('diaEvento');
+            $table->dropColumn('diaFinal');
         });
     }
 };
