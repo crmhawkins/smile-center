@@ -76,7 +76,7 @@
         });
     });
 </script>
-<script>
+{{-- <script>
     $(document).ready(function() {
         // Inicializar DataTables
         $('#datatable-buttons').DataTable({
@@ -92,5 +92,5 @@
             responsive: true // Asegura que la tabla sea responsive
         });
     });
-</script>
+</script> --}}
 @endsection
