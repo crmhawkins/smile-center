@@ -76,9 +76,15 @@
         });
     });
 </script>
-
+<script>
+$(document).ready(function() {
+    $('#datatable-buttons').DataTable({
+        paging: false, // Esto deshabilita la paginación
+        // Otras opciones de configuración...
+    });
+});
+</script>
 <!-- Required datatable js -->
-{{-- <script src="../assets/js/jquery.min.js"></script> --}}
 <script src="../assets/js/jquery.slimscroll.js"></script>
 
 <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
