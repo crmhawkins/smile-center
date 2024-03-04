@@ -26,7 +26,7 @@
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th scope="col">Servicio</th>
+                                    <th scope="col">Servicio{{$dia}}</th>
                                     <th scope="col">Stock total</th>
                                     <th scope="col">Disponibles</th>
                                     <th scope="col">Articulos</th>
