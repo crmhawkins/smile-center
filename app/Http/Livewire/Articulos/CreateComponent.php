@@ -17,6 +17,7 @@ class CreateComponent extends Component
     public $stock;
     public $id_categoria;
     public $servicioCategorias;
+    public $accesorio = 0;
 
     public function mount()
     {
@@ -36,6 +37,7 @@ class CreateComponent extends Component
                 'name' => 'required',
                 'stock' => 'required',
                 'id_categoria' => 'required',
+                'accesorio'=> 'required',
             ],
             // Mensajes de error
             [

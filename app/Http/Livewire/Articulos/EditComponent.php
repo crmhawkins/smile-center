@@ -17,6 +17,8 @@ class EditComponent extends Component
     public $stock;
     public $id_categoria;
     public $servicioCategorias;
+    public $accesorio = 0;
+
 
     public function mount()
     {
@@ -25,6 +27,7 @@ class EditComponent extends Component
         $this->name = $articulo->name;
         $this->stock = $articulo->stock;
         $this->id_categoria = $articulo->id_categoria;
+        $this->accesorio = $articulo->accesorio ?? 0;
     }
     public function render()
     {
@@ -38,6 +41,7 @@ class EditComponent extends Component
                 'name' => 'required',
                 'stock' => 'required',
                 'id_categoria' => 'required',
+                'accesorio'=> 'required',
 
             ],
             // Mensajes de error
