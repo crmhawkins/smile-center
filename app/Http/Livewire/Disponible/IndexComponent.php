@@ -52,6 +52,6 @@ class IndexComponent extends Component
 
     public function cambiodia()
     {
-
+        $this->emitSelf('refresh');
     }
 }
