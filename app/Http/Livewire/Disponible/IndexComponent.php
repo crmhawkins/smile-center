@@ -40,7 +40,7 @@ class IndexComponent extends Component
                 END) AS total_stock_usado')
             ->value('total_stock_usado');
             // Obtener el stock total fijo del artículo
-            $stockTotal = Articulos::where('id_categoria' == $servicioId)->count();
+            $stockTotal = Articulos::where('id_categoria', $servicioId)->count();
             $disponible =$stockTotal- $sumaTotalStockUsado;
         return  $disponible;
     }
