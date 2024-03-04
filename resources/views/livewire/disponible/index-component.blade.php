@@ -1,3 +1,5 @@
+
+<div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -75,7 +77,8 @@
                 </div>
             </div>
         </div>
-
+    </div>
+</div>
 <script>
     document.querySelectorAll('.details-control').forEach(function(element) {
         element.addEventListener('click', function() {
