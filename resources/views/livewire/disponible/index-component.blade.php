@@ -19,39 +19,37 @@
                 <div class="card-body">
                     <h4 class="mt-0 header-title">Listado de todos los servicios</h4>
                     <p class="sub-title">Listado completo de todos nuestros eventos</p>
-                    @if (count($servicios) > 0)
-                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
+                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th scope="col">Servicio</th>
+                                <th scope="col">Stock total</th>
+                                <th scope="col">Disponibles</th>
+                                <th scope="col">Articulos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($servicios as $servicio)
                                 <tr>
-                                    <th scope="col">Servicio</th>
-                                    <th scope="col">Stock total</th>
-                                    <th scope="col">Disponibles</th>
-                                    <th scope="col">Articulos</th>
+                                    <td>{{ $servicio->nombre }}</td>
+                                    <td>{{ $this->stockTotal($servicio->id) }}</td>
+                                    <td>{{ $this->stock($servicio->id) }}</td>
+                                    <td class="details-control" data-id="{{ $servicio->id }}" style="cursor: pointer;">
+                                        <span>Ver artículos</span>
+                                        <div class="articulos" style="display: none;">
+                                            <ul>
+                                                @foreach ($articulos as $articulo)
+                                                    @if ($articulo->id_categoria == $servicio->id)
+                                                        <li>{{ $articulo->name }}</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($servicios as $servicio)
-                                    <tr>
-                                        <td>{{ $servicio->nombre }}</td>
-                                        <td>{{ $this->stockTotal($servicio->id) }}</td>
-                                        <td>{{ $this->stock($servicio->id) }}</td>
-                                        <td class="details-control" data-id="{{ $servicio->id }}" style="cursor: pointer;">
-                                            <span>Ver artículos</span>
-                                            <div class="articulos" style="display: none;">
-                                                <ul>
-                                                    @foreach ($articulos as $articulo)
-                                                        @if ($articulo->id_categoria == $servicio->id)
-                                                            <li>{{ $articulo->name }}</li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @endif
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -69,6 +67,7 @@
         </div>
     </div>
 </div>
+@section('scripts')
 <script>
     document.querySelectorAll('.details-control').forEach(function(element) {
         element.addEventListener('click', function() {
@@ -77,3 +76,26 @@
         });
     });
 </script>
+
+<!-- Required datatable js -->
+{{-- <script src="../assets/js/jquery.min.js"></script> --}}
+<script src="../assets/js/jquery.slimscroll.js"></script>
+
+<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="../plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="../plugins/datatables/jszip.min.js"></script>
+<script src="../plugins/datatables/pdfmake.min.js"></script>
+<script src="../plugins/datatables/vfs_fonts.js"></script>
+<script src="../plugins/datatables/buttons.html5.min.js"></script>
+<script src="../plugins/datatables/buttons.print.min.js"></script>
+<script src="../plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="../plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="../assets/pages/datatables.init.js"></script>
+
+
+@endsection
