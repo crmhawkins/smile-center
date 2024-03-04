@@ -17,31 +17,39 @@
         </div> <!-- end row -->
     </div>
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-9">
             <div class="card m-b-30">
-                <div class="card-body row">
-                    @foreach ($dias as $diaIndex => $dia)
-                        <div class="form-group col-md-4">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                {{ $dia }}</h5>
-                            <div class="form-group col-md-12">
-                                <div class="form-row">
-                                    @if ($eventos->where('diaEvento', $fechas[$diaIndex])->count() > 0)
-                                        <ul>
-                                            @foreach ($eventos->where('diaEvento', $fechas[$diaIndex]) as $evento)
-                                                <li><a href="{{route('presupuestos.edit', $presupuestos->where("id_evento", $evento->id)->first()->id)}}"> (#{{ $presupuestos->where('id_evento', $evento->id)->first()->nPresupuesto }})
-                                                    {{ $categorias->find($evento->eventoNombre)->nombre }} -
-                                                    {{ $this->getCliente($evento->id) }}</a></li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <h6 class="text-center">No hay servicios disponibles este día.</h6>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="card-body">
+                    <h4 class="mt-0 header-title">Listado de todos los servicios </h4>
+                    <p class="sub-title../plugins">Listado completo de todos nuestros eventos</p>
+                    @if (count($servicios) > 0)
+                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th scope="col">Servicio</th>
+                                <th scope="col">Stock total</th>
+                                <th scope="col">En Uso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($servicios as $servicio)
+                            <tr>
+                                <td>{{ $servicio->nombre }}</td>
+                                <td>@php
+                                    $sumatorio = 0;
+                                    foreach ($articulos as $articulo) {
+                                        if ($articulo->id_categoria == $servicio->id) {
+                                            $sumatorio += $articulo->stock;
+                                        }
+                                    }
+                                    echo $sumatorio; // Mostramos el sumatorio
+                                @endphp</td>
+                                <td>{{ $servicio->nombre }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
                 </div>
             </div>
         </div>
