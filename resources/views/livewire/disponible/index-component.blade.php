@@ -92,4 +92,5 @@
             responsive: true // Asegura que la tabla sea responsive
         });
     });
+</script>
 @endsection
