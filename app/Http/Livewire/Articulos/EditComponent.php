@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Articulos;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\Articulos;
-use App\Models\ServicioCategoria;
+use App\Models\Servicio;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class EditComponent extends Component
@@ -22,7 +22,7 @@ class EditComponent extends Component
 
     public function mount()
     {
-        $this->servicioCategorias = ServicioCategoria::all();
+        $this->servicioCategorias = Servicio::all();
         $articulo = Articulos::find($this->identificador);
         $this->name = $articulo->name;
         $this->stock = $articulo->stock;

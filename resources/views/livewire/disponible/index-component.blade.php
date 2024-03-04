@@ -20,35 +20,46 @@
         <div class="col-9">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h4 class="mt-0 header-title">Listado de todos los servicios </h4>
-                    <p class="sub-title../plugins">Listado completo de todos nuestros eventos</p>
+                    <h4 class="mt-0 header-title">Listado de todos los servicios</h4>
+                    <p class="sub-title">Listado completo de todos nuestros eventos</p>
                     @if (count($servicios) > 0)
-                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th scope="col">Servicio</th>
-                                <th scope="col">Stock total</th>
-                                <th scope="col">En Uso</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($servicios as $servicio)
-                            <tr>
-                                <td>{{ $servicio->nombre }}</td>
-                                <td>@php
-                                    $sumatorio = 0;
-                                    foreach ($articulos as $articulo) {
-                                        if ($articulo->id_categoria == $servicio->id) {
-                                            $sumatorio += 1;
-                                        }
-                                    }
-                                    echo $sumatorio; // Mostramos el sumatorio
-                                @endphp</td>
-                                <td>{{ $servicio->nombre }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Servicio</th>
+                                    <th scope="col">Stock total</th>
+                                    <th scope="col">Disponibles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($servicios as $servicio)
+                                    <tr>
+                                        <td>{{ $servicio->nombre }}</td>
+                                        <td>
+                                            @php
+                                                $sumatorio = 0;
+                                                foreach ($articulos as $articulo) {
+                                                    if ($articulo->id_categoria == $servicio->id) {
+                                                        $sumatorio += 1;
+                                                    }
+                                                }
+                                                echo $sumatorio; // Mostramos el sumatorio
+                                            @endphp
+                                        </td>
+                                        <td>
+                                            <select class="form-select" wire:model="articuloSeleccionado">
+                                                <option value="">Selecciona un artículo</option>
+                                                @foreach ($articulos as $articulo)
+                                                    @if ($articulo->id_categoria == $servicio->id)
+                                                        <option value="{{ $articulo->id }}">{{ $articulo->nombre }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     @endif
                 </div>
             </div>
