@@ -31,16 +31,20 @@
                                 <tr>
                                     {{-- <th scope="col">Trato</th> --}}
                                     <th scope="col">Nombre</th>
-                                    <th scope="col">Stock</th>
+                                    <th scope="col">Stock Ilimitado</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($articulos as $articulo)
                                     <tr>
-                                        
+
                                         <td>{{ $articulo->name }}</td>
-                                        <td>{{ $articulo->stock }}</td>
+                                        <td>@if({{ $articulo->stock }} > 0)
+                                            Si
+                                        @else
+                                           NO
+                                        @endif</td>
                                         <td> <a href="articulo-edit/{{ $articulo->id }}" class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>
                                 @endforeach
@@ -49,12 +53,12 @@
                     @else
                         <h6 class="text-center">No hay tenemos ningun articulo</h6>
                     @endif
-            
+
 
                 </div>
             </div>
         </div> <!-- end col -->
-    </div> <!-- end row -->    
+    </div> <!-- end row -->
 </div>
 
 
@@ -78,7 +82,7 @@
 <!-- Responsive examples -->
 <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
-<script src="../assets/pages/datatables.init.js"></script>   
+<script src="../assets/pages/datatables.init.js"></script>
 
 
 @endsection

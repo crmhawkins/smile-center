@@ -43,12 +43,11 @@
 
                         <!-- Stock -->
                         <div class="form-group row">
-                            <label for="name" class="col-sm-12 col-form-label">Stock</label>
+                            <label for="name" class="col-sm-12 col-form-label">¿Stock ilimitado?</label>
                             <div class="col-sm-11">
-                                <input type="text" wire:model="stock" class="form-control" name="stock" id="stock" aria-label="Stock" placeholder="Stock">
+                                <input type="checkbox" wire:model="stock" class="form-check-input" name="stock" id="stock" aria-label="Stock" placeholder="Stock">
                                 @error('stock')
                                 <span class="text-danger">{{ $message }}</span>
-
 
                                 <style>
                                     .nombre {
