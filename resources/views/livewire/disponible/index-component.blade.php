@@ -76,7 +76,7 @@
         });
     });
 </script>
-<script>
+{{-- <script>
     document.addEventListener('livewire:load', function () {
         window.livewire.hook('message.processed', function (message, component) {
             setTimeout(function () {
@@ -94,7 +94,7 @@
             }, 100); // Retraso de 100 milisegundos
         });
     });
-    </script>
+    </script> --}}
 <!-- Required datatable js -->
 <script src="../assets/js/jquery.slimscroll.js"></script>
 
