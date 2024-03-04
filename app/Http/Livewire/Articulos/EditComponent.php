@@ -60,6 +60,7 @@ class EditComponent extends Component
             'name' => $this->name,
             'stock' => $this->stock,
             'id_categoria' => $this->id_categoria,
+            'accesorio' => $this->accesorio,
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 24, $articulo->id));

@@ -28,6 +28,8 @@ class Presupuesto extends Model
         "estado",
         'categoria_evento_id',
         'gasoilDistancia',
+        'diaEvento',
+        'diaFinal',
         'gestor_id',
         'created_at',
         'updated_at',
