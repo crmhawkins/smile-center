@@ -44,7 +44,7 @@
                         <!-- Stock -->
                         <div class="form-group row">
                             <div class="col-sm-5">
-                                <label for="name" class="col-sm-7 col-form-label">¿Stock ilimitado?</label>
+                                <label for="name" class="col-sm-5 col-form-label">¿Stock ilimitado?</label>
                                 <input type="checkbox" wire:model="stock" class="form-check-input p-10" name="stock" id="stock" aria-label="Stock" placeholder="Stock">
                                 @error('stock')
                                 <span class="text-danger">{{ $message }}</span>
@@ -60,7 +60,7 @@
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
-                                <label for="name" class="col-sm-7 col-form-label">¿Usa accesorios?</label>
+                                <label for="name" class="col-sm-5 col-form-label">¿Usa accesorios?</label>
                                 <input type="checkbox" wire:model="accesorio" class="form-check-input p-10" name="accesorio" id="accesorio" aria-label="accesorio" placeholder="accesorio">
                                 @error('accesorio')
                                 <span class="text-danger">{{ $message }}</span>
