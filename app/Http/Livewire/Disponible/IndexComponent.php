@@ -21,8 +21,14 @@ class IndexComponent extends Component
     public function mount()
     {
         $this->servicios = Servicio::all();
-        $this->articulos = Articulos::all();
+
         $this->dia = Carbon::now()->format('Y-m-d');
+        $articulosEnUso = DB::table('presupuestos')
+        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+        ->whereRaw('? BETWEEN presupuestos.diaEvento AND presupuestos.diaFinal', [$value])
+        ->pluck('servicio_presupuesto.articulo_seleccionado');
+
+    $this->articulos = Articulos::whereNotIn('id', $articulosEnUso)->get();
     }
 
     public function stock($id){
@@ -52,8 +58,11 @@ class IndexComponent extends Component
     protected $listeners = ['refresh' => '$refresh'];
     public function cambiodia()
     {
-        $this->servicios = Servicio::all(); // Ajusta según sea necesario
-        $this->articulos = Articulos::all(); // Ajusta según sea necesario
-        $this->emitSelf('refresh');
+        $articulosEnUso = DB::table('presupuestos')
+        ->join('servicio_presupuesto', 'presupuestos.id', '=', 'servicio_presupuesto.presupuesto_id')
+        ->whereRaw('? BETWEEN presupuestos.diaEvento AND presupuestos.diaFinal', [$value])
+        ->pluck('servicio_presupuesto.articulo_seleccionado');
+
+        $this->articulos = Articulos::whereNotIn('id', $articulosEnUso)->get();
     }
 }

@@ -18,7 +18,7 @@
             <div class="card m-b-30">
                 <div class="card-body">
                     <h4 class="mt-0 header-title">Listado de todos los servicios</h4>
-                    <p class="sub-title">Listado completo de todos nuestros eventos</p> {{$dia}}
+                    <p class="sub-title">Listado completo de todos nuestros eventos</p>
                     @if (count($servicios) > 0)
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
