@@ -32,6 +32,7 @@
                                     {{-- <th scope="col">Trato</th> --}}
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Stock Ilimitado</th>
+                                    <th scope="col">Usa Accesorio</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
                             </thead>
@@ -41,6 +42,11 @@
 
                                         <td>{{ $articulo->name }}</td>
                                         <td>@if( $articulo->stock  > 0)
+                                            Si
+                                        @else
+                                           NO
+                                        @endif</td>
+                                        <td>@if( $articulo->accesorio  > 0)
                                             Si
                                         @else
                                            NO
