@@ -46,18 +46,16 @@
                                                 echo $sumatorio; // Mostramos el sumatorio
                                             @endphp
                                         </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Seleccionar artículo
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <td class="details-control" data-id="{{ $servicio->id }}" style="cursor: pointer;">
+                                            <span>Ver artículos</span>
+                                            <div class="articulos" style="display: none;">
+                                                <ul>
                                                     @foreach ($articulos as $articulo)
                                                         @if ($articulo->id_categoria == $servicio->id)
-                                                            <a class="dropdown-item" href="#">{{ $articulo->nombre }}</a>
+                                                            <li>{{ $articulo->nombre }}</li>
                                                         @endif
                                                     @endforeach
-                                                </div>
+                                                </ul>
                                             </div>
                                         </td>
                                     </tr>
