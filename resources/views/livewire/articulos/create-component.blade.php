@@ -43,10 +43,26 @@
 
                         <!-- Stock -->
                         <div class="form-group row">
-                            <div class="col-sm-11">
-                                <label for="name" class="col-sm-2 col-form-label">¿Stock ilimitado?</label>
+                            <div class="col-sm-5">
+                                <label for="name" class="col-sm-3 col-form-label">¿Stock ilimitado?</label>
                                 <input type="checkbox" wire:model="stock" class="form-check-input p-10" name="stock" id="stock" aria-label="Stock" placeholder="Stock">
                                 @error('stock')
+                                <span class="text-danger">{{ $message }}</span>
+
+                                <style>
+                                    .nombre {
+                                        color: red;
+                                    }
+                                </style>
+                                @enderror
+                            </div>
+                            <div class="col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
+                                <label for="name" class="col-sm-3 col-form-label">¿Usa accesorios?</label>
+                                <input type="checkbox" wire:model="accesorio" class="form-check-input p-10" name="accesorio" id="accesorio" aria-label="accesorio" placeholder="accesorio">
+                                @error('accesorio')
                                 <span class="text-danger">{{ $message }}</span>
 
                                 <style>

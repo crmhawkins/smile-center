@@ -15,6 +15,7 @@ class Articulos extends Model
         "name",
         "stock",
         "id_categoria",
+        "accesorio",
 
     ];
 
