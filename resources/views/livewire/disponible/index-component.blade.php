@@ -61,7 +61,7 @@
                     <h5>Elige un día para mostrar</h5>
                     <div class="row">
                         <div class="col-12">
-                            <input type="date" class="form-control" wire:model="dia">
+                            <input type="date" class="form-control" wire:model="dia" wire:chande='cambiodia'>
                         </div>
                     </div>
                 </div>

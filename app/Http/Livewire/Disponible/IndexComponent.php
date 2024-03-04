@@ -75,5 +75,6 @@ class IndexComponent extends Component
         ->pluck('servicio_presupuesto.articulo_seleccionado');
 
         $this->articulos = Articulos::whereNotIn('id', $articulosEnUso)->get();
+
     }
 }
