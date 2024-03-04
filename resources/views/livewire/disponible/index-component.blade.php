@@ -21,12 +21,12 @@
             <div class="card m-b-30">
                 <div class="card-body">
                     <h4 class="mt-0 header-title">Listado de todos los servicios</h4>
-                    <p class="sub-title">Listado completo de todos nuestros eventos</p>
+                    <p class="sub-title">Listado completo de todos nuestros eventos</p> {{$dia}}-{{$test}}
                     @if (count($servicios) > 0)
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th scope="col">Servicio{{$dia}}</th>
+                                    <th scope="col">Servicio</th>
                                     <th scope="col">Stock total</th>
                                     <th scope="col">Disponibles</th>
                                     <th scope="col">Articulos</th>
@@ -75,6 +75,12 @@
                     <div class="row">
                         <div class="col-12">
                             <input type="date" class="form-control" wire:model="dia">
+                        </div>
+                        <div class="col-12">
+                            <input type="date" class="form-control" wire:model.lazy="dia">
+                        </div>
+                        <div class="col-12">
+                            <input type="date" class="form-control" wire:model="test">
                         </div>
                     </div>
                 </div>
