@@ -40,7 +40,7 @@
                                     <tr>
 
                                         <td>{{ $articulo->name }}</td>
-                                        <td>@if({{ $articulo->stock }} > 0)
+                                        <td>@if( $articulo->stock  > 0)
                                             Si
                                         @else
                                            NO
