@@ -47,7 +47,7 @@
                                                 echo $sumatorio; // Mostramos el sumatorio
                                             @endphp
                                         </td>
-                                        <td>{{ $this->stock($servicio->id) }}</td>
+                                        <td wire:key="stock-{{ $servicio->id }}-{{ $dia }}">{{ $this->stock($servicio->id) }}</td>
                                         <td class="details-control" data-id="{{ $servicio->id }}" style="cursor: pointer;">
                                             <span>Ver artículos</span>
                                             <div class="articulos" style="display: none;">
