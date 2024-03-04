@@ -33,18 +33,8 @@
                                 @foreach ($servicios as $servicio)
                                     <tr>
                                         <td>{{ $servicio->nombre }}</td>
-                                        <td>
-                                            @php
-                                                $sumatorio = 0;
-                                                foreach ($articulos as $articulo) {
-                                                    if ($articulo->id_categoria == $servicio->id) {
-                                                        $sumatorio += 1;
-                                                    }
-                                                }
-                                                echo $sumatorio; // Mostramos el sumatorio
-                                            @endphp
-                                        </td>
-                                        <td wire:key="stock-{{ $servicio->id }}-{{ $dia }}">{{ $this->stock($servicio->id) }}</td>
+                                        <td>{{ $this->stockTotal($servicio->id) }}</td>
+                                        <td>{{ $this->stock($servicio->id) }}</td>
                                         <td class="details-control" data-id="{{ $servicio->id }}" style="cursor: pointer;">
                                             <span>Ver artículos</span>
                                             <div class="articulos" style="display: none;">

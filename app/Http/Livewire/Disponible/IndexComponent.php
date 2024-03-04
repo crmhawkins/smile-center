@@ -30,7 +30,18 @@ class IndexComponent extends Component
 
     $this->articulos = Articulos::whereNotIn('id', $articulosEnUso)->get();
     }
+    public function stockTotal($id){
 
+        $sumatorio = 0;
+
+        $stocks = Articulos::all();
+        foreach ($stocks as $articulo) {
+            if ($articulo->id_categoria == $id) {
+                $sumatorio += 1;
+            }
+        }
+        echo $sumatorio; // Mostramos el sumatorio
+    }
     public function stock($id){
         $servicioId = $id;
 
