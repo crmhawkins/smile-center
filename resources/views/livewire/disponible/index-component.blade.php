@@ -47,14 +47,18 @@
                                             @endphp
                                         </td>
                                         <td>
-                                            <select class="form-select" wire:model="articuloSeleccionado">
-                                                <option value="">Selecciona un artículo</option>
-                                                @foreach ($articulos as $articulo)
-                                                    @if ($articulo->id_categoria == $servicio->id)
-                                                        <option value="{{ $articulo->id }}">{{ $articulo->nombre }}</option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Seleccionar artículo
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    @foreach ($articulos as $articulo)
+                                                        @if ($articulo->id_categoria == $servicio->id)
+                                                            <a class="dropdown-item" href="#">{{ $articulo->nombre }}</a>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
