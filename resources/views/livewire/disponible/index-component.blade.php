@@ -82,11 +82,11 @@
             </div>
         </div>
 
-<script>
+{{-- <script>
     document.querySelectorAll('.details-control').forEach(function(element) {
         element.addEventListener('click', function() {
             var articulos = this.querySelector('.articulos');
             articulos.style.display = articulos.style.display === 'none' ? 'block' : 'none';
         });
     });
-</script>
+</script> --}}
