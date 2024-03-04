@@ -76,25 +76,8 @@
         });
     });
 </script>
-<script>
-    document.addEventListener('livewire:load', function () {
-    window.livewire.hook('message.processed', function (message, component) {
-        // Verificar si la instancia de DataTables ya existe
-        if ($.fn.DataTable.isDataTable('#datatable-buttons')) {
-            $('#datatable-buttons').DataTable().destroy(); // Destruir la instancia existente
-        }
-        // Reinicializar DataTables
-        $('#datatable-buttons').DataTable({
-            paging: false,
-                searching: true,
-                ordering: true,
-                dom: 'Bfrtip',
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                responsive: true,
-        });
-    });
-});
-    </script>
+
+
 <!-- Required datatable js -->
 <script src="../assets/js/jquery.slimscroll.js"></script>
 
