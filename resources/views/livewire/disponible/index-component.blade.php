@@ -29,6 +29,7 @@
                                     <th scope="col">Servicio</th>
                                     <th scope="col">Stock total</th>
                                     <th scope="col">Disponibles</th>
+                                    <th scope="col">Articulos</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,6 +47,7 @@
                                                 echo $sumatorio; // Mostramos el sumatorio
                                             @endphp
                                         </td>
+                                        <td>{{ $servicio->nombre }}</td>
                                         <td class="details-control" data-id="{{ $servicio->id }}" style="cursor: pointer;">
                                             <span>Ver artículos</span>
                                             <div class="articulos" style="display: none;">
@@ -69,17 +71,15 @@
         <div class="col-md-3">
             <div class="card m-b-30 position-fixed">
                 <div class="card-body">
-                    <h5>Elige un dia para mostrar</h5>
+                    <h5>Elige un día para mostrar</h5>
                     <div class="row">
                         <div class="col-12">
-                            <input type="week" class="form-control" wire:model="dia" wire:change="cambiodia">
+                            <input type="date" class="form-control" wire:model="dia" wire:change="cambiodia">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
 <script>
     document.querySelectorAll('.details-control').forEach(function(element) {
