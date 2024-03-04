@@ -49,9 +49,11 @@ class IndexComponent extends Component
     {
         return view('livewire.disponible.index-component');
     }
-
+    protected $listeners = ['refresh' => '$refresh'];
     public function cambiodia()
     {
+        $this->servicios = Servicio::all(); // Ajusta según sea necesario
+        $this->articulos = Articulos::all(); // Ajusta según sea necesario
         $this->emitSelf('refresh');
     }
 }
