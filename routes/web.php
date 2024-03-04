@@ -29,6 +29,7 @@ use App\Http\Controllers\DepartamentosUserController;
 use App\Http\Controllers\TipoGastoController;
 use App\Http\Controllers\CategoriaEventoController;
 use App\Http\Controllers\TipoEventoController;
+use App\Http\Controllers\DisponiblesController;
 
 
 use App\Http\Controllers\ServicioController;
@@ -234,6 +235,9 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/servicios', [ServicioController::class, 'index'])->name('servicios.index');
     Route::get('/servicios-create', [ServicioController::class, 'create'])->name('servicios.create');
     Route::get('/servicios-edit/{id}', [ServicioController::class, 'edit'])->name('servicios.edit');
+
+    //Servicios disponibles
+    Route::get('/servicios-disponibles', [DisponiblesController::class, 'index'])->name('disponible.index');
 
     // Servicios Categorias
     Route::get('/servicios-categorias', [ServicioCategoriaController::class, 'index'])->name('servicios-categorias.index');
