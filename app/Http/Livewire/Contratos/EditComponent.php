@@ -536,7 +536,7 @@ class EditComponent extends Component
         $gestor = User::where('id', $presupuesto->gestor_id)->first();
 
         foreach ($presupuesto->servicios()->get() as $servicio) {
-            $listaServicios[] = ['id' => $servicio->id, 'nombre' => $servicio->nombre, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
+            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1, 'concepto' => $servicio->pivot->concepto, 'visible' => $servicio->pivot->visible ];
         }
 
         foreach ($presupuesto->packs()->get() as $pack) {
