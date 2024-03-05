@@ -2293,6 +2293,7 @@ class EditComponent extends Component
 
         foreach ($presupuesto->servicios()->get() as $servicio) {
             $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1, 'concepto' => $servicio->pivot->concepto, 'visible' => $servicio->pivot->visible ];
+        dd($servicio->pivot->visible);
         }
 
         foreach ($presupuesto->packs()->get() as $pack) {
