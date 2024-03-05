@@ -1390,6 +1390,8 @@ class CreateComponent extends Component
     public function submit()
     {
         $tieneAcce=false;
+        $accesorionecesatio = false;
+
         foreach ($this->listaServicios as $servicio) {
 
             $accesorio = Articulos::find($servicio['articulo_seleccionado']);

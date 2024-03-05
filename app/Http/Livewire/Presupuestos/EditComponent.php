@@ -1330,6 +1330,7 @@ class EditComponent extends Component
     public function update()
     {
         $tieneAcce=false;
+        $accesorionecesatio = false;
         foreach ($this->listaServicios as $servicio) {
             $accesorio = Articulos::find($servicio['articulo_seleccionado']);
             if( isset($accesorio)){
