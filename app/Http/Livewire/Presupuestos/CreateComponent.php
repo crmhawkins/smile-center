@@ -1400,7 +1400,7 @@ class CreateComponent extends Component
             }
             if ($accesorionecesatio) {
                 foreach ($this->listaServicios as $servicio1) {
-                    if ($servicio1->id == 112){
+                    if ($servicio1['id'] == 112){
                         $tieneAcce=true;
                         break;
                     }
