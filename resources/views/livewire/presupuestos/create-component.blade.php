@@ -809,7 +809,7 @@
                             </div>
                         @elseif($tipo_seleccionado == 'individual')
 
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
                                 <div class="col-md-12">
                                     <Select wire:model="servicio_seleccionado" class="form-control"
@@ -823,6 +823,10 @@
                                         @endforeach
                                     </Select>
                                 </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="name" class="col-sm-6 col-form-label">Visible</label>
+                                <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
                             </div>
                             <div class="form-group col-md-2">
                                 <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
@@ -847,7 +851,7 @@
                                 <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
                             </div>
                             @if ($servicio_seleccionado > 0 && $articulos->where('id_categoria', $servicio_seleccionado)->count() > 0)
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
                                         relacionado al servicio</label>
                                     <div class="col-md-12">
@@ -861,6 +865,13 @@
                                                 </option>
                                             @endforeach
                                         </Select>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="precioFinalServicio" class="col-sm-12 col-form-label">Concepto</label>
+                                    <div class="col-md-12">
+                                        <input type="text" wire:model.lazy="concepto" class="form-control"
+                                            name="concepto" id="concepto" placeholder="Concepto">
                                     </div>
                                 </div>
                             @endif

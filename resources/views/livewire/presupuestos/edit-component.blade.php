@@ -707,62 +707,72 @@
                                 </div>
                             </div>
                         @elseif($tipo_seleccionado == 'individual')
+                        <div class="form-group col-md-4">
+                            <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
+                            <div class="col-md-12">
+                                <Select wire:model="servicio_seleccionado" class="form-control"
+                                    wire:change='cambioPrecioServicio()' name="servicio_seleccionado"
+                                    id="servicios">
+                                    <option value="0">Selecciona un servicio.</option>
+                                    @foreach ($servicios as $keys => $servicio)
+                                        <option class="dropdown-item" value="{{ $servicio->id }}">
+                                            {{ $servicio->nombre }}
+                                        </option>
+                                    @endforeach
+                                </Select>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="name" class="col-sm-6 col-form-label">Visible</label>
+                            <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
+                            <div class="col-md-12">
+                                <input type="number" step="0.01" wire:model.lazy="precioFinalServicio"
+                                    wire:change="cambioTiempoServicio()" class="form-control"
+                                    name="precioFinalServicio" id="precioFinalServicio"
+                                    placeholder="Precio final">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
+                            <div class="col-md-12">
+                                <input type="number" wire:model="numero_monitores"
+                                    @if ($servicio_seleccionado != null) min="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" value="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" @endif
+                                    wire:change="cambioPrecioServicio()" class="form-control"
+                                    name="numero_monitores" placeholder="Número de monitores">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2 text-center">
+                            <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                            <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
+                        </div>
+                        @if ($servicio_seleccionado > 0 && $articulos->where('id_categoria', $servicio_seleccionado)->count() > 0)
                             <div class="form-group col-md-6">
-                                <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
+                                <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
+                                    relacionado al servicio</label>
                                 <div class="col-md-12">
-                                    <Select wire:model="servicio_seleccionado" class="form-control"
-                                        wire:change='cambioPrecioServicio()' name="servicio_seleccionado"
-                                        id="servicios">
-                                        <option value="0">Selecciona un servicio.</option>
-                                        @foreach ($servicios as $keys => $servicio)
-                                            <option class="dropdown-item" value="{{ $servicio->id }}">
-                                                {{ $servicio->nombre }}
+                                    <Select wire:model="articulo_seleccionado" class="form-control"
+                                        name="articulo_seleccionado" id="articulo_seleccionado">
+                                        <option value="{{null}}">Selecciona un artículo.</option>
+                                        <option value="{{0}}">Sin definir</option>
+                                        @foreach ($articulos->where('id_categoria', $servicio_seleccionado) as $keys => $articulo)
+                                            <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                {{ $articulo->name }}
                                             </option>
                                         @endforeach
                                     </Select>
                                 </div>
                             </div>
-                            <div class="form-group col-md-2">
-                                <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
+                            <div class="form-group col-md-6">
+                                <label for="precioFinalServicio" class="col-sm-12 col-form-label">Concepto</label>
                                 <div class="col-md-12">
-                                    <input type="number" step="0.01" wire:model.lazy="precioFinalServicio"
-                                        wire:change="cambioTiempoServicio()" class="form-control"
-                                        name="precioFinalServicio" id="precioFinalServicio"
-                                        placeholder="Precio final">
+                                    <input type="text" wire:model.lazy="concepto" class="form-control"
+                                        name="concepto" id="concepto" placeholder="Concepto">
                                 </div>
                             </div>
-                            <div class="form-group col-md-2">
-                                <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
-                                <div class="col-md-12">
-                                    <input type="number" wire:model="numero_monitores"
-                                        min="{{ $servicio->minMonitor }}" wire:change="cambioPrecioServicio()"
-                                        class="form-control" name="numero_monitores" id="numero_monitores"
-                                        placeholder="Número de monitores">
-                                </div>
-                            </div>
-                            <div class="form-group col-md-2 text-center">
-                                <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                                <button class="btn btn-primary w-100" wire:click.prevent="addServicio()">Añadir</button>
-                            </div>
-                            @if (
-                                $servicio_seleccionado > 0 &&
-                                    $servicios->where('id', $servicio_seleccionado)->first()->articulos()->count() > 0)
-                                <div class="form-group col-md-12">
-                                    <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
-                                        relacionado al servicio</label>
-                                    <div class="col-md-12">
-                                        <Select wire:model="articulo_seleccionado" class="form-control"
-                                            name="articulo_seleccionado" id="articulo_seleccionado">
-                                            <option value="0">Selecciona un artículo.</option>
-                                            @foreach ($servicios->where('id', $servicio_seleccionado)->first()->articulos()->get() as $keys => $articulo)
-                                                <option class="dropdown-item" value="{{ $articulo->id }}">
-                                                    {{ $articulo->name }}
-                                                </option>
-                                            @endforeach
-                                        </Select>
-                                    </div>
-                                </div>
-                            @endif
+                        @endif
                             <div class="form-group col-md-2">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
                                 <div class="col-md-12">

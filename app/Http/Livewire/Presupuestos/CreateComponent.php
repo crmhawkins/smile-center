@@ -141,6 +141,8 @@ class CreateComponent extends Component
     // Servicios
     public $id_servicio;
     public $comienzoMontaje;
+    public $concepto;
+    public $visible = 1;
     public $horaInicio;
     public $tiempodDesmontaje;
     public $precioMonitor;
@@ -1791,6 +1793,7 @@ class CreateComponent extends Component
                     'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
                     'articulos_seleccionados' => !empty($this->articulos_seleccionados) ? $this->articulos_seleccionados : $defaultDoubleArray,
 
+
                 ];
                 $this->pack_seleccionado = 0;
                 $this->preciosMonitores = [];
@@ -1879,6 +1882,8 @@ class CreateComponent extends Component
                     'tiempo_montaje' => $this->tiempoMontaje ?? '00:00',
                     'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '00:00',
                     'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
+                    'concepto'=> $this->concepto,
+                    'visible'=> $this->visible,
                     'num_art_indef' => $this->num_arti
                 ];
                 $this->servicio_seleccionado = 0;
@@ -1892,6 +1897,8 @@ class CreateComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
+                $this->concepto = "";
+                $this->visible = 1;
                 $this->num_arti = 0;
             }
         } else {

@@ -229,6 +229,8 @@ class EditComponent extends Component
     public $articulos;
     public $articulo_seleccionado;
     public $articulos_seleccionados = [];
+    public $concepto;
+    public $visible = 1;
 
     public function mount()
     {
@@ -1960,6 +1962,8 @@ class EditComponent extends Component
                     'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '00:00',
                     'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
                     'num_art_indef' => $this->num_arti,
+                    'concepto'=> $this->concepto,
+                    'visible'=> $this->visible,
                     'existente'  => 0,
                 ];
                 $this->servicio_seleccionado = 0;
@@ -1973,6 +1977,8 @@ class EditComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
+                $this->concepto = "";
+                $this->visible = 1;
                 $this->num_arti = 0;
             }
         } else {
