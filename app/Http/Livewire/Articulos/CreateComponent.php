@@ -14,7 +14,7 @@ class CreateComponent extends Component
     use LivewireAlert;
 
     public $name;
-    public $stock;
+    public $stock = 0;
     public $id_categoria;
     public $servicioCategorias;
     public $accesorio = 0;

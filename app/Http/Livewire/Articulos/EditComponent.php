@@ -25,7 +25,7 @@ class EditComponent extends Component
         $this->servicioCategorias = Servicio::all();
         $articulo = Articulos::find($this->identificador);
         $this->name = $articulo->name;
-        $this->stock = $articulo->stock;
+        $this->stock = $articulo->stock ?? 0;
         $this->id_categoria = $articulo->id_categoria;
         $this->accesorio = $articulo->accesorio ?? 0;
     }
