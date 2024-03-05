@@ -280,11 +280,6 @@
                                 <a href="{{ route('servicios-packs.create') }}" class="btn btn-primary w-100"
                                     target="_blank">Añadir nuevo pack de servicios</a>
                             </div>
-                            <div class="col-12 mt-1">
-                                <a href="{{ route('servicios-categorias.create') }}" class="btn btn-primary w-100"
-                                    target="_blank">Añadir nueva categoría de
-                                    servicios</a>
-                            </div>
                         </div>
                     </div>
                 </div>

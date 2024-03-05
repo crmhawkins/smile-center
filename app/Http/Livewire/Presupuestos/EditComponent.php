@@ -1329,7 +1329,27 @@ class EditComponent extends Component
     // Al hacer submit en el formulario
     public function update()
     {
+        $tieneAcce=false;
+        foreach ($this->listaServicios as $servicio) {
+            $accesorio = Articulos::find("id",$servicio['articulo_seleccionado'])->accesorio;
+            if ($accesorio) {
+                foreach ($this->listaServicios as $servicio1) {
+                    if ($servicio1->id == 112){
+                        $tieneAcce=true;
+                        break;
+                    }
+                }
+                if($tieneAcce) {
 
+                }else{
+                    $this->alert('error', '¡Necesita introducir el accesorio!', [
+                        'position' => 'center',
+                        'toast' => false,]);
+                        return;
+                }
+
+            }
+        }
         $this->precioBase = $this->precioFinal;
         $this->precioFinal = $this->precioBase - $this->descuento;
         $this->id_evento = $this->evento->id;
