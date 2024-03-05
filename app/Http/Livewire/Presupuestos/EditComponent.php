@@ -1869,6 +1869,7 @@ class EditComponent extends Component
                     'checks_gasoil' => !empty($this->gastosGasoilPack) ? $this->gastosGasoilPack : $defaultDoubleArray,
                     'pagos_pendientes' => !empty($this->sueldoMonitoresPack) ? $this->sueldoMonitoresPack : $defaultDoubleArray,
                     'articulos_seleccionados' => !empty($this->articulos_seleccionados) ? $this->articulos_seleccionados : $defaultDoubleArray,
+                    'existente'  => 0,
 
                 ];
                 $this->pack_seleccionado = 0;
@@ -1958,7 +1959,8 @@ class EditComponent extends Component
                     'tiempo_montaje' => $this->tiempoMontaje ?? '00:00',
                     'tiempo_desmontaje' => $this->tiempoDesmontaje ?? '00:00',
                     'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
-                    'num_art_indef' => $this->num_arti
+                    'num_art_indef' => $this->num_arti,
+                    'existente'  => 0,
                 ];
                 $this->servicio_seleccionado = 0;
                 $this->numero_monitores = 0;
@@ -2040,7 +2042,8 @@ class EditComponent extends Component
                     // 'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     // 'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
                     'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
-                    'num_art_indef' => $this->num_arti
+                    'num_art_indef' => $this->num_arti,
+                    'existente'  => 0,
                 ];
                 $this->servicio_seleccionado = 0;
                 $this->numero_monitores = 0;
