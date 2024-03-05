@@ -1394,6 +1394,12 @@ class CreateComponent extends Component
         $this->id_evento = $this->eventoIsSaved->id;
         $this->nPresupuesto = $this->nPresupuesto . Carbon::now()->addYears($this->year)->format('Y');
 
+        $diaEvento = Carbon::parse($this->diaEvento);
+        $diaFin = Carbon::parse($this->diaFinal);
+
+        if ($diaEvento > $diaFin) {
+            $this->diaFinal = $this->diaEvento;
+        }
         $validatedData = $this->validate(
             [
                 'nPresupuesto' => 'required',
@@ -1409,7 +1415,9 @@ class CreateComponent extends Component
                 'estado' => 'required',
                 'observaciones' => 'nullable',
                 'gasoilDistancia' => 'nullable',
-                'gestor_id' => 'nullable'
+                'gestor_id' => 'nullable',
+                'diaEvento' => 'required',
+                'diaFinal' => "required"
 
             ],
             // Mensajes de error

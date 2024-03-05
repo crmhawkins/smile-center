@@ -1331,6 +1331,12 @@ class EditComponent extends Component
         $this->precioBase = $this->precioFinal;
         $this->precioFinal = $this->precioBase - $this->descuento;
         $this->id_evento = $this->evento->id;
+        $diaEvento = Carbon::parse($this->diaEvento);
+        $diaFin = Carbon::parse($this->diaFinal);
+
+        if ($diaEvento > $diaFin) {
+            $this->diaFinal = $this->diaEvento;
+        }
 
         $validatedData = $this->validate(
             [
@@ -1345,6 +1351,8 @@ class EditComponent extends Component
                 'adelanto' => 'nullable',
                 'observaciones' => 'nullable',
                 'categoria_evento_id' => 'nullable',
+                'diaEvento' => 'required',
+                'diaFinal' => "required"
 
             ],
             // Mensajes de error
