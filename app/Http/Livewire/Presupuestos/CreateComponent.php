@@ -1391,8 +1391,12 @@ class CreateComponent extends Component
     {
         $tieneAcce=false;
         foreach ($this->listaServicios as $servicio) {
-            $accesorio = Articulos::find($servicio['articulo_seleccionado'])->accesorio;
-            if ($accesorio) {
+
+            $accesorio = Articulos::find($servicio['articulo_seleccionado']);
+            if( isset($accesorio)){
+                $accesorionecesatio = $accesorio->accesorio;
+            }
+            if ($accesorionecesatio) {
                 foreach ($this->listaServicios as $servicio1) {
                     if ($servicio1->id == 112){
                         $tieneAcce=true;
