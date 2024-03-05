@@ -1331,7 +1331,7 @@ class EditComponent extends Component
     {
         $tieneAcce=false;
         foreach ($this->listaServicios as $servicio) {
-            $accesorio = Articulos::find("id",$servicio['articulo_seleccionado'])->accesorio;
+            $accesorio = Articulos::find($servicio['articulo_seleccionado'])->accesorio;
             if ($accesorio) {
                 foreach ($this->listaServicios as $servicio1) {
                     if ($servicio1->id == 112){
