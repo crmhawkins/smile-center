@@ -653,6 +653,17 @@
                                 <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
                                 <button class="btn btn-primary w-100" wire:click.prevent="addServicioSinArticulo()">Añadir</button>
                             </div>
+                            <div class="form-group col-md-6">
+                                <label for="precioFinalServicio" class="col-sm-12 col-form-label">Concepto</label>
+                                <div class="col-md-12">
+                                    <input type="text" wire:model.lazy="concepto" class="form-control"
+                                        name="concepto" id="concepto" placeholder="Concepto">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="name" class="col-sm-4 col-form-label">Visible</label>
+                                <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
+                            </div>
                             <div class="form-group col-md-2">
                                 <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
                                 <div class="col-md-12">
@@ -722,7 +733,7 @@
                                 </Select>
                             </div>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="form-group col-sm-2">
                             <label for="name" class="col-sm-8 col-form-label">Visible</label>
                             <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
                         </div>
