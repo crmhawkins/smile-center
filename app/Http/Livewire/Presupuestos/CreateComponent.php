@@ -1457,6 +1457,8 @@ class CreateComponent extends Component
                     // 'pago_pendiente' => json_encode($servicio['sueldo_monitores']),
                     'articulo_seleccionado' => $servicio['articulo_seleccionado'],
                     'num_art_indef' => $servicio['num_art_indef'],
+                    'concepto'=> $servicio['concepto'],
+                    'visible'=> $servicio['visible'],
 
                 ]
             );
@@ -1657,6 +1659,9 @@ class CreateComponent extends Component
                 } catch (\Exception $e) {
                 }
             }
+
+
+            $this->concepto = $servicio->nombre;
         } else {
             $this->alert('error', 'Selecciona un servicio.');
             $this->numero_monitores = 0;
@@ -1665,7 +1670,8 @@ class CreateComponent extends Component
             $this->hora_finalizacion = 0;
             $this->precioFinalServicio = 0;
         }
-    }
+
+     }
 
     public function asignarValorInicial($keyPack, $value)
     {
@@ -1938,7 +1944,7 @@ class CreateComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
-                $this->concepto = "";
+                $this->concepto;
                 $this->visible = 1;
                 $this->num_arti = 0;
             }

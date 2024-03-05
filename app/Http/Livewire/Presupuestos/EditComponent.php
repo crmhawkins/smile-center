@@ -1385,6 +1385,8 @@ class EditComponent extends Component
                 ->wherePivot('gasto_gasoil', json_encode($servicio['gasto_gasoil']))
                 ->wherePivot('pago_pendiente', json_encode($servicio['pago_pendiente']))
                 ->wherePivot('num_art_indef', $servicio['num_art_indef'])
+                ->wherePivot('concepto', $servicio['concepto'])
+                ->wherePivot('visible', $servicio['num_art_indef'])
                 ->detach($servicio['id']);
         }
 
@@ -1422,6 +1424,8 @@ class EditComponent extends Component
                         'pago_pendiente' => json_encode($servicio['pago_pendiente']),
                         'articulo_seleccionado' => $servicio['articulo_seleccionado'],
                         'num_art_indef' => $servicio['num_art_indef'],
+                        'concepto', $servicio['concepto'],
+                        'visible', $servicio['num_art_indef'],
                     ]
 
                 );
@@ -1432,6 +1436,7 @@ class EditComponent extends Component
                     'id_monitores' => json_encode($servicio['id_monitores']),
                     'gasto_gasoil' => json_encode($servicio['gasto_gasoil']),
                     'pago_pendiente' => json_encode($servicio['pago_pendiente']),
+
                 ]);
             }
         }
@@ -1742,6 +1747,7 @@ class EditComponent extends Component
                 } catch (\Exception $e) {
                 }
             }
+            $this->concepto = $servicio->nombre;
         } else {
             $this->alert('error', 'Selecciona un servicio.');
             $this->numero_monitores = 0;
