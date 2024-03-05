@@ -2022,6 +2022,8 @@ class CreateComponent extends Component
                     // 'gasto_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     // 'check_gasoil' => $this->gastosGasoil ?? $defaultArray,
                     // 'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
+                    'concepto'=> $this->concepto,
+                    'visible'=> $this->visible,
                     'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
                     'num_art_indef' => $this->num_arti
                 ];
@@ -2036,6 +2038,8 @@ class CreateComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
+                $this->concepto;
+                $this->visible = 1;
                 $this->num_arti = 0;
             }
         } else {

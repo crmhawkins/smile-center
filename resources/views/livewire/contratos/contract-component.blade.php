@@ -244,21 +244,23 @@
                 </thead>
                 <tbody>
                     @foreach ($listaServicios as $servicio)
-                        <tr width="100%">
-                            <td colspan="3" style="border-right-color: #fff !important;"><b>Servicio:
-                                </b>{{ $servicio['nombre'] }} </td>
-                            <td><b>Importe:</b> {{ $servicio['precio_final'] }} €</td>
-                        </tr>
-                        <tr width="100%">
-                            <td style="border-right-color: #fff !important;"><b>Tiempo:</b>
-                                {{ $servicio['tiempo'] }}h</td>
-                            <td style="border-right-color: #fff !important;"><b>Hora de inicio:</b>
-                                {{ $servicio['hora_inicio'] }}</td>
-                            <td style="border-right-color: #fff !important;"><b>Hora de finalización:</b>
-                                {{ $servicio['hora_finalizacion'] }}</td>
-                            <td style="border-right-color: #fff !important;"><b>Número de monitores:</b>
-                                {{ $servicio['numero_monitores'] }}</td>
-                        </tr>
+                        @if($servicio['visible'])
+                            <tr width="100%">
+                                <td colspan="3" style="border-right-color: #fff !important;"><b>Servicio:
+                                    </b>{{ $servicio['concepto'] }} </td>
+                                <td><b>Importe:</b> {{ $servicio['precio_final'] }} €</td>
+                            </tr>
+                            <tr width="100%">
+                                <td style="border-right-color: #fff !important;"><b>Tiempo:</b>
+                                    {{ $servicio['tiempo'] }}h</td>
+                                <td style="border-right-color: #fff !important;"><b>Hora de inicio:</b>
+                                    {{ $servicio['hora_inicio'] }}</td>
+                                <td style="border-right-color: #fff !important;"><b>Hora de finalización:</b>
+                                    {{ $servicio['hora_finalizacion'] }}</td>
+                                <td style="border-right-color: #fff !important;"><b>Número de monitores:</b>
+                                    {{ $servicio['numero_monitores'] }}</td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

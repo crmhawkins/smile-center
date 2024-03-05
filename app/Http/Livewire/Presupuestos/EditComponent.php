@@ -2024,7 +2024,7 @@ class EditComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
-                $this->concepto = "";
+                $this->concepto;
                 $this->visible = 1;
                 $this->num_arti = 0;
             }
@@ -2104,6 +2104,8 @@ class EditComponent extends Component
                     // 'pago_pendiente' => $this->sueldoMonitores ?? $defaultArray,
                     'articulo_seleccionado' => $this->articulo_seleccionado ?? '0',
                     'num_art_indef' => $this->num_arti,
+                    'concepto'=> $this->concepto,
+                    'visible'=> $this->visible,
                     'existente'  => 0,
                 ];
                 $this->servicio_seleccionado = 0;
@@ -2117,6 +2119,8 @@ class EditComponent extends Component
                 $this->precioFinal += $this->precioFinalServicio;
                 $this->precioFinalServicio = 0;
                 $this->articulo_seleccionado = 0;
+                $this->concepto;
+                $this->visible = 1;
                 $this->num_arti = 0;
             }
         } else {
@@ -2281,7 +2285,7 @@ class EditComponent extends Component
         $packs = ServicioPack::all();
 
         foreach ($presupuesto->servicios()->get() as $servicio) {
-            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
+            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1, 'concepto' => $servicio->pivot->concepto, 'visible' => $servicio->pivot->visible ];
         }
 
         foreach ($presupuesto->packs()->get() as $pack) {
@@ -2370,7 +2374,7 @@ class EditComponent extends Component
         $nombreEvento = TipoEvento::find($evento->eventoNombre);
         $packs = ServicioPack::all();
         foreach ($presupuesto->servicios()->get() as $servicio) {
-            $listaServicios[] = ['id' => $servicio->id, 'nombre' => $servicio->nombre, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precio_final' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1];
+            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'tiempo' => $servicio->pivot->tiempo, 'hora_inicio' => $servicio->pivot->hora_inicio, 'hora_finalizacion' => $servicio->pivot->hora_finalizacion, 'existente' => 1, 'concepto' => $servicio->pivot->concepto, 'visible' => $servicio->pivot->visible ];
         }
 
         foreach ($presupuesto->packs()->get() as $pack) {

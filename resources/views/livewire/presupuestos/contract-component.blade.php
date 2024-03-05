@@ -228,14 +228,16 @@
                         <td>PRECIO</td>
                     </tr>
                     @foreach ($listaServicios as $servicio)
+                    @if($servicio['visible'])
                     <tr width="100%">
                         <td colspan="2"><b>Servicio:
-                            </b>{{ $servicios->firstWhere('id', $servicio['id'])->nombre }} </td>
+                            </b>{{ $servicio['concepto'] }} </td>
                         <td><b>Número de monitores:</b>
                             {{ $servicio['numero_monitores'] }}
                         </td>
                         <td><b>Importe:</b> {{ $servicio['precioFinal'] }} €</td>
                     </tr>
+                    @endif
                     @endforeach
                 </tbody>
                 </table>
