@@ -1424,8 +1424,8 @@ class EditComponent extends Component
                         'pago_pendiente' => json_encode($servicio['pago_pendiente']),
                         'articulo_seleccionado' => $servicio['articulo_seleccionado'],
                         'num_art_indef' => $servicio['num_art_indef'],
-                        'concepto', $servicio['concepto'],
-                        'visible', $servicio['num_art_indef'],
+                        'concepto'=> $servicio['concepto'],
+                        'visible'=> $servicio['visible'],
                     ]
 
                 );
