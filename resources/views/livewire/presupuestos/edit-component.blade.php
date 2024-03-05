@@ -723,7 +723,7 @@
                             </div>
                         </div>
                         <div class="col-sm-2">
-                            <label for="name" class="col-sm-6 col-form-label">Visible</label>
+                            <label for="name" class="col-sm-8 col-form-label">Visible</label>
                             <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
                         </div>
                         <div class="form-group col-md-2">
