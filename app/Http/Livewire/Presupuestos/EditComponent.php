@@ -318,6 +318,8 @@ class EditComponent extends Component
                 'tiempo_desmontaje' => $servicio->pivot->tiempo_desmontaje ?? '0',
                 'articulo_seleccionado' => $servicio->pivot->articulo_seleccionado ?? '0',
                 'num_art_indef' => $servicio->pivot->num_art_indef,
+                'concepto'=> $servicio->pivot->concepto,
+                'visible'=> $servicio->pivot->visible,
                 'existente' => 1
             ];
         }
