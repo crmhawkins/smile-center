@@ -129,11 +129,12 @@
         </table>
 
         <table class="table">
+            @if($cliente->tipo_cliente)
             <thead>
                 <tr width="100%">
                     <th>Cliente</th>
-                    <th colspan="2">Dirección</th>
-                    <th>CIF</th>
+                    <th>Dirección</th>
+                    <th colspan="2">CIF</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,6 +146,36 @@
                     </td>
                     <td>{{ $cliente->nif }}</td>
                 </tr>
+                <tr width="100%">
+                    <th>Codigo Organo Gestor</th>
+                    <th>Codigo Unidad Tramitadora</th>
+                    <th colspan="2">Codigo Oficina Contable</th>
+                </tr>
+                <tr width="100%">
+                    <td> {{ $cliente->codigo_organo_gestor }}</td>
+                    <td>
+                        {{ $cliente->codigo_unidad_tramitadora }}
+                    </td>
+                    <td>{{ $cliente->codigo_oficina_contable }}</td>
+                </tr>
+            @else
+            <thead>
+                <tr width="100%">
+                    <th>Cliente</th>
+                    <th>Dirección</th>
+                    <th colspan="2">CIF</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr width="100%">
+                    <td> {{ $cliente->nombre }} {{ $cliente->apellido }}
+                    </td>
+                    <td>
+                        {{ $cliente->tipoCalle }} {{ $cliente->calle }} , {{ $cliente->numero }}
+                    </td>
+                    <td>{{ $cliente->nif }}</td>
+                </tr>
+            @endif
                 <tr width="100%">
                     <th>Contacto</th>
                     <th>Email</th>
