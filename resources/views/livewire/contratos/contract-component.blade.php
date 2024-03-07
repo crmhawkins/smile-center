@@ -146,6 +146,13 @@
                         {{ $cliente->tlf1 }}</td>
                     <td width="50%"><b>Email: </b>{{ $cliente->email1 }}</td>
                 </tr>
+                @if($cliente->tipo_cliente)
+                <tr width="100%">
+                    <td width="33%" style="border-right-color: #fff !important;"><b>Codigo Organo Gestor:</b> {{ $cliente->codigo_organo_gestor  }}</td>
+                    <td width="33%" style="border-right-color: #fff !important; border-left-color: #fff !important;"><b>Codigo Unidad Tramitadora: </b>{{ $cliente->codigo_unidad_tramitadora }}</td>
+                    <td width="33%"><b>Codigo Oficina Contable: </b>{{ $cliente->codigo_oficina_contable }}</td>
+                </tr>
+                @endif
             </tbody>
         </table>
         <table class="table">
