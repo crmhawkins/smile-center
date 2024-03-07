@@ -127,30 +127,34 @@
             </thead>
             <tbody>
                 <tr width="100%">
-                    <td width="70%" style="border-right-color: #fff !important;"><b>Nombre:</b>
+                    <td width="40%" style="border-right-color: #fff !important;"><b>Nombre:</b>
                         {{ $cliente->nombre }} {{ $cliente->apellido }}</td>
+                        <td width="30%" style="border-right-color: #fff !important; border-left-color: #fff !important;"></td>
                     <td width="30%"colspan="2"><b>DNI:</b> {{ $cliente->nif }}</td>
                 </tr>
                 <tr width="100%">
-                    <td width="80%" style="border-right-color: #fff !important;"><b>Domicilio:</b>
+                    <td width="40%" style="border-right-color: #fff !important;"><b>Domicilio:</b>
                         {{ $cliente->tipoCalle }} {{ $cliente->calle }} , {{ $cliente->numero }}</td>
-                    <td width="20%"colspan="2"><b>CP:</b> {{ $cliente->codigoPostal }}</td>
+                        <td width="30%" style="border-right-color: #fff !important; border-left-color: #fff !important;"></td>
+                    <td width="30%"colspan="2"><b>CP:</b> {{ $cliente->codigoPostal }}</td>
                 </tr>
                 <tr width="100%">
-                    <td width="60%" style="border-right-color: #fff !important;"><b>Localidad:</b>
+                    <td width="40%" style="border-right-color: #fff !important;"><b>Localidad:</b>
                         {{ $cliente->ciudad }}</td>
-                    <td width="40%"colspan="2"><b>Provincia:</b> {{ $cliente->provincia }}</td>
+                        <td width="30%" style="border-right-color: #fff !important; border-left-color: #fff !important;"></td>
+                    <td width="30%"colspan="2"><b>Provincia:</b> {{ $cliente->provincia }}</td>
                 </tr>
                 <tr width="100%">
-                    <td width="50%" style="border-right-color: #fff !important;"><b>Teléfono:</b>
+                    <td width="40%" style="border-right-color: #fff !important;"><b>Teléfono:</b>
                         {{ $cliente->tlf1 }}</td>
-                    <td width="50%"colspan="2"><b>Email: </b>{{ $cliente->email1 }}</td>
+                        <td width="30%" style="border-right-color: #fff !important; border-left-color: #fff !important;"></td>
+                    <td width="30%"colspan="2"><b>Email: </b>{{ $cliente->email1 }}</td>
                 </tr>
                 @if($cliente->tipo_cliente)
                 <tr width="100%">
-                    <td width="33%" style="border-right-color: #fff !important;"><b>Codigo Organo Gestor:</b> {{ $cliente->codigo_organo_gestor  }}</td>
-                    <td width="33%" style="border-right-color: #fff !important; border-left-color: #fff !important;"><b>Codigo Unidad Tramitadora: </b>{{ $cliente->codigo_unidad_tramitadora }}</td>
-                    <td width="33%"><b>Codigo Oficina Contable: </b>{{ $cliente->codigo_oficina_contable }}</td>
+                    <td width="40%" style="border-right-color: #fff !important;"><b>Codigo Organo Gestor:</b> {{ $cliente->codigo_organo_gestor  }}</td>
+                    <td width="30%" style="border-right-color: #fff !important; border-left-color: #fff !important;"><b>Codigo Unidad Tramitadora: </b>{{ $cliente->codigo_unidad_tramitadora }}</td>
+                    <td width="30%"><b>Codigo Oficina Contable: </b>{{ $cliente->codigo_oficina_contable }}</td>
                 </tr>
                 @endif
             </tbody>
