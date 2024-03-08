@@ -1398,39 +1398,13 @@ class EditComponent extends Component
         event(new \App\Events\LogEvent(Auth::user(), 4, $this->presupuesto->id));
 
         foreach ($this->listaServiciosEliminar as $servicio) {
-            $this->presupuesto->servicios()->wherePivot('numero_monitores',  $servicio['numero_monitores'])
-                ->wherePivot('precio_final', $servicio['precioFinal'])
-                ->wherePivot('tiempo', $servicio['tiempo'])
-                ->wherePivot('tiempo_montaje', $servicio['tiempo_montaje'])
-                ->wherePivot('tiempo_desmontaje', $servicio['tiempo_desmontaje'])
-                ->wherePivot('hora_inicio', $servicio['hora_inicio'])
-                ->wherePivot('hora_finalizacion', $servicio['hora_finalizacion'])
-                ->wherePivot('hora_montaje', $servicio['hora_montaje'])
-                ->wherePivot('sueldo_monitores', json_encode($servicio['sueldo_monitores']))
-                ->wherePivot('id_monitores', json_encode($servicio['id_monitores']))
-                ->wherePivot('gasto_gasoil', json_encode($servicio['gasto_gasoil']))
-                ->wherePivot('pago_pendiente', json_encode($servicio['pago_pendiente']))
-                ->wherePivot('num_art_indef', $servicio['num_art_indef'])
-                ->wherePivot('concepto', $servicio['concepto'])
-                ->wherePivot('visible', $servicio['num_art_indef'])
-                ->detach($servicio['id']);
+            $this->presupuesto->servicios()->detach($servicio['id']);
         }
 
         foreach ($this->listaPacksEliminar as $pack) {
-            $this->presupuesto->packs()->wherePivot('numero_monitores', json_encode($pack['numero_monitores']))
-                ->wherePivot('precio_final', $pack['precioFinal'])
-                ->wherePivot('tiempos', json_encode($pack['tiempos']))
-                ->wherePivot('horas_inicio', json_encode($pack['horas_inicio']))
-                ->wherePivot('horas_finalizacion', json_encode($pack['horas_finalizacion']))
-                ->wherePivot('tiempos_montaje', json_encode($pack['tiempos_montaje']))
-                ->wherePivot('tiempos_desmontaje', json_encode($pack['tiempos_desmontaje']))
-                ->wherePivot('horas_montaje', json_encode($pack['horas_montaje']))
-                ->wherePivot('sueldos_monitores', json_encode($pack['sueldos_monitores']))
-                ->wherePivot('id_monitores', json_encode($pack['id_monitores']))
-                ->wherePivot('gastos_gasoil', json_encode($pack['gastos_gasoil']))
-                ->wherePivot('pagos_pendientes', json_encode($pack['pagos_pendientes']))
-                ->detach($pack['id']);
+            $this->presupuesto->packs()->detach($pack['id']);
         }
+
         foreach ($this->listaServicios as $servicio) {
             if ($servicio['existente'] == 0) {
                 $this->presupuesto->servicios()->attach(
