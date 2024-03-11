@@ -1254,6 +1254,7 @@
                                                         wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
                                                         class="form-control" name="articulo_seleccionado"
                                                         id="articulo_seleccionado">
+                                                        <option value="0">Selecciona un artículo.</option>
                                                         @foreach ($articulos->where('id_categoria', $itemServicio['id']) as $keys => $articulo)
                                                             <option class="dropdown-item" value="{{ $articulo->id }}">
                                                                 {{ $articulo->name }}
