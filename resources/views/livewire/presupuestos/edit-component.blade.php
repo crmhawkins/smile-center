@@ -1160,7 +1160,7 @@
                                                     wire:model="listaServicios.{{ $servicioIndex }}.articulo_seleccionado"
                                                     class="form-control" name="articulo_seleccionado"
                                                     id="articulo_seleccionado">
-                                                    {{dd($articulos->where('id_categoria', $itemServicio['id']))}}
+                                                    {{var_dump($articulos->where('id_categoria', $itemServicio['id']))}}
                                                     @foreach ($articulos->where('id_categoria', $itemServicio['id']) as $keys => $articulo)
                                                     <option class="dropdown-item" value="{{ $articulo->id }}">
                                                             {{ $articulo->name }}
