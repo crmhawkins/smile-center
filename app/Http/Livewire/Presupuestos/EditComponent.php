@@ -2043,7 +2043,7 @@ class EditComponent extends Component
             ]);
         }
     }
-    public function updatedArticulo_seleccionado($value){
+    public function updatedArticuloSeleccionado($value){
 
         $this->concepto = $value;
     }
