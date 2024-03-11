@@ -1243,7 +1243,9 @@
                                 @if ($servicioIndex + 1 == count($listaServicios))
                                     <tr>
                                         <td class="izquierda">
-                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                            @if( $nombreser=$servicios->where('id', $itemServicio['id'])->first())
+                                            {{ $nombreser->nombre }}
+                                            @endif
                                         </td>
                                         <td>
                                             @if (isset($itemServicio['num_art_indef']) && $itemServicio['num_art_indef'] > 0)
@@ -1281,7 +1283,9 @@
                                 @else
                                     <tr>
                                         <td class="izquierda" style="border-bottom: 1px solid black !important;">
-                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                            @if( $nombreser=$servicios->where('id', $itemServicio['id'])->first())
+                                            {{ $nombreser->nombre }}
+                                            @endif
                                         </td>
                                         <td>
                                         @if (isset($itemServicio['num_art_indef']) && $itemServicio['num_art_indef'] > 0)
