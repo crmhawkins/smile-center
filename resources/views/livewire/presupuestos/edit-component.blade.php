@@ -1333,8 +1333,10 @@
                                 <div class="row text-center">
                                     <div class="col-md-12">
                                         <label for="adelantoResumen" class="col-sm-12 col-form-label">Servicio</label>
+                                        @if($servicios->find($itemServicio['id']))
                                         <input type="text" id="adelantoResumen" class="form-control text-center"
                                             value="{{ $servicios->find($itemServicio['id'])->nombre }}" disabled>
+                                        @endif
                                     </div>
                                     @for ($i = 0; $i < $itemServicio['numero_monitores']; $i++)
                                         <div class="col-md-6">
