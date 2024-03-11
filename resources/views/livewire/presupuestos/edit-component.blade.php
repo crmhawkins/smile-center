@@ -1356,10 +1356,12 @@
                                         <div class="col-md-3">
                                             <label for="adelantoResumen"
                                                 class="col-sm-12 col-form-label">Sueldo</label>
+                                                @if($servicios->find($itemServicio['id']))
                                             <input type="number" id="adelantoResumen"
                                                 wire:model='listaServicios.{{ $servicioIndex }}.sueldo_monitores.{{ $i }}'
                                                 value="{{ $servicios->find($itemServicio['id'])->precioMonitor }}"
                                                 class="form-control text-center">
+                                                @endif
                                         </div>
                                         <div class="col-md-3">
                                             <label for="adelantoResumen" class="col-sm-12 col-form-label">Pendiente de
