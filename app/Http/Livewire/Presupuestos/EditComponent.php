@@ -2045,7 +2045,7 @@ class EditComponent extends Component
     }
     public function updatedArticuloSeleccionado($value){
         $articulo=Articulos::find($value);
-        $this->concepto = $articulo->nombre;
+        $this->concepto = $articulo->name;
     }
 
 
