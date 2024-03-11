@@ -718,125 +718,125 @@
                                 </div>
                             </div>
                         @elseif($tipo_seleccionado == 'individual')
-                        <div class="form-group col-md-4">
-                            <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
-                            <div class="col-md-12">
-                                <Select wire:model="servicio_seleccionado" class="form-control"
-                                    wire:change='cambioPrecioServicio()' name="servicio_seleccionado"
-                                    id="servicios">
-                                    <option value="0">Selecciona un servicio.</option>
-                                    @foreach ($servicios as $keys => $servicio)
-                                        <option class="dropdown-item" value="{{ $servicio->id }}">
-                                            {{ $servicio->nombre }}
-                                        </option>
-                                    @endforeach
-                                </Select>
-                            </div>
-                        </div>
-                        <div class="form-group col-sm-2">
-                            <label for="name" class="col-sm-8 col-form-label">Visible</label>
-                            <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
-                            <div class="col-md-12">
-                                <input type="number" step="0.01" wire:model.lazy="precioFinalServicio"
-                                    wire:change="cambioTiempoServicio()" class="form-control"
-                                    name="precioFinalServicio" id="precioFinalServicio"
-                                    placeholder="Precio final">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
-                            <div class="col-md-12">
-                                <input type="number" wire:model="numero_monitores"
-                                    @if ($servicio_seleccionado != null) min="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" value="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" @endif
-                                    wire:change="cambioPrecioServicio()" class="form-control"
-                                    name="numero_monitores" placeholder="Número de monitores">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-2 text-center">
-                            <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
-                            <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
-                        </div>
-                        @if ($servicio_seleccionado > 0 && $articulos->where('id_categoria', $servicio_seleccionado)->count() > 0)
-                            <div class="form-group col-md-6">
-                                <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
-                                    relacionado al servicio</label>
+                            <div class="form-group col-md-4">
+                                <label for="diaEvento" class="col-sm-12 col-form-label">Servicios</label>
                                 <div class="col-md-12">
-                                    <Select wire:model="articulo_seleccionado" class="form-control"
-                                        name="articulo_seleccionado" id="articulo_seleccionado">
-                                        <option value="{{null}}">Selecciona un artículo.</option>
-                                        <option value="{{0}}">Sin definir</option>
-                                        @foreach ($articulos->where('id_categoria', $servicio_seleccionado) as $keys => $articulo)
-                                            <option class="dropdown-item" value="{{ $articulo->id }}">
-                                                {{ $articulo->name }}
+                                    <Select wire:model="servicio_seleccionado" class="form-control"
+                                        wire:change='cambioPrecioServicio()' name="servicio_seleccionado"
+                                        id="servicios">
+                                        <option value="0">Selecciona un servicio.</option>
+                                        @foreach ($servicios as $keys => $servicio)
+                                            <option class="dropdown-item" value="{{ $servicio->id }}">
+                                                {{ $servicio->nombre }}
                                             </option>
                                         @endforeach
                                     </Select>
                                 </div>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="precioFinalServicio" class="col-sm-12 col-form-label">Concepto</label>
-                                <div class="col-md-12">
-                                    <input type="text" wire:model.lazy="concepto" class="form-control"
-                                        name="concepto" id="concepto" placeholder="Concepto">
-                                </div>
-                            </div>
-                        @endif
-                            <div class="form-group col-md-2">
-                                <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
-                                <div class="col-md-12">
-                                    <input type="time" wire:model="tiempo" wire:change="cambioTiempoServicio()"
-                                        class="form-control" name="tiempo" placeholder="00:00:00">
-                                </div>
+                            <div class="form-group col-sm-2">
+                                <label for="name" class="col-sm-8 col-form-label">Visible</label>
+                                <input type="checkbox" wire:model="visible" class="form-check-input" name="visible" id="visible" aria-label="visible" placeholder="visible">
                             </div>
                             <div class="form-group col-md-2">
-                                <label for="tiempo_montaje" class="col-sm-12 col-form-label">Tiempo
-                                    montaje</label>
+                                <label for="precioFinalServicio" class="col-sm-12 col-form-label">Precio</label>
                                 <div class="col-md-12">
-                                    <input type="time" wire:model="tiempoMontaje"
-                                        wire:change="cambioTiempoServicio()" class="form-control" name="tiempo"
-                                        placeholder="00:00:00">
-                                </div>
-                            </div>
-                            <div class="form-group col-md-2">
-                                <label for="hora_finalizacion" class="col-sm-12 col-form-label">Tiempo
-                                    desmontaje</label>
-                                <div class="col-md-12">
-                                    <input type="time" wire:model="tiempoDesmontaje"
+                                    <input type="number" step="0.01" wire:model.lazy="precioFinalServicio"
                                         wire:change="cambioTiempoServicio()" class="form-control"
-                                        name="hora_finalizacion" placeholder="00:00:00">
+                                        name="precioFinalServicio" id="precioFinalServicio"
+                                        placeholder="Precio final">
                                 </div>
                             </div>
                             <div class="form-group col-md-2">
-                                <label for="hora_montaje" class="col-sm-12 col-form-label">Hora
-                                    montaje</label>
+                                <label for="numero_monitores" class="col-sm-12 col-form-label">Monitores</label>
                                 <div class="col-md-12">
-                                    <input type="time" wire:model="horaMontaje"
-                                        wire:change="cambioTiempoServicio()" class="form-control" name="hora_inicio"
-                                        placeholder="00:00:00">
+                                    <input type="number" wire:model="numero_monitores"
+                                        @if ($servicio_seleccionado != null) min="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" value="{{ $servicios->where('id', $servicio_seleccionado)->first()->minMonitor }}" @endif
+                                        wire:change="cambioPrecioServicio()" class="form-control"
+                                        name="numero_monitores" placeholder="Número de monitores">
                                 </div>
                             </div>
-                            <div class="form-group col-md-2">
-                                <label for="hora_inicio" class="col-sm-12 col-form-label">Hora
-                                    inicio</label>
-                                <div class="col-md-12">
-                                    <input type="time" wire:model="hora_inicio"
-                                        wire:change="cambioTiempoServicio()" class="form-control" name="hora_inicio"
-                                        placeholder="00:00:00">
-                                </div>
+                            <div class="form-group col-md-2 text-center">
+                                <label for="precioServicio" class="col-sm-12 col-form-label">&nbsp;</label>
+                                <button class="btn btn-primary w-100" wire:click.prevent="addServicio">Añadir</button>
                             </div>
+                            @if ($servicio_seleccionado > 0 && $articulos->where('id_categoria', $servicio_seleccionado)->count() > 0)
+                                <div class="form-group col-md-6">
+                                    <label for="articulo_seleccionado" class="col-sm-12 col-form-label">Artículo
+                                        relacionado al servicio</label>
+                                    <div class="col-md-12">
+                                        <Select wire:model="articulo_seleccionado" class="form-control"
+                                            name="articulo_seleccionado" id="articulo_seleccionado">
+                                            <option value="{{null}}">Selecciona un artículo.</option>
+                                            <option value="{{0}}">Sin definir</option>
+                                            @foreach ($articulos->where('id_categoria', $servicio_seleccionado) as $keys => $articulo)
+                                                <option class="dropdown-item" value="{{ $articulo->id }}">
+                                                    {{ $articulo->name }}
+                                                </option>
+                                            @endforeach
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="precioFinalServicio" class="col-sm-12 col-form-label">Concepto</label>
+                                    <div class="col-md-12">
+                                        <input type="text" wire:model.lazy="concepto" class="form-control"
+                                            name="concepto" id="concepto" placeholder="Concepto">
+                                    </div>
+                                </div>
+                            @endif
+                                <div class="form-group col-md-2">
+                                    <label for="precioServicio" class="col-sm-12 col-form-label">Tiempo</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="tiempo" wire:change="cambioTiempoServicio()"
+                                            class="form-control" name="tiempo" placeholder="00:00:00">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="tiempo_montaje" class="col-sm-12 col-form-label">Tiempo
+                                        montaje</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="tiempoMontaje"
+                                            wire:change="cambioTiempoServicio()" class="form-control" name="tiempo"
+                                            placeholder="00:00:00">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="hora_finalizacion" class="col-sm-12 col-form-label">Tiempo
+                                        desmontaje</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="tiempoDesmontaje"
+                                            wire:change="cambioTiempoServicio()" class="form-control"
+                                            name="hora_finalizacion" placeholder="00:00:00">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="hora_montaje" class="col-sm-12 col-form-label">Hora
+                                        montaje</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="horaMontaje"
+                                            wire:change="cambioTiempoServicio()" class="form-control" name="hora_inicio"
+                                            placeholder="00:00:00">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="hora_inicio" class="col-sm-12 col-form-label">Hora
+                                        inicio</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="hora_inicio"
+                                            wire:change="cambioTiempoServicio()" class="form-control" name="hora_inicio"
+                                            placeholder="00:00:00">
+                                    </div>
+                                </div>
 
-                            <div class="form-group col-md-2">
-                                <label for="precioServicio" class="col-sm-12 col-form-label">Hora
-                                    finalización</label>
-                                <div class="col-md-12">
-                                    <input type="time" wire:model="hora_finalizacion"
-                                        wire:change="cambioTiempoServicio()" class="form-control"
-                                        name="hora_finalizacion" placeholder="00:00:00">
+                                <div class="form-group col-md-2">
+                                    <label for="precioServicio" class="col-sm-12 col-form-label">Hora
+                                        finalización</label>
+                                    <div class="col-md-12">
+                                        <input type="time" wire:model="hora_finalizacion"
+                                            wire:change="cambioTiempoServicio()" class="form-control"
+                                            name="hora_finalizacion" placeholder="00:00:00">
+                                    </div>
                                 </div>
-                            </div>
                         @elseif($tipo_seleccionado == 'pack')
                             <div class="form-group col-md-10">
                                 <label for="diaEvento" class="col-sm-12 col-form-label">Packs de
@@ -1148,7 +1148,9 @@
                                 @if ($servicioIndex + 1 == count($listaServicios))
                                     <tr>
                                         <td class="izquierda">
-                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                            @if( $nombreser=$servicios->where('id', $itemServicio['id'])->first())
+                                            {{ $nombreser->nombre }}
+                                            @endif
                                         </td>
                                         <td>
                                             @if (isset($itemServicio['num_art_indef']) && $itemServicio['num_art_indef'] > 0)
@@ -1187,7 +1189,9 @@
                                 @else
                                     <tr>
                                         <td class="izquierda" style="border-bottom: 1px solid black !important;">
-                                            {{ $servicios->where('id', $itemServicio['id'])->first()->nombre }}
+                                            @if( $nombreser=$servicios->where('id', $itemServicio['id'])->first())
+                                            {{ $nombreser->nombre }}
+                                            @endif
                                         </td>
                                         <td>
                                         @if (isset($itemServicio['num_art_indef']) && $itemServicio['num_art_indef'] > 0)

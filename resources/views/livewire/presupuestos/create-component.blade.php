@@ -939,7 +939,7 @@
                                         name="hora_finalizacion" placeholder="00:00:00">
                                 </div>
                             </div>
-                            @elseif($tipo_seleccionado == 'pack')
+                        @elseif($tipo_seleccionado == 'pack')
                             <div class="form-group col-md-10">
                                 <label for="diaEvento" class="col-sm-12 col-form-label">Packs de servicios</label>
                                 <div class="col-md-12">
@@ -1364,122 +1364,6 @@
             </div>
         </div>
 
-        {{-- <div class="card m-b-30">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Sueldos de monitores y gasoil</h5>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <div class="row">
-
-                                @foreach ($listaPacks as $packIndex => $pack)
-                                    @foreach ($packs->where('id', $pack['id'])->first()->servicios()->get() as $keyPack => $servicioPack)
-                                        <div class="row text-center">
-                                            <div class="col-md-12">
-                                                <label for="adelantoResumen"
-                                                    class="col-sm-12 col-form-label">Servicio</label>
-                                                <input type="text" id="adelantoResumen"
-                                                    class="form-control text-center"
-                                                    value="{{ $servicioPack->nombre }}" disabled>
-                                            </div>
-                                            @for ($i = 0; $i < $pack['numero_monitores'][$keyPack]; $i++)
-                                                <div class="col-md-6">
-                                                    <label for="adelantoResumen"
-                                                        class="col-sm-12 col-form-label">Monitor</label>
-                                                    <select class="form-control text-center"
-                                                        wire:model="listaPacks.{{ $packIndex }}.id_monitores.{{ $keyPack }}.{{ $i }}"
-                                                        name="servicio_seleccionado" id="monitores">
-                                                        <option value="0">Selecciona un monitor.</option>
-                                                        @foreach ($monitores as $keys => $monitor)
-                                                            <option class="dropdown-item"
-                                                                value="{{ $monitor->id }}">
-                                                                {{ $monitor->nombre }}
-                                                            </option>
-                                                        @endforeach
-                                                    </Select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="adelantoResumen"
-                                                        class="col-sm-12 col-form-label">Sueldo</label>
-                                                    <input type="number" id="adelantoResumen"
-                                                        wire:model="listaPacks.{{ $packIndex }}.sueldos_monitores.{{ $keyPack }}.{{ $i }}"
-                                                        value="{{ $servicios->where('id', $listaPacks[$packIndex]['id'])->first()->precioMonitor }}"
-                                                        class="form-control text-center">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="adelantoResumen"
-                                                        class="form-check-label col-form-label col-sm-12">Desplaz./Gasoil
-                                                        <input type="checkbox"
-                                                            wire:model="listaPacks.{{ $packIndex }}.check_gasoil.{{ $keyPack }}.{{ $i }}"
-                                                            class="form-check-input"
-                                                            wire:change='setGasoilPack("{{ $packIndex }}", "{{ $keyPack }}", "{{ $i }}")'></label>
-                                                    @if (isset($listaPacks[$packIndex]['check_gasoil'][$keyPack][$i]))
-                                                        <input type="number"
-                                                            wire:model="listaPacks.{{ $packIndex }}.gastos_gasoil.{{ $keyPack }}.{{ $i }}"
-                                                            class="form-control" step="0.01">
-                                                    @endif
-                                                </div>
-                                            @endfor
-                                        </div>
-                                    @endforeach
-                                @endforeach
-                                @foreach ($listaServicios as $servicioIndex => $itemServicio)
-                                    <div class="row text-center">
-                                        <div class="col-md-12">
-                                            <label for="adelantoResumen"
-                                                class="col-sm-12 col-form-label">Servicio</label>
-                                            <input type="text" id="adelantoResumen"
-                                                class="form-control text-center"
-                                                value="{{ $servicios->find($itemServicio['id'])->nombre }}" disabled>
-                                        </div>
-                                        @for ($i = 0; $i < $itemServicio['numero_monitores']; $i++)
-                                            <div class="col-md-6">
-                                                <label for="adelantoResumen"
-                                                    class="col-sm-12 col-form-label">Monitor</label>
-                                                <select class="form-control text-center"
-                                                    wire:model="listaServicios.{{ $servicioIndex }}.id_monitores.{{ $i }}"
-                                                    name="servicio_seleccionado" id="monitores"
-                                                    wire:change="addMonitorServicio({{ $servicioIndex }}, {{ $i }})">
-                                                    <option value="0">Selecciona un monitor.</option>
-                                                    @foreach ($monitores as $keys => $monitor)
-                                                        <option class="dropdown-item" value="{{ $monitor->id }}">
-                                                            {{ $monitor->nombre }}
-                                                        </option>
-                                                    @endforeach
-                                                </Select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="adelantoResumen"
-                                                    class="form-check-label col-form-label col-sm-12">Autorización
-                                                    imagen
-                                                    <input type="checkbox"
-                                                        wire:model="listaServicios.{{ $servicioIndex }}.check_gasoil.{{ $i }}"
-                                                        class="form-check-input"
-                                                        wire:change='setGasoil("{{ $servicioIndex }}", "{{ $i }}")'>
-                                                </label>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="adelantoResumen"
-                                                    class="form-check-label col-form-label col-sm-12">Autorización
-                                                    menores
-                                                    <input type="checkbox"
-                                                        wire:model="listaServicios.{{ $servicioIndex }}.check_gasoil.{{ $i }}"
-                                                        class="form-check-input"
-                                                        wire:change='setGasoil("{{ $servicioIndex }}", "{{ $i }}")'>
-                                                </label>
-                                            </div>
-                                        @endfor
-                                    </div>
-                                @endforeach
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="form-row">
