@@ -1386,6 +1386,14 @@ class CreateComponent extends Component
         }
         return $programasConf;
     }
+    public function updatedArticuloSeleccionado($value){
+        $articulo=Articulos::find($value);
+        if(isset( $articulo->name)){
+        $this->concepto = $articulo->name;
+    }
+    }
+
+
     // Al hacer submit en el formulario
     public function submit()
     {
