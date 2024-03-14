@@ -1505,7 +1505,8 @@ class EditComponent extends Component
         if (isset($contrato)){event(new \App\Events\LogEvent(Auth::user(), 16, $contrato->id));}
 
         $this->evento->delete();
-        $contrato->delete();
+        if (isset($contrato)){ $contrato->delete();}
+
 
         // Guardar datos validados
         $presupuesosSave = $this->presupuesto->delete();
