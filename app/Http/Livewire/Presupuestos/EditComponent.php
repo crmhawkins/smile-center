@@ -1499,9 +1499,11 @@ class EditComponent extends Component
             $this->presupuesto->packs()->detach($pack['id']);
         }
         $contrato = Contrato::firstWhere('id_presupuesto', $this->presupuesto->id);
+
         event(new \App\Events\LogEvent(Auth::user(), 7, $this->presupuesto->id));
         event(new \App\Events\LogEvent(Auth::user(), 13, $this->evento->id));
-        event(new \App\Events\LogEvent(Auth::user(), 16, $contrato->id));
+        if (isset($contrato)){event(new \App\Events\LogEvent(Auth::user(), 16, $contrato->id));}
+
         $this->evento->delete();
         $contrato->delete();
 
