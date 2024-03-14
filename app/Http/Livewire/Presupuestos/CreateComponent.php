@@ -1517,19 +1517,7 @@ class CreateComponent extends Component
             ]);
         }
 
-        // Guardar datos validados
-        $contratoSave = Contrato::create([
-            "id_presupuesto" => $presupuesosSave->id,
-            'metodoPago' => $this->metodoPago,
-            'cuentaTransferencia' => $this->cuentaTransferencia,
-            'observaciones' => $this->observaciones,
-            'authImagen' => $this->authImagen,
-            'authMenores' => $this->authMenores,
-            'dia' => $this->diaEvento,
-        ]);
-        $this->contrato_id = $contratoSave->id;
 
-        event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
 
 
 
