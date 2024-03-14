@@ -2156,6 +2156,21 @@ class CreateComponent extends Component
 
     public function verContrato()
     {
+
+           // Guardar datos validados
+           $contratoSave = Contrato::create([
+            "id_presupuesto" => $this->identificador,
+            'metodoPago' => $this->metodoPago,
+            'cuentaTransferencia' => $this->cuentaTransferencia,
+            'observaciones' => $this->observaciones,
+            'authImagen' => $this->authImagen,
+            'authMenores' => $this->authMenores,
+            'dia' => $this->diaEvento,
+        ]);
+        $this->contrato_id = $contratoSave->id;
+
+        event(new \App\Events\LogEvent(Auth::user(), 14, $contratoSave->id));
+
         return redirect()->route('contratos.edit', $this->contrato_id);
     }
 
