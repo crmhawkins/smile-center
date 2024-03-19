@@ -404,13 +404,13 @@ class EditComponent extends Component
         // Validación de datos
         $validatedData = $this->validate(
             [
-                "id_presupuesto" => "required",
-                'metodoPago' => 'required',
-                'cuentaTransferencia' => 'required',
+                "id_presupuesto" => "nullable",
+                'metodoPago' => 'nullable',
+                'cuentaTransferencia' => 'nullable',
                 'observaciones' => 'nullable',
-                'authImagen' => 'required',
-                'authMenores' => 'required',
-                'dia' => 'required'
+                'authImagen' => 'nullable',
+                'authMenores' => 'nullable',
+                'dia' => 'nullable'
             ],
             // Mensajes de error
             [
