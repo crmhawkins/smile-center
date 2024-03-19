@@ -544,7 +544,7 @@
                     showCancelButton: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.livewire.emit('submit');
+                        window.livewire.emit('update');
                     }
                 });
             });
