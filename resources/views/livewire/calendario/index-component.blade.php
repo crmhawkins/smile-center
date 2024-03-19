@@ -87,6 +87,7 @@
                 },
                 events: [
                     @foreach ($eventos as $evento)
+                    @if ($presupuestos->where('id_evento', $evento->id)->first() !== null)
                         @if ($presupuestos->where('id_evento', $evento->id)->first()->estado != 'Cancelado')
                             {
                                 title: '{{ $this->categorias->where('id', $evento->eventoNombre)->first()->nombre }} ',
@@ -113,6 +114,7 @@
                                 @endif
                             },
                         @endif
+                    @endif
                     @endforeach
                 ],
                 eventClick: function(info) {
