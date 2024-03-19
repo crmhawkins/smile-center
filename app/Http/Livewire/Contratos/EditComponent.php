@@ -36,7 +36,7 @@ class EditComponent extends Component
     public $empresa;
     public $identificador;
     public $contrato;
-
+    public $imprimir;
     public $presupuestos;
     public $presupuesto;
     public $fechaContrato;
@@ -544,7 +544,7 @@ class EditComponent extends Component
         }
 
         $filename = Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
-        $this->ruta = '/contratos/' . $filename;
+        $ruta = '/contratos/' . $filename;
 
 
 
