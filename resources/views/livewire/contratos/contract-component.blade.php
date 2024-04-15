@@ -308,10 +308,12 @@
                         {{ $presupuesto->adelanto}} € ({{round(($presupuesto->adelanto / $presupuesto->precioFinal) * 100, 2)}}%)</td>
                     <td style="border-top-color: #fff !important; border-bottom-color: #fff !important;"><b>Método de pago:</b> {{ $metodoPago }}</td>
                 </tr>
-                <tr width="100%">
+                @if ($cliente->tipo_cliente == 1)
+                <tr style="margin-top:-5%;" width="100%">
                     <td colspan="3" style="border-top-color: #fff !important;"><b>Total
                         servicios contratados :</b> {{ $presupuesto->precioFinal * 1.21 }} € (IVA incluido)</td>
                 </tr>
+                @endif
                 <tr width="100%">
                     <td colspan="3" style="border-bottom-color: #fff !important;">En caso de transferencia:</td>
                 </tr>
