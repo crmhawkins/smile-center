@@ -309,7 +309,7 @@
                     <td style="border-top-color: #fff !important; border-bottom-color: #fff !important;"><b>Método de pago:</b> {{ $metodoPago }}</td>
                 </tr>
                 <tr width="100%">
-                    <td colspan="3" style="border-top-color: #fff !important;">Total
+                    <td colspan="3" style="border-top-color: #fff !important;"><b>Total
                         servicios contratados :</b> {{ $presupuesto->precioFinal * 1.21 }} € (IVA incluido)</td>
                 </tr>
                 <tr width="100%">
