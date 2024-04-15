@@ -585,7 +585,7 @@ class EditComponent extends Component
             File::makeDirectory($path, $mode = 0777, true, true);
         }
 
-        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $ruta)->output(); //
 
         $this->confirmed();
 
