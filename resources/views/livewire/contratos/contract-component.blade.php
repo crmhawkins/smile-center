@@ -310,7 +310,7 @@
                 </tr>
                 @if ($cliente->tipo_cliente == 1)
                 <tr width="100%">
-                    <td colspan="3" style="margin-top:-50px;border-top-color: #fff !important;"><b>Total
+                    <td colspan="3" style="border-top-color: #fff !important;"><b>Total
                         servicios contratados :</b> {{ $presupuesto->precioFinal * 1.21 }} € (IVA incluido)</td>
                 </tr>
                 @endif
