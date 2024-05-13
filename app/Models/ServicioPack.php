@@ -5,10 +5,12 @@ namespace App\Models;
 use App\Models\Servicio;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServicioPack extends Model
 {
     use HasFactory;
+
 
     protected $table = "servicio_packs";
 

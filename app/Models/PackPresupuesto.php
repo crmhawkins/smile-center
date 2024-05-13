@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PackPresupuesto extends Model
 {
     use HasFactory;
+
 
     protected $table = "pack_presupuesto";
     protected $casts = [

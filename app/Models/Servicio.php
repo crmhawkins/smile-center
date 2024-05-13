@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\ServicioPack;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Servicio extends Model
 {
     use HasFactory;
+
 
     protected $table = "servicios";
 

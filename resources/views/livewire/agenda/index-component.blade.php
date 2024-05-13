@@ -31,7 +31,16 @@
                                     @if ($eventos->where('diaEvento', $fechas[$diaIndex])->count() > 0)
                                         <ul>
                                             @foreach ($eventos->where('diaEvento', $fechas[$diaIndex]) as $evento)
-                                                <li><a href="{{route('presupuestos.edit', $presupuestos->where("id_evento", $evento->id)->first()->id)}}"> (#{{ $presupuestos->where('id_evento', $evento->id)->first()->nPresupuesto }})
+                                            @php
+                                                $presupuesto = $presupuestos->where("id_evento", $evento->id)->first();
+                                            @endphp
+                                                <li> @if($presupuesto)
+                                                    <a href="{{ route('presupuestos.edit', $presupuesto->id) }}">
+                                                        (#{{ $presupuesto->nPresupuesto }})
+                                                    </a>
+                                                @else
+                                                    <span>No disponible</span>
+                                                @endif
                                                     {{ $categorias->find($evento->eventoNombre)->nombre }} -
                                                     {{ $this->getCliente($evento->id) }}</a></li>
                                             @endforeach
