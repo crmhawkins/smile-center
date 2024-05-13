@@ -131,10 +131,16 @@ class IndexComponent extends Component
         $pivote = ServicioPresupuesto::where('presupuesto_id', $id1)->where('servicio_id', $id2)->first();
         if ($pivote != null) {
             if (empty(json_decode($pivote->sueldo_monitores))) {
-                $precio = Servicio::where('id', $id2)->first()->precioMonitor;
-                $sueldo = (int) date_parse_from_format('h', $pivote->tiempo) * (int) $precio;
-                for ($i = 0; $i < $pivote->numero_monitores; $i++) {
-                    $this->datos_servicio[$id1][$id2]['id_monitores'][$i] = $sueldo;
+
+                $servicio = Servicio::where('id', $id2)->first();
+                if(isset($servicio)){
+                    $precio = $servicio->precioMonitor;
+                    $sueldo = (int) date_parse_from_format('h', $pivote->tiempo) * (int) $precio;
+                    for ($i = 0; $i < $pivote->numero_monitores; $i++) {
+                        $this->datos_servicio[$id1][$id2]['id_monitores'][$i] = $sueldo;
+                    }
+                }else{
+                    return 'error';
                 }
             } else {
                 $this->datos_servicio[$id1][$id2]['sueldo_monitores'] = json_decode($pivote->sueldo_monitores);
