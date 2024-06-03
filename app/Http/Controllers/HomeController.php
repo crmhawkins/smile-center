@@ -32,8 +32,9 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $presupuestos = Presupuesto::where('estado', 'Aceptado')->orWhere('estado', 'Pendiente')->orderBy('fechaEmision', 'ASC')->get();
-        $categorias = TipoEvento::all();
+        $presupuestos = Presupuesto::orderBy('fechaEmision', 'ASC')->get();
+        $presupuestosPendientes = Presupuesto::Where('estado_id', '1')->orderBy('fechaEmision', 'ASC')->get();
+        $presupuestosAceptados = Presupuesto::where('estado_id', '2')->orderBy('fechaEmision', 'ASC')->get();
 
         $inicioSemana = Carbon::now()->startOfWeek();  // Lunes de esta semana
         $finSemana = Carbon::now()->endOfWeek();  // Domingo de esta semana
@@ -47,13 +48,12 @@ class HomeController extends Controller
         $pendiente = (float) ($presupuestos->where('estado', '!=', 'Facturado')->whereBetween('fechaEmision', [$inicioMes, $finMes])->sum('precioFinal') - $presupuestos->where('estado', '!=', 'Facturado')->whereBetween('fechaEmision', [$inicioMes, $finMes])->sum('adelanto'));
 
         $user = $request->user();
-        $eventos = Evento::whereBetween('diaEvento', [$inicioSemana, $finSemana])->orderBy('diaEvento', 'ASC')->get();
-        $presupuestosMes = Presupuesto::where('estado', 'Facturado')->whereBetween('fechaEmision', [$inicioMes, $finMes])->get();
+        $presupuestosMes = Presupuesto::whereBetween('fechaEmision', [$inicioMes, $finMes])->get();
 
         $gastos_caja = Caja::whereBetween('fecha', [$inicioSemana, $finSemana])->where('tipo_movimiento', 'Gasto')->sum('importe');
         $ingresos_caja = Caja::whereBetween('fecha', [$inicioSemana, $finSemana])->where('tipo_movimiento', 'Ingreso')->sum('importe');
         $resultados_caja = $ingresos_caja - $gastos_caja;
 
-        return view('home', compact('user', 'presupuestos', 'categorias', 'porcentaje_ingresos_mensuales', 'eventos',  'ingresos_mensuales', 'ingresos_caja', 'gastos_caja', 'resultados_caja'));
+        return view('home', compact('user', 'presupuestosAceptados','presupuestosPendientes',  'porcentaje_ingresos_mensuales',  'ingresos_mensuales', 'ingresos_caja', 'gastos_caja', 'resultados_caja'));
     }
 }

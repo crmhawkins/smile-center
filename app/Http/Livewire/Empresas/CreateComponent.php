@@ -3,9 +3,9 @@
 namespace App\Http\Livewire\Empresas;
 
 use App\Models\Empresa;
-
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class CreateComponent extends Component
 {
@@ -13,19 +13,15 @@ class CreateComponent extends Component
     use LivewireAlert;
 
     public $nombre;
-    public $telefono;
-    public $direccion;
-    public $cif;
+    public $contacto;
+    public $cargo;
     public $email;
-    public $cod_postal;
-    public $localidad;
-    public $pais;
+    public $telefono;
+    public $codigoPostal;
+    public $direccion;
+    public $poblacion;
+    public $provincia;
 
-
-
-
-    public function mount(){
-    }
 
     public function render()
     {
@@ -36,35 +32,33 @@ class CreateComponent extends Component
     public function submit()
     {
         // Validación de datos
-        $validatedData = $this->validate([
-            'nombre' => 'required',
-            'telefono' => 'required|numeric',
-            'direccion' => 'required',
-            'cif' => 'required',
-            'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
-            'cod_postal' => 'required',
-            'localidad' => 'required',
-            'pais' => 'required',
-
-        ],
+        $validatedData = $this->validate(
+            [
+                'nombre'=> 'required',
+                "email"=> 'nullable',
+                "telefono"=> 'nullable',
+                "codigoPostal"=> 'nullable',
+                "direccion"=> 'nullable',
+                "poblacion"=> 'nullable',
+                "provincia"=> 'nullable',
+                "contacto"=> 'nullable',
+                "cargo"=> 'nullable',
+            ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
-                'telefono.required' => 'El teléfono es obligatorio.',
-                'direccion.required' => 'La dirección es obligatoria.',
-                'cif.required' => 'El CIF es obligatorio.',
-                'email.required' => 'El email es obligatorio.',
-                'email.regex' => 'Introduce un email válido',
-                'cod_postal.required' => 'El código postal es obligatorio.',
-                'localidad.required' => 'La localidad es obligatoria.',
-                'pais.required' => 'El país es obligatorio.',
-            ]);
+            ]
+        );
 
         // Guardar datos validados
-        $empresasSave = Empresa::create($validatedData);
+        $clienteSave = Empresa::create(
+            $validatedData
+        );
+
+        event(new \App\Events\LogEvent(Auth::user(), 8, $clienteSave->id));
 
         // Alertas de guardado exitoso
-        if ($empresasSave) {
+        if ($clienteSave) {
             $this->alert('success', '¡Empresa registrada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -88,6 +82,7 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
+            'submit'
         ];
     }
 
@@ -96,6 +91,5 @@ class CreateComponent extends Component
     {
         // Do something
         return redirect()->route('empresas.index');
-
     }
 }

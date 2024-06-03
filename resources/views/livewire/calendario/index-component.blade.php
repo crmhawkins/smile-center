@@ -23,9 +23,6 @@
                             text-align: left !important;
                         }
                     </style>
-                    {{-- <h4 class="mt-0 header-title">Listado de todos los articulos</h4>
-                    <p class="sub-title../plugins">Listado completo de todos nuestros articulos, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
-                    </p> --}}
 
 
                     <div id='calendar' class="w-100"></div>
@@ -69,6 +66,7 @@
     <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            var appUrl = "{{ config('app.url') }}";
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -86,42 +84,32 @@
                     list: 'Lista'
                 },
                 events: [
-                    @foreach ($eventos as $evento)
-                    @if ($presupuestos->where('id_evento', $evento->id)->first() !== null)
-                        @if ($presupuestos->where('id_evento', $evento->id)->first()->estado != 'Cancelado')
-                            {
-                                title: '{{ $this->categorias->where('id', $evento->eventoNombre)->first()->nombre }} ',
-                                start: '{{ $evento->diaEvento }}',
-                                end: '{{ $evento->diaFinal }}',
-                                description: '<br> <b>Protagonista:</b> {{ $evento->eventoProtagonista }} <br> <b>Niños:</b> {{ $evento->eventoNiños }}<br> <b>Adultos:</b> {{ $evento->eventoAdulto }}',
-                                id: '{{ $evento->id }}',
-                                html: true,
-                                @if ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Pendiente')
-                                    color: '#f39200',
-                                    presupuestoId: '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
-                                @elseif ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Aceptado')
-                                    color: '#30419b',
-                                        presupuestoId:
-                                        '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
-                                @elseif ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Completado')
-                                    color: '#009e4e',
-                                        presupuestoId:
-                                        '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
-                                @elseif ($presupuestos->where('id_evento', $evento->id)->first()->estado == 'Facturado')
-                                    color: '#991b7a',
-                                        presupuestoId:
-                                        '{{ $presupuestos->where('id_evento', $evento->id)->first()->id }}',
-                                @endif
-                            },
+                    @foreach ($citas as $cita)
+                    {
+                        title: '{{ $this->pacientes->where('id', $cita->paciente_id)->first()->nombre }} ',
+                        start: '{{ $cita->fecha }}',
+                        end: '{{ $cita->fecha }}',
+                        id: '{{ $cita->id }}',
+                        html: true,
+                        @if (isset($cita->presupuesto()->first()->id))
+                        description: '<br> <b>Nº Presupuesto:</b> {{ $cita->presupuesto()->first()->id }}<br> <b>Observacion:</b> {{ $cita->observacion }}',
+                        presupuestoId: '{{ $cita->presupuesto()->first()->id }}',
+                        @else
+                        citaid: '{{ $cita->id }}',
+                        description: '<br> <b>Observacion:</b> {{ $cita->observacion }}',
                         @endif
-                    @endif
+                        color: '#02C58D',
+                        },
                     @endforeach
                 ],
                 eventClick: function(info) {
                     if (info.event.extendedProps.presupuestoId != undefined) {
                         console.log('hola');
-                        window.open('https://crm.fabricandoeventosjerez.com/admin/presupuestos-edit/' +
-                            info.event.extendedProps.presupuestoId);
+                        window.open(appUrl + '/admin/presupuestos-edit/' + info.event.extendedProps.presupuestoId);
+                    }
+                    if (info.event.extendedProps.citaid != undefined) {
+                        console.log('hola');
+                        window.open(appUrl + '/admin/citas-edit/' + info.event.extendedProps.citaid);
                     }
                 },
                 eventDidMount: function(info) {
@@ -135,8 +123,6 @@
                 },
             });
             calendar.render();
-
-
 
         });
 
@@ -159,21 +145,6 @@
                 //   $(".response").append(canvas);
             })
 
-            // var calendarEl = $('#calendar');
-            // console.log(calendarEl[0].innerHTML)
-            // // Crea un nuevo objeto jsPDF
-            // var doc = new jsPDF();
-
-            // // Agrega el contenido HTML del calendario al documento PDF
-            // // doc.addHTML(calendarEl, 10, 10);
-            // // doc.addHTML(calendarEl, function () {
-            // //     doc.save('calendario.pdf');
-            // // });
-            // doc.fromHTML(`<html><head><title>Eventos</title></head><body>` + calendarEl[0].innerHTML + `</body></html>`);
-            // doc.save('div.pdf');
-
-            // // Guarda el archivo PDF
-            // doc.save('calendario.pdf');
         }
     </script>
 @endsection

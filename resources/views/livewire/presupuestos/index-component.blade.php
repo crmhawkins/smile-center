@@ -27,12 +27,9 @@
                             <tr>
                                 <th scope="col">Número</th>
                                 <th scope="col">Fecha emisión</th>
-                                <th scope="col">Cliente</th>
-                                <th scope="col">Evento</th>
-                                <th scope="col">Precio Base</th>
-                                <th scope="col">Descuento</th>
-                                <th scope="col">Precio</th>
+                                <th scope="col">Paciente</th>
                                 <th scope="col">Estado</th>
+                                <th scope="col">Precio</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -42,22 +39,29 @@
                             <tr>
                                 <td>{{ $presup->id }}</td>
                                 <td>{{ $presup->fechaEmision }}</td>
-                                <td>{{ $this->getClienteNombre($presup->id_cliente) }}</td>
-                                <td>{{ $this->getEventoNombre($eventos->find($presup->id_evento)->eventoNombre) }}</td>
-                                <td>{{ $presup->precioBase }} €</td>
-                                <td>{{ $presup->descuento }} €</td>
-                                <td>{{ $presup->precioFinal }} €</td>
-                                <td>@if($presup->estado == "Aceptado")
-                                    <span class="badge badge-success">Aceptado</span>
-                                    @elseif($presup->estado == "Pendiente")
-                                    <span class="badge badge-warning">Pendiente</span>
-                                    @elseif($presup->estado == "Cancelado")
-                                    <span class="badge badge-danger">Cancelado</span>
-                                    @elseif($presup->estado == "Facturado")
-                                    <span class="badge badge-info">Facturado</span>
-                                    @endif
+                                <td>{{ $this->getClienteNombre($presup->paciente_id) }}</td>
+                                <td>
+                                    @switch($presup->estado_id)
+                                        @case(1)
+                                        <span class="badge badge-warning">{{$this->getEstado($presup->estado_id)}}</span>
+                                            @break
+                                        @case(2)
+                                        <span class="badge badge-success">{{$this->getEstado($presup->estado_id)}}</span>
+                                            @break
+                                        @case(3)
+                                        <span class="badge badge-danger">{{$this->getEstado($presup->estado_id)}}</span>
+                                            @break
+                                        @case(4)
+                                        <span class="badge badge-primary">{{$this->getEstado($presup->estado_id)}}</span>
+                                            @break
+                                        @case(5)
+                                        <span class="badge badge-info">{{$this->getEstado($presup->estado_id)}}</span>
+                                            @break
+                                        @default
+                                        <span class="badge badge-info">{{$this->getEstado($presup->estado_id)}}</span>
+                                    @endswitch
                                 </td>
-
+                                <td>{{ $this->getTotal($presup->id) }}</td>
                                 <td> <a href="presupuestos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a> </td>
                             </tr>
                             @endforeach
@@ -78,59 +82,6 @@
 
 
 @section('scripts')
-{{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            console.log('entro');
-            $('#tablePresupuestos').DataTable({
-                responsive: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                buttons: [{
-                    extend: 'collection',
-                    text: 'Export',
-                    buttons: [{
-                            extend: 'pdf',
-                            className: 'btn-export'
-                        },
-                        {
-                            extend: 'excel',
-                            className: 'btn-export'
-                        }
-                    ],
-                    className: 'btn btn-info text-white'
-                }],
-                "language": {
-                    "lengthMenu": "Mostrando _MENU_ registros por página",
-                    "zeroRecords": "Nothing found - sorry",
-                    "info": "Mostrando página _PAGE_ of _PAGES_",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(filtrado de _MAX_ total registros)",
-                    "search": "Buscar:",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Ultimo",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    },
-                    "zeroRecords": "No se encontraron registros coincidentes",
-                }
-            });
-
-            addEventListener("resize", (event) => {
-                location.reload();
-            })
-        });
-    </script> --}}
 <script src="../assets/js/jquery.slimscroll.js"></script>
 
 <script src="../plugins/datatables/jquery.dataTables.min.js"></script>

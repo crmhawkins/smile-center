@@ -12,14 +12,12 @@ class Alertas extends Model
     protected $table = "alertas";
     protected $fillable = [
         'user_id',
-        'status_id',
-        'stage',
-        'cont_postpone',
-        'datetime',
+        'estado_id',
         'referencia_id',
+        'tipo',
+        'titulo',
         'descripcion',
-        'observaciones',
-        
+
     ];
 
     /**
@@ -31,12 +29,12 @@ class Alertas extends Model
         'created_at', 'updated_at', 'deleted_at',
     ];
 
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
 }

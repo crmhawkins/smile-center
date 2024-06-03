@@ -26,37 +26,19 @@
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
-                                <th scope="col">Servicio</th>
-                                {{-- <th scope="col">Categoria</th> --}}
-                                <th scope="col">Pack</th>
-                                {{-- <th scope="col">Stock</th> --}}
-                                <th scope="col">Precio Base</th>
-                                <th scope="col">Nº mínimo de monitores</th>
-                                <th scope="col">Precio por monitor</th>
-                                <th scope="col">Precio total Estimado</th>
-
-
-                                <th scope="col">Acciones</th>
+                                <th >Servicio</th>
+                                <th >Descripción</th>
+                                <th >Precio</th>
+                                <th >Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($servicios as $servicio)
                             <tr>
                                 <td>{{ $servicio->nombre }}</td>
-                                {{-- <td>{{ $this->nombreCategoria($servicio->id_categoria) }}</td> --}}
-                                @if($servicio->id_pack == null)
-                                <td> No pertenece a ningún pack </td>
-                                @else
-                                <td>{{ $this->nombrePacks($servicio->id_pack) }}</td>
-                                @endif
-                                {{-- <td>{{ $servicio->stock }}</td> --}}
-                                <td>{{ $servicio->precioBase }}</td>
-                                <td>{{ $servicio->minMonitor }}</td>
-                                <td>{{ $servicio->precioMonitor }} €</td>
-                                <td>{{ $this->precioTotal($servicio->id) }} €</td>
-
-
-                                <td> <a href="servicios-edit/{{ $servicio->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                                <td>{{ $servicio->descripcion }}</td>
+                                <td>{{ $servicio->precio }}</td>
+                                <td class=""> <a href="servicios-edit/{{ $servicio->id }}" class="btn btn-primary">Ver/Editar</a> </td>
                             </tr>
                             @endforeach
                         </tbody>

@@ -2,23 +2,23 @@
 
 namespace App\Http\Livewire\Calendario;
 
-use App\Models\Evento;
+use App\Models\Cita;
+use App\Models\Paciente;
 use App\Models\Presupuesto;
-use App\Models\TipoEvento;
 use Livewire\Component;
 
 class IndexComponent extends Component
 {
-    public $eventos;
+    public $citas;
     public $presupuestos;
-    public $categorias;
+    public $pacientes;
 
 
     public function mount()
     {
-        $this->eventos = Evento::all();
+        $this->citas = Cita::all();
         $this->presupuestos = Presupuesto::all();
-        $this->categorias = TipoEvento::all();
+        $this->pacientes = Paciente::all();
     }
     public function render()
     {

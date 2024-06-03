@@ -16,117 +16,24 @@ class EditComponent extends Component
     use LivewireAlert;
 
     public $identificador;
-    public $servicioCategorias;
-    public $servicioPacks;
-
-    public $articulo_seleccionado;
-    public $numero_articulos;
-    public $listaArticulos;
-    public $listaArticulosEliminar = [];
-    public $articulos;
-    public $articulosSelect;
-    public $stock_usado;
-    public $tiempoMontaje;
-    public $tiempoDesmontaje;
-    public $tiempoServicio;
-
     public $nombre;
-    public $precioBase;
-    public $id_pack;
-    public $id_categoria;
-    public $minMonitor;
-    public $precioMonitor;
-    public $precioMonitorNocturno;
-    public $precioMonitorAnimacion;
-    public $selectedPacks = [];
+    public $precio;
+    public $descripcion;
+    public $iva;
 
 
     public function mount()
     {
         $servicio = Servicio::find($this->identificador);
-        $this->selectedPacks = $servicio->id_pack;
-        $this->servicioCategorias = ServicioCategoria::all();
-        $this->servicioPacks = ServicioPack::all();
-        $this->articulos = Articulos::all();
-        $this->articulosSelect = $this->articulos;
         $this->nombre = $servicio->nombre;
-        $this->precioBase = $servicio->precioBase;
-        $this->id_categoria = $servicio->id_categoria;
-        $this->minMonitor = $servicio->minMonitor;
-        $this->precioMonitor = $servicio->precioMonitor;
-        $this->precioMonitorNocturno = $servicio->precioMonitorNocturno;
-        $this->precioMonitorAnimacion = $servicio->precioMonitorAnimacion;
-        $this->tiempoMontaje = $servicio->tiempoMontaje;
-        $this->tiempoDesmontaje = $servicio->tiempoDesmontaje;
-        $this->tiempoServicio = $servicio->tiempoServicio;
-
-        foreach ($servicio->articulos()->get() as $servicio) {
-            $this->listaArticulos[] = [
-                'id' => $servicio->id,
-                'stock_usado' => $servicio->pivot->stock_usado,
-                'existente' => 1
-            ];
-        }
-        if ($this->id_categoria > 0) {
-            $this->refreshArticulos();
-        }
+        $this->precio = $servicio->precio;
+        $this->descripcion = $servicio->descripcion;
+        $this->iva = $servicio->iva;
     }
-
-    public function precioTotal()
-    {
-        return intval($this->minMonitor) * intval($this->precioMonitor) + floatval($this->precioBase);
-    }
-
-    public function crearPack()
-    {
-        return Redirect::to(route("servicios-packs.create"));
-    }
-
 
     public function render()
     {
         return view('livewire.servicios.edit-component');
-    }
-
-    public function addStock()
-    {
-        if ($this->articulo_seleccionado != 0) {
-            if($this->stock_usado > Articulos::firstWhere('id', $this->articulo_seleccionado)->stock){
-                $this->alert('error', '¡La selección sobrepasa al stock disponible!', [
-                    'position' => 'center',
-                    'toast' => false,
-                    'showConfirmButton' => true,
-                    'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
-                ]);
-            }else{
-                $this->listaArticulos[] = [
-                    'id' => $this->articulo_seleccionado,
-                    'stock_usado' => $this->stock_usado,
-                    'existente' => 0
-                ];
-                $this->articulo_seleccionado = 0;
-                $this->stock_usado = 0;
-            }
-        } else {
-            $this->alert('error', '¡Selecciona un artículo!', [
-                'position' => 'center',
-                'toast' => false,
-                'showConfirmButton' => true,
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
-            ]);
-        }
-    }
-
-
-    public function deleteArticulos($indice)
-    {
-        if ($this->listaArticulos[$indice]['existente'] == 1) {
-            $this->listaArticulosEliminar[] = $this->listaArticulos[$indice];
-        }
-        unset($this->listaArticulos[$indice]);
-        $this->listaArticulos = array_values($this->listaArticulos);
     }
 
     // Al hacer update en el formulario
@@ -136,24 +43,17 @@ class EditComponent extends Component
         $this->validate(
             [
                 'nombre' => 'required',
-                'precioBase' => 'required',
-                'id_pack' => 'nullable',
-                'minMonitor' => 'required',
-                'precioMonitor' => 'required',
-                'tiempoMontaje' => 'required',
-                'tiempoDesmontaje' => 'required',
+                'precio' => 'required',
+                'descripcion' => 'nullable',
+                'iva' => 'nullable',
+
 
             ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
-                'precioBase.required' => 'El precio base es obligatorio.',
-                'id_categoria.required' => 'El id de la categoría es obligatorio.',
-                'minMonitor.required' => 'El mínimo de monitores es obligatorio.',
-                'precioMonitor.required' => 'El el precio minimo por monitor es obligatorio.',
-                'tiempoMontaje.required' => 'El tiempo de montaje es obligatorio.',
-                'tiempoDesmontaje.required' => 'El tiempo de desmontaje es obligatorio.',
-                'tiempoServicio.required' => 'La duración del servicio es obligatorio.',
+                'precio.required' => 'El precio base es obligatorio.',
+
             ]
         );
 
@@ -164,35 +64,11 @@ class EditComponent extends Component
 
         $servicioSave = $servicio->update([
             'nombre' => $this->nombre,
-            'precioBase' => $this->precioBase,
-            'id_pack' => $this->selectedPacks,
-            'minMonitor' => $this->minMonitor,
-            'precioMonitor' => $this->precioMonitor,
-            'tiempoMontaje' => $this->tiempoMontaje,
-            'tiempoDesmontaje' => $this->tiempoDesmontaje,
+            'precio' => $this->precio,
+            'descripcion' => $this->descripcion,
+            'iva' => $this->iva,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 30, $servicio->id));
-
-        // if(!empty($this->listaArticulosEliminar)){
-        //     foreach ($this->listaArticulosEliminar as $articulo) {
-        //         $servicio->articulos()->detach($articulo['id']);
-        //     }
-        // }
-
-
-
-        // foreach ($this->listaArticulos as $servicioAttach) {
-        //     if ($servicioAttach['existente'] == 0) {
-        //         $servicio->articulos()->attach(
-        //             $servicioAttach['id'],
-        //             [
-        //                 'stock_usado' => $servicioAttach['stock_usado'],
-        //             ]
-        //         );
-        //     }
-        // }
-
-
 
         if ($servicioSave) {
             $this->alert('success', '¡Servicio actualizado correctamente!', [
@@ -214,14 +90,7 @@ class EditComponent extends Component
 
         $this->emit('eventUpdated');
     }
-    public function refreshArticulos()
-    {
-        if ($this->id_categoria != null && $this->id_categoria > 0) {
-            $this->articulosSelect = $this->articulos->where('id_categoria', $this->id_categoria)->all();
-        } else {
-            $this->articulosSelect = $this->articulos->all();
-        }
-    }
+
 
     // Eliminación
     public function destroy()

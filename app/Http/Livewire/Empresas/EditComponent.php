@@ -5,34 +5,35 @@ namespace App\Http\Livewire\Empresas;
 use App\Models\Empresa;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
 {
     use LivewireAlert;
 
     public $identificador;
-
     public $nombre;
-    public $telefono;
-    public $direccion;
-    public $cif;
+    public $contacto;
+    public $cargo;
     public $email;
-    public $cod_postal;
-    public $localidad;
-    public $pais;
+    public $telefono;
+    public $codigoPostal;
+    public $direccion;
+    public $poblacion;
+    public $provincia;
 
     public function mount()
     {
-        $empresas = Empresa::find($this->identificador);
-
-        $this->nombre = $empresas->nombre;
-        $this->telefono = $empresas->telefono;
-        $this->direccion = $empresas->direccion;
-        $this->cif = $empresas->cif;
-        $this->email = $empresas->email;
-        $this->cod_postal = $empresas->cod_postal;
-        $this->localidad = $empresas->localidad;
-        $this->pais = $empresas->pais;
+        $empresa = Empresa::find($this->identificador);
+        $this->nombre = $empresa->nombre;
+        $this->email = $empresa->email;
+        $this->telefono = $empresa->telefono;
+        $this->codigoPostal = $empresa->codigoPostal;
+        $this->direccion = $empresa->direccion;
+        $this->poblacion = $empresa->poblacion;
+        $this->provincia = $empresa->provincia;
+        $this->contacto = $empresa->provincia;
+        $this->cargo = $empresa->provincia;
     }
 
     public function render()
@@ -45,46 +46,40 @@ class EditComponent extends Component
     {
         // Validación de datos
         $this->validate([
-            'nombre' => 'required',
-            'telefono' => 'required|numeric',
-            'direccion' => 'required',
-            'cif' => 'required',
-            'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
-            'cod_postal' => 'required',
-            'localidad' => 'required',
-            'pais' => 'required',
+            'nombre'=> 'nullable',
+            "email"=> 'nullable',
+            "telefono"=> 'nullable',
+            "codigoPostal"=> 'nullable',
+            "direccion"=> 'nullable',
+            "poblacion"=> 'nullable',
+            "provincia"=> 'nullable',
+            "contacto"=> 'nullable',
+            "cargo"=> 'nullable',
         ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
-                'telefono.required' => 'El teléfono es obligatorio.',
-                'direccion.required' => 'La dirección es obligatoria.',
-                'cif.required' => 'El CIF es obligatorio.',
-                'email.required' => 'El email es obligatorio.',
-                'email.regex' => 'Introduce un email válido',
-                'cod_postal.required' => 'El código postal es obligatorio.',
-                'localidad.required' => 'La localidad es obligatoria.',
-                'pais.required' => 'El país es obligatorio.',
             ]);
 
         // Encuentra el identificador
-        $empresas = Empresa::find($this->identificador);
+        $paciente = Empresa::find($this->identificador);
 
         // Guardar datos validados
-        $empresasSave = $empresas->update([
+        $pacienteSave = $paciente->update([
             'nombre' => $this->nombre,
-            'telefono' => $this->telefono,
-            'direccion' => $this->direccion,
-            'cif' => $this->cif,
+            'contacto'=>$this->contacto,
+            'cargo'=>$this->cargo,
             'email' => $this->email,
-            'cod_postal' => $this->cod_postal,
-            'localidad' => $this->localidad,
-            'pais' => $this->pais,
-
+            'telefono' => $this->telefono,
+            'codigoPostal' => $this->codigoPostal,
+            "direccion"=> $this->direccion,
+            "poblacion"=> $this->poblacion,
+            "provincia"=> $this->provincia,
 
         ]);
+        event(new \App\Events\LogEvent(Auth::user(), 9, $paciente->id));
 
-        if ($empresasSave) {
+        if ($pacienteSave) {
             $this->alert('success', 'Empresa actualizada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -95,7 +90,7 @@ class EditComponent extends Component
                 'timerProgressBar' => true,
             ]);
         } else {
-            $this->alert('error', '¡No se ha podido guardar la información de la empresa!', [
+            $this->alert('error', '¡No se ha podido guardar la información de la Empresa!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
@@ -104,7 +99,7 @@ class EditComponent extends Component
 
         session()->flash('message', 'Empresa actualizada correctamente.');
 
-        $this->emit('productUpdated');
+        $this->emit('eventUpdated');
     }
 
       // Eliminación
@@ -129,6 +124,8 @@ class EditComponent extends Component
     {
         return [
             'confirmed',
+            'update',
+            'destroy',
             'confirmDelete'
         ];
     }
@@ -143,8 +140,9 @@ class EditComponent extends Component
     // Función para cuando se llama a la alerta
     public function confirmDelete()
     {
-        $empresas = Empresa::find($this->identificador);
-        $empresas->delete();
+        $cliente = Empresa::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
+        $cliente->delete();
         return redirect()->route('empresas.index');
 
     }

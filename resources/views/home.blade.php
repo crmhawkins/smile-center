@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-sm-6 col-xl-4">
             <div class="card">
                 <div class="card-heading p-4">
@@ -74,7 +74,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <div class="row">
         <div class="col-xl-1">
             &nbsp;
@@ -82,19 +82,19 @@
         <div class="col-xl-4">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h4 class="mt-0 header-title mb-4">Eventos de esta semana</h4>
+                    <h4 class="mt-0 header-title mb-4">Presupuestos pendientes</h4>
                     <div class="friends-suggestions">
-                        @foreach ($eventos as $evento)
+                        @foreach ($presupuestosPendientes as $presupuesto)
                             <a href="#" class="friends-suggestions-list">
                                 <div class="border-bottom position-relative">
-
                                     <div class="suggestion-icon float-right mt-2 pt-1">
-                                        <a href="{{ route('eventos.edit', $evento->id) }}"><i class="mdi mdi-plus"></i></a>
+                                        <a href="{{ route('presupuestos.edit', $presupuesto->id) }}"><i class="mdi mdi-plus"></i></a>
                                     </div>
                                     <div class="desc">
-                                        <h5 class="font-14 mb-1 pt-2 text-dark"><span
-                                                class="badge badge-primary">Evento</span> {{ $categorias->find($evento->eventoNombre)->nombre }}</h5>
-                                        <p class="text-muted">{{ $evento->diaEvento }}</p>
+                                        <h5 class="font-14 mb-1 pt-2 text-dark">
+                                            <span class="badge badge-warning">Pendiente</span> Presupuesto nº
+                                            {{ $presupuesto->id }}</h5>
+                                        <p class="text-muted">{{ $presupuesto->fechaEmision }}</p>
                                     </div>
                                 </div>
                             </a>
@@ -102,16 +102,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-2">
-                &nbsp;
-            </div>
+        </div>
+        <div class="col-xl-1">
+            &nbsp;
         </div>
         <div class="col-xl-4">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h4 class="mt-0 header-title mb-4">Presupuestos sin facturar</h4>
+                    <h4 class="mt-0 header-title mb-4">Presupuestos Aceptados</h4>
                     <div class="friends-suggestions">
-                        @foreach ($presupuestos as $presupuesto)
+                        @foreach ($presupuestosAceptados as $presupuesto)
                             <a href="#" class="friends-suggestions-list">
                                 <div class="border-bottom position-relative">
                                     <div class="suggestion-icon float-right mt-2 pt-1">
@@ -120,10 +120,7 @@
                                     </div>
                                     <div class="desc">
                                         <h5 class="font-14 mb-1 pt-2 text-dark">
-                                            @if($presupuesto->estado == "Aceptado")
-                                            <span
-                                                class="badge badge-success">Aceptado</span> @elseif($presupuesto->estado == "Pendiente")                                             <span
-                                                class="badge badge-warning">Pendiente</span> @endif Presupuesto nº
+                                            <span class="badge badge-success">Aceptado</span>  Presupuesto nº
                                             {{ $presupuesto->id }}</h5>
                                         <p class="text-muted">{{ $presupuesto->fechaEmision }}</p>
                                     </div>

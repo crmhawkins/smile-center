@@ -13,16 +13,16 @@
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
-<body style="background-color: #03386c;">
+<body style="background-color: #164765;">
     <div class="container">
         <div class="row justify-content-center mt-5">
             <div class="col-sm-12 text-center">
-                <img src="{{ asset('images/logo.png') }}" style="width: 15% !important;">
+                <img src="{{ asset('images/logo_white.png') }}" style="width: 25% !important;">
             </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-sm-12 text-center text-white">
-                <h1 style="font-size: 3rem !important;">Iniciar sesión</h1>
+                <h1 style="font-size: 3rem !important; color:#ffffff;">Iniciar sesión</h1>
             </div>
         </div>
         <div class="row justify-content-center"

@@ -7,7 +7,6 @@ use Livewire\Component;
 
 class IndexComponent extends Component
 {
-    // public $search;
     public $empresas;
 
     public function mount()
@@ -18,9 +17,7 @@ class IndexComponent extends Component
     public function render()
     {
 
-        return view('livewire.empresas.index-component', [
-            'empresas' => $this->empresas,
-        ]);
+        return view('livewire.empresas.index-component');
     }
 
 }

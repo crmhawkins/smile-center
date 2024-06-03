@@ -13,6 +13,8 @@ use App\Http\Controllers\AlumnoController;
 use App\Http\Controllers\ArticulosController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\EmpresaController;
+use App\Http\Controllers\AseguradoraController;
+use App\Http\Controllers\PlataformaController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\FacturaController;
@@ -37,7 +39,7 @@ use App\Http\Controllers\ServicioCategoriaController;
 use App\Http\Controllers\ServicioPackController;
 use App\Http\Controllers\MonitorController;
 use App\Http\Controllers\ProgramaController;
-use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\ResumenDiaController;
 use App\Http\Controllers\ResumenSemanaController;
 use App\Http\Controllers\ResumenMensualController;
@@ -47,6 +49,13 @@ use App\Http\Livewire\Facturas\EditComponent;
 use App\Http\Livewire\Facturas\IndexComponent as FacturasIndexComponent;
 use App\Http\Livewire\Productos\IndexComponent;
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\LogsController;
+use App\Http\Controllers\NewslettersController;
+use App\Http\Controllers\StatisticsController;
+use UniSharp\LaravelFilemanager\Lfm;
+
 
 use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
@@ -75,8 +84,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
-
-
+    Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+        Lfm::routes();
+    });
     /* --------------------------------------- */
     // Budgets
     Route::get('budgets', [BudgetController::class, 'index'])->name('budget.index');
@@ -207,19 +217,28 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::post('project-priority-updated', [ProjectPriorityController::class, 'updated'])->name('projectPriority.updated');
     Route::delete('project-priority-delete', [ProjectPriorityController::class, 'delete'])->name('projectPriority.delete');
 
-    // // Facturas
-    // Route::get('generar-factura', [FacturasController::class, 'generar'])->name('generarFactura.generar');
-    // Route::get('factura', [FacturasController::class, 'index'])->name('factura.index');
-    // Route::get('factura/create', [FacturasController::class, 'create'])->name('factura.create');
-    // Route::get('factura/edit/{id}', [FacturasController::class, 'edit'])->name('factura.edit');
-    // Route::get('factura/electronica/{id}', [FacturasController::class, 'electronica'])->name('factura.electronica');
-    // Route::get('factura/pdf/{id}', [FacturasController::class, 'pdf'])->name('facturas.pdf');
 
+    //Marketing
+    Route::get('/newsletters', [NewslettersController::class, 'index'])->name('marketing.newsletters.index');
+    Route::get('/newsletters-create', [NewslettersController::class,'create'])->name('marketing.newsletters.create');
+    Route::post('/newsletters-store', [NewslettersController::class,'store'])->name('marketing.newsletters.store');
+    Route::get('/newsletters/{newsletter}/edit', [NewslettersController::class,'edit'])->name('marketing.newsletters.edit');
+    Route::post('/newsletters/{newsletter}', [NewslettersController::class,'update'])->name('marketing.newsletters.update');
+    Route::get('/newsletters-statistics', [NewslettersController::class,'statistics'])->name('marketing.statistics');
+    Route::post('/newsletters-statistics/get-info', [NewslettersController::class,'getInfoNewsletter'])->name('marketing.getInfo');
+    Route::get('/smartnewsletter', [NewslettersController::class,'smartNewsletters'])->name('marketing.smartnewsletter');
+    Route::post('/runsmartnewsletter', [NewslettersController::class,'runSmartNewsletters'])->name('marketing.runsmartnewsletter');
+    Route::get('/newsletters-favourites', [NewslettersController::class,'favourites'])->name('marketing.newsletters.favourites');
+    Route::post('/newsletters-add/{newsletter}', [NewslettersController::class,'addFavourites'])->name('marketing.newsletters.favourites.add');
+    Route::post('/newsletters-send/{newsletter}', [NewslettersController::class,'send'])->name('marketing.newsletters.send');
+    Route::delete('/newsletters-delete/{newsletter}', [NewslettersController::class,'destroy'])->name('marketing.newsletters.destroy');
 
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');
 
+    // estadisticas
+    Route::get('statistics', [StatisticsController::class, 'index'])->name('statistics.index');
 
     // Settings
     Route::get('clients', [ClientsController::class, 'index'])->name('clients.index');
@@ -259,23 +278,33 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
      Route::get('/programas-create', [ProgramaController::class, 'create'])->name('programas.create');
      Route::get('/programas-edit/{id}', [ProgramaController::class, 'edit'])->name('programas.edit');
 
+     //Logs
+     Route::get('/logs', [LogsController::class, 'index'])->name('logs.index');
      // Clientes
-     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
-     Route::get('/clientes-create', [ClienteController::class, 'create'])->name('clientes.create');
-     Route::get('/clientes-create-from-budget', [ClienteController::class, 'createFromBudget'])->name('clientes.create-from-budget');
-     Route::get('/clientes-edit/{id}', [ClienteController::class, 'edit'])->name('clientes.edit');
-
-     // Clientes
-     Route::get('/contratos', [ContratoController::class, 'index'])->name('contratos.index');
-     Route::get('/contratos-create', [ContratoController::class, 'create'])->name('contratos.create');
-     Route::get('/contratos-edit/{id}', [ContratoController::class, 'edit'])->name('contratos.edit');
-
-     // Resumen Dia
-     Route::get('/cuadrante-dias', [ResumenDiaController::class, 'show'])->name('resumen-dias.show');
-     Route::get('/cuadrante-semanas', [ResumenSemanaController::class, 'show'])->name('resumen-semanas.show');
-     Route::get('/cuadrante-mensual/current', [ResumenMensualController::class, 'show'])->name('resumen-mensual.show');
-     Route::get('/cuadrante-mensual-edit/{identificador}', [ResumenMensualController::class, 'edit'])->name('resumen-mensual.edit');
-     Route::get('/cuadrante-mensual', [ResumenMensualController::class, 'index'])->name('resumen-mensual.index');
+     Route::get('/pacientes', [PacienteController::class, 'index'])->name('pacientes.index');
+     Route::get('/pacientes-create', [PacienteController::class, 'create'])->name('pacientes.create');
+     Route::get('/pacientes-edit/{id}', [PacienteController::class, 'edit'])->name('pacientes.edit');
+    // Leads
+     Route::get('/leads', [LeadsController::class, 'index'])->name('leads.index');
+     Route::get('/leads-create', [LeadsController::class, 'create'])->name('leads.create');
+     Route::get('/leads-edit/{id}', [LeadsController::class, 'edit'])->name('leads.edit');
+    // Citas
+     Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
+     Route::get('/citas-create', [CitaController::class, 'create'])->name('citas.create');
+     Route::get('/citas-create/{id}', [CitaController::class, 'createFrom'])->name('citas.create');
+     Route::get('/citas-edit/{id}', [CitaController::class, 'edit'])->name('citas.edit');
+     // Empresas
+     Route::get('/empresas', [EmpresaController::class, 'index'])->name('empresas.index');
+     Route::get('/empresas-create', [EmpresaController::class, 'create'])->name('empresas.create');
+     Route::get('/empresas-edit/{id}', [EmpresaController::class, 'edit'])->name('empresas.edit');
+     // Aseguradoras
+     Route::get('/aseguradoras', [AseguradoraController::class, 'index'])->name('aseguradoras.index');
+     Route::get('/aseguradoras-create', [AseguradoraController::class, 'create'])->name('aseguradoras.create');
+     Route::get('/aseguradoras-edit/{id}', [AseguradoraController::class, 'edit'])->name('aseguradoras.edit');
+     // Plataformas
+     Route::get('/plataformas', [PlataformaController::class, 'index'])->name('plataformas.index');
+     Route::get('/plataformas-create', [PlataformaController::class, 'create'])->name('plataformas.create');
+     Route::get('/plataformas-edit/{id}', [PlataformaController::class, 'edit'])->name('plataformas.edit');
 
      //Gastos
      Route::get('gastos', [GastoController::class, 'index'])->name('gastos.index');

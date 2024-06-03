@@ -26,64 +26,38 @@
                             <div class="col-sm-12">
                                 <h5 class="ms-3"
                                     style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                    Datos
-                                    básicos del servicio</h5>
+                                    Datos básicos del servicio</h5>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-sm-12">
+                            <div class="col-sm-6">
                                 <label for="nombre" class="col-sm-12 col-form-label">Nombre </label>
-                                <div class="col-sm-11">
+                                <div class="col-sm-12">
                                     <input type="text" wire:model="nombre" class="form-control" name="nombre"
-                                        id="nombre" placeholder="Evento">
+                                        id="nombre" placeholder="Servicio">
                                     @error('nombre')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-                        {{-- <div class="form-group row">
-                            <div class="col-sm-12">
-                                <label for="id_categoria" class="col-sm-12 col-form-label">Categoria </label>
-                                <div class="col-sm-11">
-                                    <select class="form-control" name="id_categoria" required id="id_categoria"
-                                        wire:model="id_categoria" wire:change="refreshArticulos">
-                                        <option value="">Elige una categoría de servicio</option>
-                                        @foreach ($servicioCategorias as $categoria)
-                                            <option value="{{ $categoria->id }}">
-                                                {{ $categoria->nombre }}
-                                            </option>
-                                        @endforeach
-                                        @error('id_categoria')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </select>
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <div class="form-group row" wire:ignore>
-                            <div class="col-sm-12">
-                                <label for="minMonitor" class="col-sm-12 col-form-label">Seleccione los Packs </label>
-                                <div class="col-sm-11">
-                                    <select class="form-control select-multiple-checkboxes" multiple="multiple">
-                                        @foreach ($servicioPacks as $pack)
-                                            <option value="{{ $pack->id }}" @if(in_array($pack->id, $this->selectedPacks)) selected @endif>
-                                                {{ $pack->nombre }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                            <div class="col-sm-6">
+                                <label for="precio" class="col-sm-12 col-form-label">Precio</label>
+                                <div class="col-sm-12">
+                                    <input type="number" wire:model="precio" class="form-control" name="precio"
+                                        id="precio" placeholder="0">
+                                    @error('precio')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group row">
                             <div class="col-sm-12">
-                                <label for="minMonitor" class="col-sm-12 col-form-label">Nº minimo de monitores </label>
-                                <div class="col-sm-11">
-                                    <input type="number" wire:model="minMonitor" class="form-control"
-                                        name="minMonitors" id="minMonitor" placeholder="1">
-                                    @error('minEmpleados')
+                                <label for="descripcion" class="col-sm-12 col-form-label">Descripción</label>
+                                <div class="col-sm-12">
+                                    <input type="text" wire:model="descripcion" class="form-control" name="descripcion"
+                                        id="descripcion" placeholder="Descripcion">
+                                    @error('descripcion')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -92,201 +66,21 @@
                     </form>
                 </div>
             </div>
-            <div class="card mt-5">
-                <div class="card-body">
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Costes del servicio</h5>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-3">
-                                <label for="precioBase" class="col-sm-12 col-form-label">Precio Base </label>
-                                <div class="col-sm-9">
-                                    <input type="text" wire:model="precioBase" class="form-control" name="precioBase"
-                                        id="precioBase" placeholder="0">
-                                    @error('precioBase')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="precioMonitor" class="col-sm-12 col-form-label">Precio por monitor
-                                    (diurno)
-                                </label>
-                                <div class="col-sm-9">
-                                    <input type="text" wire:model="precioMonitor" class="form-control"
-                                        name="precioMonitor" id="precioMonitor" placeholder="20">
-                                    @error('precioMonitor')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="precioMonitor" class="col-sm-12 col-form-label">Precio por monitor
-                                    (nocturno)
-                                </label>
-                                <div class="col-sm-9">
-                                    <input type="text" wire:model="precioMonitorNocturno" class="form-control"
-                                        name="precioMonitor" id="precioMonitorNocturno" placeholder="20">
-                                    @error('precioMonitor')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="precioMonitor" class="col-sm-12 col-form-label">Precio por monitor
-                                    (animación)
-                                </label>
-                                <div class="col-sm-9">
-                                    <input type="text" wire:model="precioMonitorAnimacion" class="form-control"
-                                        name="precioMonitor" id="precioMonitorAnimacion" placeholder="20">
-                                    @error('precioMonitor')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-5">
-                <div class="card-body">
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Tiempos del servicio</h5>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">
-                            <label for="tiempoServicio" class="col-sm-12 col-form-label">Duración del evento
-                            </label>
-                            <div class="col-sm-9">
-                                <input type="time" wire:model="tiempoServicio" class="form-control"
-                                    name="precioBase" id="tiempoServicio" placeholder="0">
-                                @error('tiempoServicio')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="tiempoMontaje" class="col-sm-12 col-form-label">Tiempo de montaje</label>
-                            <div class="col-sm-9">
-                                <input type="time" wire:model="tiempoMontaje" class="form-control"
-                                    name="precioBase" id="tiempoMontaje" placeholder="0">
-                                @error('tiempoMontaje')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="tiempoDesmontaje" class="col-sm-12 col-form-label">Tiempo de
-                                desmontaje</label>
-                            <div class="col-sm-9">
-                                <input type="time" wire:model="tiempoDesmontaje" class="form-control"
-                                    name="precioBase" id="tiempoDesmontaje" placeholder="0">
-                                @error('tiempoDesmontaje')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{-- <div class="card mt-5">
-                <div class="card-body">
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <h5 class="ms-3"
-                                style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                Artículos</h5>
-                        </div>
-                    </div>
-                    <div class="form-group row justify-content-center">
-                        <div class="form-group col-md-6">
-                            <div x-data="" x-init="$('#select2-cat').select2();
-                            $('#select2-cat').on('change', function(e) {
-                                var data = $('#select2-cat').select2('val');
-                                @this.set('articulo_seleccionado', data);
-                            });">
-                                <label for="fechaVencimiento">Elige un artículo para asignarlo al servicio:</label>
-                                <select class="form-control" name="estado" id="select2-cat" wire:model="articulo_seleccionado">
-                                    <option value="">-- SELECCIONE UN ARTÍCULO --</option>
-                                    @foreach ($articulosSelect as $articulo)
-                                        <option value="{{ $articulo['id'] }}">{{ $articulo['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="stock" class="col-sm-12 col-form-label">Stock usado</label>
-                            <div class="col-sm-9">
-                                <input type="number" class="form-control" name="stock" id="stock"
-                                    wire:model="stock_usado">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <button class="btn btn-primary" wire:click.prevent="addStock">Añadir artículo</button>
-                        </div>
-                    </div>
-                    <div class="form-group row justify-content-center">
-                        @if (!empty($listaArticulos))
-                            <table class="table table-striped table-bordered nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>Artículo</th>
-                                        <th>Stock Usado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($listaArticulos as $articuloIndex => $articulo)
-                                        <tr>
-                                            <td>{{ $articulos->where('id', $articulo['id'])->first()->name }}</td>
-                                            <td>{{ $articulo['stock_usado'] }}</td>
-                                            <td><button class="btn btn-danger"
-                                                    wire:click.prevent="deleteArticulos('{{ $articuloIndex }}')">X</button>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
-                    </div>
-                </div>
-            </div>--}}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 justify-content-center">
             <div class="card m-b-30">
                 <div class="card-body">
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Editar
-                                servicio</button>
-                            <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Eliminar
-                                servicio</button>
+                            <button type="button" class="w-100 btn btn-success mb-2" id="alertaGuardar">Actualizar servicio</button>
+                            <button type="button" class="w-100 btn btn-danger mb-2" wire:click="destroy" >Borrar servicio</button>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Opciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <a href="{{ route('servicios-packs.create') }}" class="btn btn-primary w-100"
-                                target="_blank">Añadir nuevo pack de servicios</a>
-                        </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 @section('scripts')
     <script>
@@ -302,17 +96,5 @@
                 }
             });
         });
-
-
-
-        $(document).ready(function() {
-    $('.select-multiple-checkboxes').select2({
-        closeOnSelect: false,
-        placeholder: "Selecciona los packs"
-    }).on('change', function (e) {
-        var data = $(this).val();
-        @this.set('selectedPacks', data);
-    });
-});
     </script>
 @endsection

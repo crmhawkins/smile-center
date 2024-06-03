@@ -28,25 +28,24 @@
                                 {{ $dia }}</h5>
                             <div class="form-group col-md-12">
                                 <div class="form-row">
-                                    @if ($eventos->where('diaEvento', $fechas[$diaIndex])->count() > 0)
+                                    @if ($citas->where('fecha', $fechas[$diaIndex])->count() > 0)
                                         <ul>
-                                            @foreach ($eventos->where('diaEvento', $fechas[$diaIndex]) as $evento)
+                                            @foreach ($citas->where('fecha', $fechas[$diaIndex]) as $cita)
                                             @php
-                                                $presupuesto = $presupuestos->where("id_evento", $evento->id)->first();
+                                                $presupuesto = $cita->presupuesto->first();
                                             @endphp
                                                 <li> @if($presupuesto)
                                                     <a href="{{ route('presupuestos.edit', $presupuesto->id) }}">
-                                                        (#{{ $presupuesto->nPresupuesto }})
+                                                        (Nº {{ $presupuesto->id}})
                                                     </a>
                                                 @else
                                                     <span>No disponible</span>
                                                 @endif
-                                                    {{ $categorias->find($evento->eventoNombre)->nombre }} -
-                                                    {{ $this->getCliente($evento->id) }}</a></li>
+                                                    {{ $this->getNombre($cita->paciente_id) }} - {{Carbon::parse($cita->hora)->format('H:i')}}</a></li>
                                             @endforeach
                                         </ul>
                                     @else
-                                        <h6 class="text-center">No hay eventos para este día.</h6>
+                                        <h6 class="text-center">No hay citas para este día.</h6>
                                     @endif
                                 </div>
                             </div>

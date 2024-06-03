@@ -1,133 +1,241 @@
+<div class="container-fluid">
+    <div class="page-title-box">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h4 class="page-title">EDITAR EMPRESA</span></h4>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Empresas</a></li>
+                    <li class="breadcrumb-item active">Editar empresa</li>
+                </ol>
+            </div>
+        </div> <!-- end row -->
+    </div>
+    <!-- end page-title -->
 
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <form wire:submit.prevent="submit">
+                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="id" value="{{ csrf_token() }}">
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <h5 class="ms-3" style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                                Datos de la empresa</h5>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="nombre" class="form-control" name="nombre"
+                                            id="nombre" aria-label="Nombre" placeholder="Nombre">
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                            <style>
+                                                .nombre {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="contacto" class="col-sm-12 col-form-label">Persona de contacto</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="contacto" class="form-control" name="contacto"
+                                        id="contacto" placeholder="contacto">
+                                        @error('apellido')
+                                        <span class="text-danger">{{ $message }}</span>
 
-@section('head')
-    @vite(['resources/sass/productos.scss'])
-@endsection
-<div class="container mx-auto">
-    <h1>Empresas</h1>
-    <h2>Editar Empresa</h2>
-    <br>
+                                        <style>
+                                            .apellido {
+                                                color: red;
+                                            }
+                                            </style>
+                                    @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="cargo" class="col-sm-12 col-form-label">Cargo</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="cargo" class="form-control" name="cargo"
+                                            id="cargo" aria-label="cargo" placeholder="Cargo">
+                                        @error('cargo')
+                                            <span class="text-danger">{{ $message }}</span>
+                                            <style>
+                                                .nombre {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tipo de Calle -->
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="email" class="col-sm-12 col-form-label">Email</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="email" class="form-control"
+                                            name="email" id="email" placeholder="Email">
+                                        @error('email')
+                                            <span class="text-danger">{{ $message }}</span>
 
+                                            <style>
+                                                .tipoCalle {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="telefono" class="col-sm-12 col-form-label">Télefono</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="telefono" class="form-control" name="telefono"
+                                            id="telefono" placeholder="Télefono">
+                                        @error('telefono')
+                                            <span class="text-danger">{{ $message }}</span>
 
-            <form wire:submit.prevent="update">
-                <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                                            <style>
+                                                .calle {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- CP -->
+                            <div class="form-group row">
+                                <!-- Ciudad -->
+                                <div class="col-md-6">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Direccion</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="direccion" class="form-control"
+                                            name="direccion" id="direccion" placeholder="direccion">
+                                        @error('direccion')
+                                            <span class="text-danger">{{ $message }}</span>
 
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="nombre" class="col-sm-2 col-form-label">Nombre </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="nombre" class="form-control" name="nombre" id="nombre" placeholder="Zenotech SL...">
-                      @error('nombre') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
+                                            <style>
+                                                .ciudad {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="codigoPostal" class="col-sm-12 col-form-label">CP</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" wire:model.lazy="codigoPostal" class="form-control"
+                                            name="codigoPostal" id="codigoPostal" placeholder="XXXXX">
+                                        @error('codigoPostal')
+                                            <span class="text-danger">{{ $message }}</span>
+                                            <style>
+                                                .codigoPostal {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                                <!-- poblacion -->
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="poblacion" class="col-sm-12 col-form-label">Poblacion</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="poblacion" class="form-control"
+                                            name="poblacion" id="poblacion" placeholder="poblacion">
+                                        @error('poblacion')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .provincia {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <!-- Provincia -->
+                                <div class="col-md-6">
+                                    <label for="provincia" class="col-sm-12 col-form-label">Provincia</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model.lazy="provincia" class="form-control"
+                                            name="provincia" id="provincia" placeholder="Provincia">
+                                        @error('provincia')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .provincia {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="telefono" class="col-sm-2 col-form-label">Teléfono </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="telefono" class="form-control" name="telefono" id="telefono" placeholder="956124591...">
-                      @error('telefono') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="direccion" class="col-sm-2 col-form-label">Dirección </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="direccion" class="form-control" name="direccion" id="direccion" placeholder="Calle arboleda nº...">
-                      @error('direccion') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="cif" class="col-sm-2 col-form-label">CIF </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="cif" class="form-control" name="cif" id="cif" placeholder="Z2826000G">
-                      @error('cif') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="email" class="col-sm-2 col-form-label">Email </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="email" class="form-control" name="email" id="email" placeholder="zenotech@gmail.com...">
-                      @error('email') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="cod_postal" class="col-sm-2 col-form-label">Cod. Postal </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="cod_postal" class="form-control" name="cod_postal" id="cod_postal" placeholder="11574...">
-                      @error('cod_postal') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="localidad" class="col-sm-2 col-form-label">Localidad </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="localidad" class="form-control" name="localidad" id="localidad" placeholder="Algeciras...">
-                      @error('localidad') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <label for="pais" class="col-sm-2 col-form-label">País </label>
-                    <div class="col-sm-10">
-                      <input type="text" wire:model="pais" class="form-control" name="pais" id="pais" placeholder="España...">
-                      @error('pais') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-
-                <div class="mb-3 row d-flex align-items-center">
-                    <button type="submit" class="btn btn-outline-info">Guardar</button>
-                </div>
-
-
-
-
-            </form>
-            <div class="mb-3 row d-flex align-items-center">
-              <button wire:click="destroy" class="btn btn-outline-danger">Eliminar</button>
-          </div>
+            </div>
         </div>
-
+        <div class="col-md-3">
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <h5>Acciones</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" class="w-100 btn btn-success mb-2" id="alertaGuardar">Actualizar Empresa</button>
+                            <button type="button" class="w-100 btn btn-danger mb-2" wire:click='destroy'>Borrar Empresa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
 
 @section('scripts')
     <script>
-        $.datepicker.regional['es'] = {
-            closeText: 'Cerrar',
-            prevText: '< Ant',
-            nextText: 'Sig >',
-            currentText: 'Hoy',
-            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-            monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
-            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-            dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
-            dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
-            weekHeader: 'Sm',
-            dateFormat: 'dd/mm/yy',
-            firstDay: 1,
-            isRTL: false,
-            showMonthAfterYear: false,
-            yearSuffix: ''
-        };
-        $.datepicker.setDefaults($.datepicker.regional['es']);
+      function initializeSelect2() {
+            $('.select2').select2().on('change', function (e) {
+                var data = $(this).val();
+                @this.set($(this).attr('name'), data);
+            });
+        }
+
         document.addEventListener('livewire:load', function () {
+            initializeSelect2();
 
-
-        })
-        $(document).ready(function() {
-            console.log('select2')
-            $("#datepicker").datepicker();
-
-            $("#datepicker").on('change', function(e){
-                @this.set('fecha_nac', $('#datepicker').val());
-                });
-
+            Livewire.hook('message.processed', (message, component) => {
+                initializeSelect2();
+            });
         });
-    </script>
 
+        $("#alertaGuardar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Pulsa el botón de confirmar para guardar el cliente.',
+                icon: 'warning',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('update');
+                }
+            });
+        });
+
+    </script>
 @endsection
 

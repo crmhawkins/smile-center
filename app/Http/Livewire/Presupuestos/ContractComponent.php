@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Presupuestos;
 
-use App\Models\Cliente;
+use App\Models\Paciente;
 use App\Models\Evento;
 use App\Models\ServicioEvento;
 use App\Models\Monitor;
