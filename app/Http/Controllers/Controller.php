@@ -18,11 +18,11 @@ class Controller extends BaseController
     protected $alertas;
     protected $user;
 
-    public function __construct() 
+    public function __construct()
     {
         $this->user = Auth::user();
         // Fetch the Site Settings object
-        $this->alertas = Alertas::all();
+        $this->alertas = Alertas::where('estado_id',1)->get();
         View::share('alertas', $this->alertas);
         View::share('user', $this->user);
     }
