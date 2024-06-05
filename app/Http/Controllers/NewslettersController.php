@@ -153,7 +153,6 @@ return view('newsletters.create', compact('clients'));
 
         $data = [
             "pacientes_array_id" => $clients_serialize,
-            "category" => $request->category,
             "date_sent" => $date->format('Y-m-d H:i'),
             "first_title_newsletter" => $request->first_title_newsletter,
             "banner_description" => $request->banner_description,

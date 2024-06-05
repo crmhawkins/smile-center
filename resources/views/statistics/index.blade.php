@@ -193,8 +193,8 @@ ul.nav.nav-tabs.custom-item a:hover {
                                                         @foreach($arrayBudgets as $item)
                                                         <tr>
                                                             <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->id}}</td>
-                                                            <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->paciente_id}}</td>
-                                                            <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->estado_id}}</td>
+                                                            <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->paciente()->first()->nombre}} {{$item->paciente()->first()->apellido}}</td>
+                                                            <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->estado()->first()->estado}}</td>
                                                             <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->created_at}}</td>
                                                             <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->servicios()->sum('precio')}}</td>
                                                         </tr>

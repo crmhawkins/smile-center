@@ -36,6 +36,14 @@ class Presupuesto extends Model
     {
         return $this->hasMany(Cita::class, 'presupuesto_id');
     }
+    public function estado()
+    {
+        return $this->hasOne(EstadoPresupuesto::class, 'id','estado_id');
+    }
+    public function paciente()
+    {
+        return $this->hasOne(Paciente::class,'id', 'paciente_id');
+    }
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];

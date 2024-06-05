@@ -1,23 +1,23 @@
 <?php
- 
+
 namespace App\Mail;
- 
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
- 
+
 class MailNewsletter extends Mailable
 {
     use Queueable, SerializesModels;
-     
+
     /**
      * The demo object instance.
      *
      * @var Demo
      */
     public $newsletter;
- 
+
     /**
      * Create a new message instance.
      *
@@ -27,16 +27,15 @@ class MailNewsletter extends Mailable
     {
         $this->newsletter = $newsletter;
     }
- 
+
     /**
      * Build the message.
      *
      * @return $this
      */
     public function build(){
-        $mail = $this->from('info@crmhawkins.com')
-        ->subject('Newsletter - HAWKINS')
-        ->view('mails.mailNewsletter');
+        $mail = $this->subject('Newsletter')
+                     ->view('mails.mailNewsletter');
 
         return $mail;
     }

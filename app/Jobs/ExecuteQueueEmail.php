@@ -120,11 +120,11 @@ class ExecuteQueueEmail implements ShouldQueue
 
         foreach ($request->clients as $client) {
             $cliente = Paciente::find($client);
-            $newsletterObject->client_id = $cliente->id;
+            $newsletterObject->paciente_id = $cliente->id;
             if($cliente->email){
                 $validator = $this->validateEmail($cliente->email);
 
-                if($validator->passes() && $cliente->newsletters_sending_accepted){
+                if($validator->passes()){
                     $newsletterObject->to = $cliente->email;
                     $newsletterObject->delay = $date;
                     $added = $this->jobAdd($newsletterObject);
@@ -201,12 +201,12 @@ class ExecuteQueueEmail implements ShouldQueue
                 $contador = 0;
             }
 
-            $cliente =  Paciente::where('estado_id', 1)->where('id', $client)->where('newsletter',1)->whereNotNull('email')->first();
+            $cliente =  Paciente::find($client);
 
             if($cliente){
                 $validator = $this->validateEmail($cliente->email);
-                if($validator->passes() && $cliente->newsletters_sending_accepted){
-                    $newsletterObject->client_id = $cliente->id;
+                if($validator->passes()){
+                    $newsletterObject->paciente_id = $cliente->id;
                     $newsletterObject->to = $cliente->email;
                     $newsletterObject->delay = $date;
 
@@ -233,7 +233,7 @@ class ExecuteQueueEmail implements ShouldQueue
         if($newsletterObject->to){
 
             $data = [
-                'client_id' => $newsletterObject->client_id,
+                'paciente_id' => $newsletterObject->paciente_id,
                 'newsletter_id' => $newsletterObject->id_foreign,
                 'campaign' => 'newsletter_manual',
                 'email' => $newsletterObject->to,
@@ -244,7 +244,7 @@ class ExecuteQueueEmail implements ShouldQueue
 
             $newsletterObject->id_newsletter = $newsletter->id;
 
-            $client = Paciente::find($newsletterObject->client_id);
+            $client = Paciente::find($newsletterObject->paciente_id);
             $client->last_newsletter = $newsletterObject->delay;
             $client->save();
 

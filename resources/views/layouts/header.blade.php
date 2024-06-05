@@ -46,14 +46,14 @@
                                 @livewire('lista-alertas')
                             </div>
                         </div>
-                    @endif
-                @else
+                        @else
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated dropdown-menu-lg px-1">
                             <!-- item-->
                             <h6 class="dropdown-item-text">
                                 No tienes notificaciones
                             </h6>
                         </div>
+                    @endif
                 @endif
             </li>
 

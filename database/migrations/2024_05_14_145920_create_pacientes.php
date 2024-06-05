@@ -29,6 +29,7 @@ return new class extends Migration
             $table->bigInteger('aseguradora_id')->nullable();
             $table->string('origen')->nullable();
             $table->tinyInteger('newsletter')->nullable();
+            $table->dateTime('last_newsletter')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

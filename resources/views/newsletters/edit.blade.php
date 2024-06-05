@@ -24,8 +24,8 @@
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
-
     <form method="POST" action="{{ route('marketing.newsletters.update', $newsletter->id) }}" class="row" enctype="multipart/form-data" data-callback="formCallback">
+        @csrf
         <div class="col-lg-10 col-md-10">
             <div class="card">
                 <div class="card-body">
@@ -46,14 +46,6 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
-                            <label>Categoria</label>
-                            <div class="input-group">
-                                <select name="category" id="category" class="selectpicker form-control" data-show-subtext="true" data-live-search="true" readonly>
-                                    <option value="{{$newsletter->category}}"> {{$newsletter->name_category->name}} </option>
-                                </select>
-                            </div>
-                        </div> --}}
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
                            <label for="date">Fecha de envio</label>
                             <div class='input-group date datepicker' style="border:none;padding:0px;"  data-target-input="nearest" >
@@ -91,7 +83,7 @@
                         </div>
 
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-banner" src="{{ asset('images/'.$newsletter->images_promo[0]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-banner" src="{{ asset('storage/images/'.$newsletter->images_promo[0]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -117,7 +109,7 @@
                             </div>
                         </div>
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-1" src="{{ asset('images/'.$newsletter->images_promo[1]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-1" src="{{ asset('storage/images/'.$newsletter->images_promo[1]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -133,7 +125,7 @@
                         </div>
 
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-2" src="{{ asset('images/'.$newsletter->images_promo[2]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-2" src="{{ asset('storage/images/'.$newsletter->images_promo[2]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -149,7 +141,7 @@
                         </div>
 
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-3" src="{{ asset('images/'.$newsletter->images_promo[3]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-3" src="{{ asset('storage/images/'.$newsletter->images_promo[3]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -165,7 +157,7 @@
                         </div>
 
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-4" src="{{ asset('images/'.$newsletter->images_promo[4]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-4" src="{{ asset('storage/images/'.$newsletter->images_promo[4]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -181,7 +173,7 @@
                         </div>
 
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-5" src="{{ asset('images/'.$newsletter->images_promo[5]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-5" src="{{ asset('storage/images/'.$newsletter->images_promo[5]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -197,7 +189,7 @@
                         </div>
 
                         <div class="col-md-12 mb-2">
-                            <img id="preview-image-before-upload-6" src="{{ asset('images/'.$newsletter->images_promo[6]) }}" alt="preview image" style="max-height: 250px;">
+                            <img id="preview-image-before-upload-6" src="{{ asset('storage/images/'.$newsletter->images_promo[6]) }}" alt="preview image" style="max-height: 250px;">
                         </div>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 form-group">
@@ -219,9 +211,9 @@
                     <button type="submit" class="btn btn-success btn-block" >
                         Guardar
                     </button>
-                    <button type="button" id="addFavoriteNewsletter" class="btn btn-info btn-block">
+                    {{-- <button type="button" id="addFavoriteNewsletter" class="btn btn-info btn-block">
                         Añadir a Favoritos
-                    </button>
+                    </button> --}}
                     <button type="button" id="sendNewsletter" class="btn btn-info btn-block">
                         Volver a enviar
                     </button>
@@ -237,17 +229,13 @@
 <form id ="addFavourites" method="POST"  action="{{ route('marketing.newsletters.favourites.add', $newsletter->id) }}" class="row" enctype="multipart/form-data"  data-callback="formCallbackAddFavouritesForm"></form>
 <form id ="send" method="POST"  action="{{ route('marketing.newsletters.send', $newsletter->id) }}" class="row" enctype="multipart/form-data"  data-callback="formCallbackSendForm"></form>
 
-@endsection
-
-
-@push('scripts')
+@section('scripts')
 <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 <!-- JAVASCRIPT -->
 <script type="text/javascript">
     function formCallback(data) {
         CommonFunctions.notificationSuccessStayOrBack(data.message, data.entryUrl, "{{route('marketing.newsletters.index')}}");
     }
-
 
     $(document).ready(function() {
 
@@ -319,7 +307,7 @@
     $('#sendNewsletter').click(function() {
         let fecha = $('#date').val();
         let hora = $('#time_start').val();
-        swal({
+        Swal.fire({
             type: 'info',
             title: 'Enviar Newsletter',
             text: 'Se enviará el '+fecha+' a las '+hora+', ¿estás conforme?',
@@ -356,4 +344,5 @@
     });
 
 </script>
-@endpush
+@endsection
+@endsection

@@ -52,10 +52,10 @@
                                                     foreach($newsletter->clients_id as $client){
                                                         if($client){
                                                             if(++$i === $num_items){
-                                                                echo($client->name);
+                                                                echo($client->nombre);
                                                             }
                                                             else{
-                                                                echo($client->name . ", ");
+                                                                echo($client->nombre . ", ");
                                                             }
                                                         }
                                                     }

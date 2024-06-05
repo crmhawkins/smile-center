@@ -38,7 +38,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Http/Helpers/budget-referent.php"
+            "app/Http/Helpers/budget-referent.php",
+            "app/Helpers/AjaxForm.php"
         ]
     },
     "autoload-dev": {

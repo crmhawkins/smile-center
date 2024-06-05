@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -104,7 +103,7 @@
 </head>
 <body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
     <!-- HIDDEN PREHEADER TEXT -->
-    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;"> Correo electronico enviado desde el CRM & ERP de Los Creativos de Hawkins </div>
+    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;"> Correo electronico enviado desde el CRM </div>
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <!-- LOGO -->
         <tr>
@@ -126,7 +125,7 @@
                     </tr>
                     <tr>
                         <td bgcolor="#ffffff" align="center" valign="top" style="color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 3px; line-height: 48px;">
-                            <p style="text-align: center;">@if($newsletter->first_title_newsletter) {{$newsletter->first_title_newsletter}} @else ¡En Hawkins te echamos de menos! @endif</p>
+                            <p style="text-align: center;">@if($newsletter->first_title_newsletter) {{$newsletter->first_title_newsletter}} @else ¡Te echamos de menos! @endif</p>
                         </td>
                     </tr>
                 </table>
@@ -139,7 +138,7 @@
                         <td bgcolor="#ffffff" align="center" valign="top" style="font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
                             @if($newsletter->promo[0])
                                 <a href="{{$newsletter->urls[0]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[0])}}" alt="{{$newsletter->banner_description}}" width="600" style="display: block; border: 0px;" />
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[0])}}" alt="{{$newsletter->banner_description}}" width="600" style="display: block; border: 0px;" />
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/600x400%20/000/fff" alt="banner" style="display: block; border: 0px;" />
@@ -162,7 +161,7 @@
                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             @if($newsletter->promo[1])
                                 <a href="{{$newsletter->urls[1]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[1])}}" width="250" alt="categoria1">
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[1])}}" width="250" alt="categoria1">
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/250x160%20/000/fff" width="250" alt="categoria1">
@@ -171,18 +170,18 @@
                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             @if($newsletter->promo[2])
                                 <a href="{{$newsletter->urls[2]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[2])}}" width="250" alt="categoria2">
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[2])}}" width="250" alt="categoria2">
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/250x160%20/000/fff" width="250" alt="categoria2">
                             @endif
                         </td>
-                    
+
                     <tr>
                         <td bgcolor="#ffffff" align="center"style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             @if($newsletter->promo[3])
                                 <a href="{{$newsletter->urls[3]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[3])}}" width="250" alt="categoria3">
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[3])}}" width="250" alt="categoria3">
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/250x160%20/000/fff" width="250" alt="categoria3">
@@ -191,7 +190,7 @@
                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             @if($newsletter->promo[4])
                                 <a href="{{$newsletter->urls[4]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[4])}}" width="250" alt="categoria4">
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[4])}}" width="250" alt="categoria4">
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/250x160%20/000/fff" width="250" alt="categoria4">
@@ -202,7 +201,7 @@
                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             @if($newsletter->promo[5])
                                 <a href="{{$newsletter->urls[5]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[5])}}" width="250"alt="categoria5">
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[5])}}" width="250"alt="categoria5">
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/250x160%20/000/fff" width="250" alt="categoria5">
@@ -211,41 +210,17 @@
                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             @if($newsletter->promo[6])
                                 <a href="{{$newsletter->urls[6]}}">
-                                    <img src="{{ asset('images/'.$newsletter->promo[6])}}" width="250" alt="categoria6">
+                                    <img src="{{ asset('storage/images/'.$newsletter->promo[6])}}" width="250" alt="categoria6">
                                 </a>
                             @else
                                 <img src="https://dummyimage.com/250x160%20/000/fff" width="250" alt="categoria6">
                             @endif
                         </td>
                     </tr>
-                    
-                    <tr>
-                        <td  colspan="2" bgcolor="#ffffff" align="left" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                           <p style="text-align: center;">Mucho más aquí <a href="https://www.lchawkins.com/">aquí.</a></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td  colspan="2" bgcolor="#ffffff" align="left" style="padding: 20px 30px 5px 30px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                           <p style="text-align: center;">¿Prefieres que te llamemos? <a href="tel:+34956662942">Click aquí.</a></p>
-                           <p>Nuestros clientes nos valoran  con 5 estrellas y ese, es nuestro mayor orgullo.</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <p style="margin: 0;">Un cordial saludo,<br>Los Creativos de Hawkins</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" bgcolor="#ffffff" align="center" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 400; line-height: 25px;">
-                            <a href="https://crmhawkins.com/unsubscribe" target="_blank">Darse de baja</a><br>
-                            <a href="{{ asset('assets/clausulas.pdf') }}" target="_blank">Politica de privacidad</a>
-                        </td>
-                    </tr>
                 </table>
             </td>
         </tr>
     </table>
-    <img src='https://crmhawkins.com/checkEmail/{{$newsletter->id_newsletter}}' width='1' height='1' border='0' alt='' hidden>
 </body>
 
 </html>

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('newsletters', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('paciente_id')->nullable()->unsigned();
+            $table->bigInteger('newsletter_id')->nullable()->unsigned();
             $table->text('campaign')->nullable();
             $table->text('email')->nullable();
             $table->boolean('sent')->default(0);
@@ -23,6 +24,7 @@ return new class extends Migration
 
             $table->foreign('paciente_id')->references('id')->on('pacientes');
 
+            $table->dateTime('date_sent')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

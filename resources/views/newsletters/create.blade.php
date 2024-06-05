@@ -3,6 +3,7 @@
 @section('title', 'Crear Newsletter')
 
 @section('head')
+    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/admin.css') }}"> --}}
     @vite(['resources/sass/productos.scss'])
     @vite(['resources/sass/alumnos.scss'])
 @endsection
@@ -149,60 +150,59 @@
         </div>
     </form>
 </div>
+    @section('scripts')
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+    <!-- JAVASCRIPT -->
+    <script type="text/javascript">
+        function formCallback(data) {
+            CommonFunctions.notificationSuccessStayOrBack(data.message, data.entryUrl, "{{route('marketing.newsletters.index')}}");
+        }
 
-@section('scripts')
-<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
-<!-- JAVASCRIPT -->
-<script type="text/javascript">
-    function formCallback(data) {
-        CommonFunctions.notificationSuccessStayOrBack(data.message, data.entryUrl, "{{route('marketing.newsletters.index')}}");
-    }
+        $(document).ready(function() {
+            $(".client-container").hide();
+            $(".activity-container").hide();
 
-    $(document).ready(function() {
-        $(".client-container").hide();
-        $(".activity-container").hide();
+            $('input[type="radio"]').click(function(){
+                if($(this).attr("value")=="client"){
+                    $(".client-container").show();
+                    $(".activity-container").hide();
+                }
+                if($(this).attr("value")=="lead"){
+                    $(".client-container").hide();
+                    $(".activity-container").show();
+                }
+            });
 
-        $('input[type="radio"]').click(function(){
-            if($(this).attr("value")=="client"){
-                $(".client-container").show();
-                $(".activity-container").hide();
-            }
-            if($(this).attr("value")=="lead"){
-                $(".client-container").hide();
-                $(".activity-container").show();
-            }
+            $('.custom-file-input').change(function(){
+                let reader = new FileReader();
+                let id = $(this).attr('data-id');
+
+                reader.onload = (e) => {
+                $('#preview-image-before-upload-'+id).attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(this.files[0]);
         });
 
-        $('.custom-file-input').change(function(){
-            let reader = new FileReader();
-            let id = $(this).attr('data-id');
+            $('.select-client').select2();
 
-            reader.onload = (e) => {
-              $('#preview-image-before-upload-'+id).attr('src', e.target.result);
-            }
+            $('#date').datetimepicker({
+                format: 'DD/MM/YYYY',
+                date: new Date(),
+            });
 
-            reader.readAsDataURL(this.files[0]);
-       });
+            $('.timepicker').timepicker({
+                interval: 5,
+                timeFormat: 'H:mm',
+                minTime: '9',
+                maxTime: '7:00pm',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
 
-        $('.select-client').select2();
-
-        $('#date').datetimepicker({
-            format: 'DD/MM/YYYY',
-            date: new Date(),
         });
 
-        $('.timepicker').timepicker({
-            interval: 5,
-            timeFormat: 'H:mm',
-            minTime: '9',
-            maxTime: '7:00pm',
-            dynamic: false,
-            dropdown: true,
-            scrollbar: true
-        });
-
-    });
-
-</script>
-@endsection
+    </script>
+    @endsection
 @endsection

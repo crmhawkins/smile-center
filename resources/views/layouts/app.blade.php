@@ -77,6 +77,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
     <script src="{{ asset('vendor/pharaonic/pharaonic.select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/metismenu.min.js') }}"></script>
@@ -84,6 +85,8 @@
     <script src="{{ asset('assets/js/waves.min.js') }}"></script>
     <script src="{{ asset('plugins/raphael/raphael.min.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/comunes.js') }}"></script>
+    <script src="{{ asset('assets/js/ajax-form.js') }}"></script>
     @livewireScripts
     @yield('scripts')
 </body>
