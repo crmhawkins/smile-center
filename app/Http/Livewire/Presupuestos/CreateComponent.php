@@ -105,11 +105,11 @@ class CreateComponent extends Component
                 'position' => 'center',
                 'toast' => false,
                 'showConfirmButton' => true,
-                'onConfirmed' => 'confirmed',
+                'onConfirmed' => 'confirmedEdit',
                 'confirmButtonText' => 'Seguir editando',
                 'showDenyButton' => true,
-                'denyButtonText' => 'Ver contrato',
-                'onDenied' => 'verContrato',
+                'denyButtonText' => 'Ir a lista ',
+                'onDenied' => 'confirmed',
                 'timer' => null,
             ]);
         } else {
@@ -146,10 +146,14 @@ class CreateComponent extends Component
     }
 
     // Función para cuando se llama a la alerta
-    public function confirmed()
+    public function confirmedEdit()
     {
         // Do something
         return redirect()->route('presupuestos.edit', $this->identificador);
     }
-
+    public function confirmed()
+    {
+        // Do something
+        return redirect()->route('presupuestos.index');
+    }
 }
