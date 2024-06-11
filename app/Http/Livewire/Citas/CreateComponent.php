@@ -57,6 +57,9 @@ class CreateComponent extends Component
 
     public function submit()
     {
+        if($this->presupuesto_id == ""){
+            $this->presupuesto_id = null;
+        }
         // Validación de datos
         $validatedData = $this->validate(
             [

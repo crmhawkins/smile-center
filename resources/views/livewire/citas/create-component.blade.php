@@ -38,7 +38,7 @@
                                                 id="presupuesto_id"
                                                 data-placeholder="presupuesto"
                                                 data-clear>
-                                            <option value="">Seleccione</option>
+                                            <option value={{null}}>Seleccione</option>
                                             @foreach ($presupuestos as $presupuesto)
                                             <option value={{$presupuesto->id}}>{{$presupuesto->id}}</option>
                                             @endforeach
@@ -55,7 +55,7 @@
                                                 id="paciente_id"
                                                 data-placeholder="paciente"
                                                 data-clear>
-                                            <option value="">Seleccione</option>
+                                            <option value={{null}}>Seleccione</option>
                                             @foreach ($pacientes as $paciente)
                                                 <option value={{$paciente->id}}>{{$paciente->nombre}} {{$paciente->apellido}}</option>
                                             @endforeach

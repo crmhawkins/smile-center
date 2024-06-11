@@ -58,6 +58,9 @@ class EditComponent extends Component
     public function update()
     {
         $cita = Cita::find($this->identificador);
+        if($this->presupuesto_id == ""){
+            $this->presupuesto_id = null;
+        }
         // Validación de datos
         $validatedData = $this->validate(
             [
