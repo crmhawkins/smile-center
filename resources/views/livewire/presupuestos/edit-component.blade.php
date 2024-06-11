@@ -161,6 +161,7 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
+                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaImprimir">Descargar</button>
                             <button class="w-100 btn btn-info mb-2" wire:click.prevent="crearCita">Generar Cita</button>
                         </div>
                     </div>

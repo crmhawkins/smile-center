@@ -263,36 +263,17 @@ class EditComponent extends Component
     public function imprimirPresupuesto()
     {
         $presupuesto = Presupuesto::find($this->identificador);
-        $listaServicios = [];
-        $listaPacks = [];
-
-        foreach ($presupuesto->servicios()->get() as $servicio) {
-            $listaServicios[] = [
-                'id' => $servicio->id,
-                'numero_monitores' => $servicio->pivot->numero_monitores,
-                'precioFinal' => $servicio->pivot->precio_final,
-                'tiempo' => $servicio->pivot->tiempo,
-                'hora_inicio' => $servicio->pivot->hora_inicio,
-                'hora_finalizacion' => $servicio->pivot->hora_finalizacion,
-                'existente' => 1,
-                'concepto' => $servicio->pivot->concepto,
-                'visible' => $servicio->pivot->visible ];
-        }
-
-        foreach ($presupuesto->packs()->get() as $pack) {
-            $listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precioFinal' => $pack->pivot->precio_final, 'existente' => 1];
-        }
-
+        $listaServicios = $presupuesto->servicios()->get();
+        $paciente =  Paciente::find($presupuesto->paciente_id);
 
         $datos =  [
-            'presupuesto' => $presupuesto,  'id_presupuesto' => $presupuesto->id, 'fechaEmision' => $this->fechaEmision, 'fechaVencimiento' => $this->fechaVencimiento,
-            'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks,  'observaciones' => '', 'servicios' => Servicio::all(),
+            'presupuesto' => $presupuesto, 'listaServicios' => $listaServicios,   'paciente' => $paciente,
         ];
 
-        $pdf = Pdf::loadView('livewire.presupuestos.contract-component', $datos)->setPaper('a4', 'vertical')->output(); //
+        $pdf = Pdf::loadView('livewire.presupuestos.pdf-component', $datos)->setPaper('a4', 'vertical')->output(); //
         return response()->streamDownload(
             fn () => print($pdf),
-            'export_protocol.pdf'
+            'Presupuesto_'.$this->identificador.'.pdf'
         );
     }
 
