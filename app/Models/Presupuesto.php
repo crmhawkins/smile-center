@@ -20,6 +20,8 @@ class Presupuesto extends Model
         'estado_id',
         'observacion',
         'fechaEmision',
+        'total',
+        'archivo'
     ];
 
 

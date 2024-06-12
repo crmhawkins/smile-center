@@ -16,6 +16,9 @@ export default defineConfig({
                 'resources/image/background-login-3.svg',
                 'resources/image/IVAN.jpg',
                 'resources/image/pic-login-3.svg',
+                'resources/sass/modal.scss',
+                'resources/sass/scrumboard.scss',
+                'resources/js/loader.js'
 
             ],
             refresh: true,

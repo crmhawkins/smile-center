@@ -153,6 +153,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
     // Presupuestos
     Route::get('presupuestos', [PresupuestoController::class, 'index'])->name('presupuestos.index');
+    Route::get('presupuestos-flujo', [PresupuestoController::class, 'trello'])->name('presupuestos.trello');
     Route::get('presupuestos-create', [PresupuestoController::class, 'create'])->name('presupuestos.create');
     Route::get('presupuestos-edit/{id}', [PresupuestoController::class, 'edit'])->name('presupuestos.edit');
 

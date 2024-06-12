@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Livewire\Presupuestos;
 
 use App\Models\Paciente;
@@ -7,19 +8,16 @@ use App\Models\Aseguradora;
 use App\Models\EstadoPresupuesto;
 use App\Models\Presupuesto;
 use App\Models\Servicio;
-
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-
-use function PHPUnit\Framework\isEmpty;
-
 class CreateComponent extends Component
 {
+    use LivewireAlert, WithFileUploads;
 
-    use LivewireAlert;
     public $identificador;
     public $paciente_id;
     public $pacientes;
@@ -32,6 +30,9 @@ class CreateComponent extends Component
     public $estados;
     public $listaServicios = [];
     public $servicio_seleccionado;
+    public $total;
+    public $archivo;
+    public $usarServicios = false; // Para determinar si se usan servicios o solo total
 
     public function mount()
     {
@@ -40,15 +41,16 @@ class CreateComponent extends Component
         $this->estados = EstadoPresupuesto::all();
         $this->servicios = Servicio::all();
         $this->aseguradoras = Aseguradora::all();
-
     }
+
     public function render()
     {
         return view('livewire.presupuestos.create-component');
     }
 
-    public function addServicio(){
-        if(!isset($this->servicio_seleccionado)){
+    public function addServicio()
+    {
+        if (!isset($this->servicio_seleccionado)) {
             return;
         }
         $servicio = Servicio::find($this->servicio_seleccionado);
@@ -58,16 +60,16 @@ class CreateComponent extends Component
             'precio' => $servicio->precio,
             'iva' => $servicio->iva ?? null,
         ];
-        $servicio= null;
         $this->servicio_seleccionado = null;
         $this->emit('resetSelect2');
     }
+
     public function deleteServicio($indice)
     {
         unset($this->listaServicios[$indice]);
         $this->listaServicios = array_values($this->listaServicios);
     }
-    // Al hacer submit en el formulario
+
     public function submit()
     {
         $validatedData = $this->validate(
@@ -77,30 +79,34 @@ class CreateComponent extends Component
                 'observacion' => 'nullable',
                 'fechaEmision' => 'required',
                 'estado_id' => 'required',
-
+                'total' => 'required_if:usarServicios,false|nullable|numeric',
+                'archivo' => 'nullable|file|max:1024', // 1MB Max
             ],
-            // Mensajes de error
             [
                 'fechaEmision.required' => 'La Fecha es obligatoria.',
-                'estado_id.required' => 'El Estado es es obligatorio.',
+                'estado_id.required' => 'El Estado es obligatorio.',
                 'paciente_id.required' => 'El Paciente es obligatorio.',
+                'total.required_if' => 'El Total es obligatorio cuando no se utilizan servicios.',
+                'archivo.max' => 'El archivo no debe superar 1MB.',
             ]
         );
 
-
-
-        // Guardar datos validados
-        $presupuesosSave = Presupuesto::create($validatedData);
-        $this->identificador = $presupuesosSave->id;
-
-        event(new \App\Events\LogEvent(Auth::user(), 3, $presupuesosSave->id));
-
-        foreach ($this->listaServicios as $servicio) {
-            $presupuesosSave->servicios()->create($servicio);
+        if ($this->archivo) {
+            $validatedData['archivo'] = $this->archivo->store('archivos_presupuestos');
         }
 
-        // Alertas de guardado exitoso
-        if ($presupuesosSave) {
+        $presupuesto = Presupuesto::create($validatedData);
+        $this->identificador = $presupuesto->id;
+
+        event(new \App\Events\LogEvent(Auth::user(), 3, $presupuesto->id));
+
+        if ($this->usarServicios) {
+            foreach ($this->listaServicios as $servicio) {
+                $presupuesto->servicios()->create($servicio);
+            }
+        }
+
+        if ($presupuesto) {
             $this->alert('success', '¡Presupuesto registrado correctamente!', [
                 'position' => 'center',
                 'toast' => false,
@@ -108,7 +114,7 @@ class CreateComponent extends Component
                 'onConfirmed' => 'confirmedEdit',
                 'confirmButtonText' => 'Seguir editando',
                 'showDenyButton' => true,
-                'denyButtonText' => 'Ir a lista ',
+                'denyButtonText' => 'Ir a lista',
                 'onDenied' => 'confirmed',
                 'timer' => null,
             ]);
@@ -120,14 +126,12 @@ class CreateComponent extends Component
         }
     }
 
-    // Función para cuando se llama a la alerta
     public function getListeners()
     {
         return [
             'confirmed',
             'alertaGuardar',
             'submit'
-
         ];
     }
 
@@ -145,15 +149,14 @@ class CreateComponent extends Component
         ]);
     }
 
-    // Función para cuando se llama a la alerta
     public function confirmedEdit()
     {
-        // Do something
         return redirect()->route('presupuestos.edit', $this->identificador);
     }
+
     public function confirmed()
     {
-        // Do something
         return redirect()->route('presupuestos.index');
     }
+
 }

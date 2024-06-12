@@ -41,11 +41,15 @@ class IndexComponent extends Component
 
         return $estado_presu->estado;
     }
-    public function getTotal($id){
-
-        $presupuesto = $this->presupuestos->find($id);
-        $total = $presupuesto->servicios()->sum('precio');
-        return $total.' €';
+    public function getTotal($id)
+    {
+        $presupuesto = Presupuesto::find($id);
+        if ($presupuesto->total) {
+            return $presupuesto->total . ' €';
+        } else {
+            $total = $presupuesto->servicios()->sum('precio');
+            return $total . ' €';
+        }
     }
 
     public function render()

@@ -2,35 +2,23 @@
 
 namespace App\Http\Livewire\Presupuestos;
 
-use App\Models\Cliente;
-use App\Models\Evento;
-use App\Models\Articulos;
-use App\Models\Aseguradora;
-use App\Models\TipoEvento;
-use App\Models\CategoriaEvento;
-use App\Models\ServicioEvento;
-use App\Models\ServicioPresupuesto;
-use App\Models\PackPresupuesto;
-use App\Models\Monitor;
-use App\Models\Presupuesto;
-use App\Models\Contrato;
-use App\Models\EstadoPresupuesto;
 use App\Models\Paciente;
-use App\Models\Programa;
+use App\Models\Aseguradora;
+use App\Models\EstadoPresupuesto;
+use App\Models\Presupuesto;
 use App\Models\Servicio;
-use App\Models\ServicioPack;
-use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EditComponent extends Component
 {
-    use LivewireAlert;
+    use LivewireAlert, WithFileUploads;
+
     public $identificador;
     public $paciente_id;
     public $pacientes;
@@ -41,15 +29,16 @@ class EditComponent extends Component
     public $servicios;
     public $fechaEmision;
     public $estados;
-    public $listaServicios;
+    public $listaServicios = [];
     public $servicio_seleccionado;
+    public $total;
+    public $archivo;
+    public $archivoNombre;
+    public $usarServicios = false;
     public $ServiciosDelete = [];
-
-
 
     public function mount()
     {
-
         $presupuesto = Presupuesto::find($this->identificador);
         $this->pacientes = Paciente::all();
         $this->estados = EstadoPresupuesto::all();
@@ -61,8 +50,9 @@ class EditComponent extends Component
         $this->observacion = $presupuesto->observacion;
         $this->fechaEmision = $presupuesto->fechaEmision;
         $this->listaServicios = $presupuesto->servicios()->get()->toArray();
-
-
+        $this->total = $presupuesto->total;
+        $this->archivoNombre = $presupuesto->archivo;
+        $this->usarServicios = !is_null($presupuesto->servicios()->first());
     }
 
     public function render()
@@ -70,8 +60,9 @@ class EditComponent extends Component
         return view('livewire.presupuestos.edit-component');
     }
 
-    public function addServicio(){
-        if(!isset($this->servicio_seleccionado)){
+    public function addServicio()
+    {
+        if (!isset($this->servicio_seleccionado)) {
             return;
         }
         $servicio = Servicio::find($this->servicio_seleccionado);
@@ -81,25 +72,19 @@ class EditComponent extends Component
             'precio' => $servicio->precio,
             'iva' => $servicio->iva ?? null,
         ];
-        $servicio= null;
         $this->servicio_seleccionado = null;
         $this->emit('resetSelect2');
     }
 
     public function deleteServicio($key)
-    {   //Miro si existe en la bd y si es asi lo borro
+    {
         if (isset($this->listaServicios[$key]["id"])) {
-            //Lo añado de la lista de eliminados
             $this->ServiciosDelete[] = $this->listaServicios[$key]['id'];
         }
-        //Lo quito de la lista de servicios
         unset($this->listaServicios[$key]);
-        // Reindexa el arreglo después de eliminar un elemento
         $this->listaServicios = array_values($this->listaServicios);
-
     }
 
-    // Al hacer submit en el formulario
     public function update()
     {
         $presupuesto = Presupuesto::find($this->identificador);
@@ -110,34 +95,43 @@ class EditComponent extends Component
                 'observacion' => 'nullable',
                 'fechaEmision' => 'required',
                 'estado_id' => 'required',
-
+                'total' => 'required_if:usarServicios,false|nullable|numeric',
+                'archivo' => 'nullable|file|max:1024', // 1MB Max
             ],
-            // Mensajes de error
             [
                 'fechaEmision.required' => 'La Fecha es obligatoria.',
-                'estado_id.required' => 'El Estado es es obligatorio.',
+                'estado_id.required' => 'El Estado es obligatorio.',
                 'paciente_id.required' => 'El Paciente es obligatorio.',
+                'total.required_if' => 'El Total es obligatorio cuando no se utilizan servicios.',
+                'archivo.max' => 'El archivo no debe superar 1MB.',
             ]
         );
 
-        // Guardar datos validados
-        $presupuesosSave = $presupuesto->update($validatedData);
-        event(new \App\Events\LogEvent(Auth::user(), 6, $presupuesto->id));
-
-        foreach ($this->ServiciosDelete as $servicio) {
-            $presupuesto->servicios()->where('id',$servicio)->delete();
-        }
-
-        foreach ($this->listaServicios as $servicio) {
-            // Verificar si el servicio ya tiene un ID asignado
-            if (empty($servicio['id'])) {
-                // Si no tiene ID, entonces se crea el servicio en el presupuesto
-                $presupuesto->servicios()->create($servicio);
+        if ($this->archivo) {
+            $validatedData['archivo'] = $this->archivo->store('archivos_presupuestos');
+            if ($presupuesto->archivo) {
+                Storage::delete($presupuesto->archivo);
             }
         }
 
-        // Alertas de guardado exitoso
-        if ($presupuesosSave) {
+        $presupuesto->update($validatedData);
+        event(new \App\Events\LogEvent(Auth::user(), 6, $presupuesto->id));
+
+        foreach ($this->ServiciosDelete as $servicio) {
+            $presupuesto->servicios()->where('id', $servicio)->delete();
+        }
+
+        if ($this->usarServicios) {
+            foreach ($this->listaServicios as $servicio) {
+                if (empty($servicio['id'])) {
+                    $presupuesto->servicios()->create($servicio);
+                }
+            }
+        } else {
+            $presupuesto->servicios()->delete();
+        }
+
+        if ($presupuesto) {
             $this->alert('success', '¡Presupuesto actualizado correctamente!', [
                 'position' => 'center',
                 'toast' => false,
@@ -154,16 +148,12 @@ class EditComponent extends Component
         }
     }
 
-
     public function destroy()
     {
         $presupuesto = Presupuesto::find($this->identificador);
-
         $presupuesto->servicios()->delete();
-        // Guardar datos validados
         $presupuesosSave = $presupuesto->delete();
 
-        // Alertas de guardado exitoso
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto eliminado correctamente!', [
                 'position' => 'center',
@@ -181,7 +171,6 @@ class EditComponent extends Component
         }
     }
 
-    // Función para cuando se llama a la alerta
     public function getListeners()
     {
         return [
@@ -194,14 +183,14 @@ class EditComponent extends Component
         ];
     }
 
-
     public function confirmed()
     {
         return redirect()->route('presupuestos.index');
     }
+
     public function cita()
     {
-        return redirect()->route('citas.create',['id'=> $this->identificador]);
+        return redirect()->route('citas.create', ['id' => $this->identificador]);
     }
 
     public function alertaImprimir()
@@ -217,9 +206,10 @@ class EditComponent extends Component
             'timerProgressBar' => true,
         ]);
     }
+
     public function alertaGuardar()
     {
-        $this->alert('info', '¿Desea actualizar los datos el presupuesto?', [
+        $this->alert('info', '¿Desea actualizar los datos del presupuesto?', [
             'position' => 'center',
             'toast' => false,
             'showConfirmButton' => true,
@@ -245,6 +235,7 @@ class EditComponent extends Component
             'timer' => null
         ]);
     }
+
     public function crearCita()
     {
         $this->alert('info', '¿Desea generar una cita a partir del presupuesto?', [
@@ -264,18 +255,28 @@ class EditComponent extends Component
     {
         $presupuesto = Presupuesto::find($this->identificador);
         $listaServicios = $presupuesto->servicios()->get();
-        $paciente =  Paciente::find($presupuesto->paciente_id);
+        $paciente = Paciente::find($presupuesto->paciente_id);
 
-        $datos =  [
-            'presupuesto' => $presupuesto, 'listaServicios' => $listaServicios,   'paciente' => $paciente,
+        $datos = [
+            'presupuesto' => $presupuesto,
+            'listaServicios' => $listaServicios,
+            'paciente' => $paciente,
         ];
 
-        $pdf = Pdf::loadView('livewire.presupuestos.pdf-component', $datos)->setPaper('a4', 'vertical')->output(); //
+        $pdf = Pdf::loadView('livewire.presupuestos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
         return response()->streamDownload(
-            fn () => print($pdf),
-            'Presupuesto_'.$this->identificador.'.pdf'
+            fn() => print($pdf),
+            'Presupuesto_' . $this->identificador . '.pdf'
         );
     }
 
+    public function descargarArchivo()
+    {
+        return Storage::download($this->archivoNombre);
+    }
 
+    public function updatedUsarServicios()
+    {
+        $this->reset(['total', 'listaServicios']);
+    }
 }

@@ -18,6 +18,13 @@ class PresupuestoController extends Controller
 
         return view('presupuesto.index', compact('response'));
     }
+    public function trello()
+    {
+        $response = '';
+        // $user = Auth::user();
+
+        return view('presupuesto.trello', compact('response'));
+    }
 
     /**
      * Show the form for creating a new resource.
