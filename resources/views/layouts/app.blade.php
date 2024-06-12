@@ -27,6 +27,8 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
       <!--Morris Chart CSS -->
       <link rel="stylesheet" href="{{ asset('plugins/morris/morris.css') }}">
+      <link rel="stylesheet" href="/sass/modal.scss">
+    <link rel="stylesheet" href="/sass/scrumboard.scss">
       <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('assets/css/metismenu.min.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet" type="text/css">

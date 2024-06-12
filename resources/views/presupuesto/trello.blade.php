@@ -3,8 +3,8 @@
 @section('title', 'Ver Presupuestos')
 
 @section('head')
-<link rel="stylesheet" href="/sass/modal.scss">
-<link rel="stylesheet" href="/sass/scrumboard.scss">
+    @vite(['resources/sass/modal.scss'])
+    @vite(['resources/sass/scrumboard.scss'])
 @endsection
 
 @section('content-principal')
