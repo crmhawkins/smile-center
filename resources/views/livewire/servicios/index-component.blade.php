@@ -2,13 +2,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">SERVICIOS</h4>
+                <h4 class="page-title">TRATAMIENTOS</h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Servicios</a></li>
-                    <li class="breadcrumb-item active">Todos los servicios</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Tratamientos</a></li>
+                    <li class="breadcrumb-item active">Todos los tratamientos</li>
                 </ol>
             </div>
         </div> <!-- end row -->
@@ -19,8 +19,8 @@
         <div class="col-12">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h4 class="mt-0 header-title">Listado de todos los servicios</h4>
-                    <p class="sub-title../plugins">Listado completo de todos nuestros eventos, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
+                    <h4 class="mt-0 header-title">Listado de todos los tratamientos</h4>
+                    <p class="sub-title../plugins">Listado completo de todos nuestros tratamientos, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
                     @if (count($servicios) > 0)
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">

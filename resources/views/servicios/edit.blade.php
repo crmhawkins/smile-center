@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Servicio')
+@section('title', 'Editar Tratamiento')
 
 @section('head')
 @vite(['resources/sass/productos.scss'])

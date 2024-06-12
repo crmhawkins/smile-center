@@ -69,10 +69,10 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="ti-settings"></i><span> Servicios <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
+                    <a href="javascript:void(0);" class="waves-effect"><i class="ti-settings"></i><span> Tratamientos <span class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
                     <ul class="submenu">
                         <li><a href="/admin/servicios">Ver Todos</a></li>
-                        <li><a href="/admin/servicios-create">Crear Servicio</a></li>
+                        <li><a href="/admin/servicios-create">Crear tratamiento</a></li>
                     </ul>
                 </li>
                 <li>

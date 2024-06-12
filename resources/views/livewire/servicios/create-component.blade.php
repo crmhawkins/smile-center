@@ -3,13 +3,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">CREAR SERVICIO</span></h4>
+                <h4 class="page-title">CREAR TRATAMIENTO</span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Servicios</a></li>
-                    <li class="breadcrumb-item active">Crear servicio</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Tratamientos</a></li>
+                    <li class="breadcrumb-item active">Crear Tratamiento</li>
                 </ol>
             </div>
         </div> <!-- end row -->
@@ -26,7 +26,7 @@
                             <div class="col-sm-12">
                                 <h5 class="ms-3"
                                     style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                                    Datos básicos del servicio</h5>
+                                    Datos básicos del Tratamiento</h5>
                             </div>
                         </div>
                         <div class="form-group row">
