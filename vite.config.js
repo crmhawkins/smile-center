@@ -18,7 +18,6 @@ export default defineConfig({
                 'resources/image/pic-login-3.svg',
                 'resources/sass/modal.scss',
                 'resources/sass/scrumboard.scss',
-                'resources/js/loader.js'
 
             ],
             refresh: true,
