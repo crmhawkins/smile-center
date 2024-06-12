@@ -3,8 +3,8 @@
 @section('title', 'Ver Presupuestos')
 
 @section('head')
-    @asset(['/build/assets/modal.792ba9aa.css'])
-    @asset(['/build/assets/scrumboard.1a06ab04.css'])
+    @vite(['resources/sass/modal.scss'])
+    @vite(['resources/sass/scrumboard.scss'])
 @endsection
 
 @section('content-principal')
