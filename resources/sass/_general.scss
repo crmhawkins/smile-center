@@ -67,6 +67,8 @@ b, strong {
   height: $height;
   overflow: hidden;
   width: $width;
+  display: flex;
+  flex-direction: row;
 }
 
 // Slimscroll
