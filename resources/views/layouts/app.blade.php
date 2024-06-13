@@ -25,8 +25,13 @@
     <x-livewire-alert::scripts />
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @if(Request::is('presupuestos-flujo'))
+    <link href="{{ asset('build/assets/scrumboard.1a06ab04.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('build/assets/modal.792ba9aa.css') }}" rel="stylesheet" type="text/css">
+    @endif
       <!--Morris Chart CSS -->
       <link rel="stylesheet" href="{{ asset('plugins/morris/morris.css') }}">
+      <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('assets/css/metismenu.min.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet" type="text/css">
