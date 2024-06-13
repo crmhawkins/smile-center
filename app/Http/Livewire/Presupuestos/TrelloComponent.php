@@ -49,7 +49,6 @@ class TrelloComponent extends Component
         $presupuesto = Presupuesto::find($presupuestoId);
         $presupuesto->estado_id = $nuevoEstadoId;
         $presupuesto->save();
-
         $this->presupuestosPorEstado = $this->presupuestosAgrupadosPorEstado();
     }
 

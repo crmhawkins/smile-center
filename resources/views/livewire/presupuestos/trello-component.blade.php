@@ -47,8 +47,8 @@
                                     </div>
                                     <div class="connect-sorting-content" id="estado-{{ $estado->id }}" data-sortable="true">
                                         @foreach ($presupuestosPorEstado['presupuestos']->get($estado->id, []) as $presupuesto)
-                                            <div class="card img-task" id="presupuesto-{{ $presupuesto->id }}" data-draggable="true">
-                                                <div class="card-body">
+                                            <div class="card img-task fina" id="presupuesto-{{ $presupuesto->id }}" data-draggable="true">
+                                                <div class="card-body fina">
                                                     <div class="task-header">
                                                         <div>
                                                             <h4 class="card-title" data-taskTitle="titulo">{{ $this->getClienteNombre($presupuesto->paciente_id) }}</h4>

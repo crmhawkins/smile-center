@@ -28,6 +28,18 @@
     @if(Request::is('*/presupuestos-flujo'))
     <link href="{{ asset('build/assets/scrumboard.1a06ab04.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('build/assets/modal.792ba9aa.css') }}" rel="stylesheet" type="text/css">
+    <style>
+        .img-task.fina {
+        max-width: 250px; /* Ajusta el ancho máximo a tu preferencia */
+        margin: 10px 0px; /* Centra la tarjeta y añade un pequeño margen */
+        padding: 0px; /* Reduce el padding para hacer la tarjeta más compacta */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Opcional: añade sombra para un mejor efecto visual */
+        }
+        .card-body.fina {
+        padding: 0px 10px !important; /* Reduce el padding para hacer la tarjeta más compacta */
+        }
+
+    </style>
     @endif
       <!--Morris Chart CSS -->
       <link rel="stylesheet" href="{{ asset('plugins/morris/morris.css') }}">
