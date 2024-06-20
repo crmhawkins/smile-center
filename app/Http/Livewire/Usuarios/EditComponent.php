@@ -7,6 +7,7 @@ use App\Models\DepartamentosUser;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class EditComponent extends Component
 {
@@ -19,6 +20,7 @@ class EditComponent extends Component
     public $role;
     public $username;
     public $password;
+    public $password_old;
     public $email;
     public $inactive;
 
@@ -32,6 +34,7 @@ class EditComponent extends Component
         $this->role = $usuarios->role;
         $this->username = $usuarios->username;
         $this->password = $usuarios->password;
+        $this->password_old = $usuarios->password;
         $this->email = $usuarios->email;
         $this->inactive = $usuarios->inactive;
 
@@ -45,6 +48,10 @@ class EditComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
+        if($this->password != $this->password_old)
+        {
+            $this->password = Hash::make($this->password);
+        }
         // Validación de datos
         $this->validate([
             'name' => 'required',
