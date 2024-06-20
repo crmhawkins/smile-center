@@ -23,6 +23,7 @@ class EditComponent extends Component
     public $password_old;
     public $email;
     public $inactive;
+    public $despartamentos;
 
     public function mount()
     {
