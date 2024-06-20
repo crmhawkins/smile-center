@@ -40,8 +40,6 @@
                                                     <a href="{{ route('presupuestos.edit', $presupuesto->id) }}">
                                                         (Nº {{ $presupuesto->id}})
                                                     </a>
-                                                @else
-                                                    <span>No disponible</span>
                                                 @endif
                                                     {{ $this->getNombre($cita->paciente_id) }} - {{Carbon::parse($cita->hora)->format('H:i')}}</a></li>
                                             @endforeach
