@@ -32,7 +32,9 @@
                                         <ul>
                                             @foreach ($citas->where('fecha', $fechas[$diaIndex]) as $cita)
                                             @php
-                                                $presupuesto = $cita->presupuesto->first();
+                                                if (isset($cita->presupuesto)) {
+                                                    $presupuesto = $cita->presupuesto->first();
+                                                }
                                             @endphp
                                                 <li> @if($presupuesto)
                                                     <a href="{{ route('presupuestos.edit', $presupuesto->id) }}">
