@@ -36,7 +36,7 @@
                                                     $presupuesto = $cita->presupuesto->first();
                                                 }
                                             @endphp
-                                                <li> @if($presupuesto)
+                                                <li> @if(isset($presupuesto))
                                                     <a href="{{ route('presupuestos.edit', $presupuesto->id) }}">
                                                         (Nº {{ $presupuesto->id}})
                                                     </a>
