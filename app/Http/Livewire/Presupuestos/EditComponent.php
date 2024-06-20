@@ -108,7 +108,7 @@ class EditComponent extends Component
         );
 
         if ($this->archivo) {
-            $validatedData['archivo'] = $this->archivo->store('archivos_presupuestos');
+            $validatedData['archivo'] = $this->archivo->store('archivos_presupuestos','public');
             if ($presupuesto->archivo) {
                 Storage::delete($presupuesto->archivo);
             }

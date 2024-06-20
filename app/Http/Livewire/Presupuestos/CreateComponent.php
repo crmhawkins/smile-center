@@ -92,7 +92,7 @@ class CreateComponent extends Component
         );
 
         if ($this->archivo) {
-            $validatedData['archivo'] = $this->archivo->store('archivos_presupuestos');
+            $validatedData['archivo'] = $this->archivo->store('archivos_presupuestos','public');
         }
 
         $presupuesto = Presupuesto::create($validatedData);

@@ -173,6 +173,10 @@
                         @enderror
                         <div wire:loading wire:target="archivo">Subiendo...</div>
                     </div>
+                    <div class="form-group col-md-12" id="pdf-preview" style="display:none;" wire:ignore>
+                        <label>Vista del archivo</label>
+                        <iframe id="pdf-frame" style="width:100%; height:800px;" frameborder="0"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,5 +212,19 @@
                 @this.set('servicio_seleccionado', $(this).val());
             });
         });
+        document.getElementById('archivo').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type === "application/pdf") {
+            const fileReader = new FileReader();
+            fileReader.onload = function() {
+                const pdfFrame = document.getElementById('pdf-frame');
+                pdfFrame.src = fileReader.result;
+                document.getElementById('pdf-preview').style.display = 'block';
+            };
+            fileReader.readAsDataURL(file);
+        } else {
+            document.getElementById('pdf-preview').style.display = 'none';
+        }
+    });
     </script>
 @endsection

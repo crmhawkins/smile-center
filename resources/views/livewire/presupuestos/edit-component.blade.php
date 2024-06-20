@@ -126,6 +126,20 @@
                             @enderror
                             <div wire:loading wire:target="archivo">Subiendo...</div>
                         </div>
+                        <div class="form-group col-md-12" id="pdf-preview" style="display:none;" wire:ignore>
+                            <label>Vista del archivo</label>
+                            <iframe id="pdf-frame" style="width:100%; height:800px;" frameborder="0"></iframe>
+                        </div>
+                        @if ($archivoNombre && !$archivo)
+                            <div class="form-group col-md-12" wire:ignore>
+                                <label>Vista del archivo</label>
+                                @if (pathinfo($archivoNombre, PATHINFO_EXTENSION) == 'pdf')
+                                <iframe src="{{Storage::url($archivoNombre) }}" style="width:100%; height:800px;" frameborder="0"></iframe>
+                                @else
+                                <p>El archivo cargado no es un PDF.</p>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -147,9 +161,6 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            @if($archivoNombre)
-                                <button type="button" class="w-100 btn btn-primary mb-2" wire:click="descargarArchivo">Descargar Archivo</button>
-                            @endif
                             <button class="w-100 btn btn-info mb-2" wire:click.prevent="crearCita">Generar Cita</button>
                         </div>
                     </div>
@@ -170,5 +181,21 @@
                 @this.set('servicio_seleccionado', $(this).val());
             });
         });
+
+        document.getElementById('archivo').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type === "application/pdf") {
+            const fileReader = new FileReader();
+            fileReader.onload = function() {
+                const pdfFrame = document.getElementById('pdf-frame');
+                pdfFrame.src = fileReader.result;
+                document.getElementById('pdf-preview').style.display = 'block';
+            };
+            fileReader.readAsDataURL(file);
+        } else {
+            document.getElementById('pdf-preview').style.display = 'none';
+        }
+    });
+
     </script>
 @endsection
