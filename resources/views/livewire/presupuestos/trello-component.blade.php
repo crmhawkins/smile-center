@@ -48,14 +48,12 @@
                                     <div class="connect-sorting-content" id="estado-{{ $estado->id }}" data-sortable="true">
                                         @foreach ($presupuestosPorEstado['presupuestos']->get($estado->id, []) as $presupuesto)
                                             <div class="card img-task fina" id="presupuesto-{{ $presupuesto->id }}" data-draggable="true">
-                                                <div class="card-body fina">
-                                                    <div class="task-header">
-                                                        <div>
-                                                            <h4 class="card-title" data-taskTitle="titulo">{{ $this->getClienteNombre($presupuesto->paciente_id) }}</h4>
+                                                <div class="card-body fina cursor-pointer" data-presupuesto-id="{{ $presupuesto->id }}">
+                                                    <div class="task">
+                                                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                                            <h5 class="card-title" data-taskTitle="titulo">{{ $this->getClienteNombre($presupuesto->paciente_id) }}</h5>
+                                                            <p class="card-text"><strong>Total:</strong> {{ $this->getTotal($presupuesto) }}</p>
                                                         </div>
-                                                    </div>
-                                                    <div class="task-body">
-                                                        <p class="card-text"><strong>Total:</strong> {{ $this->getTotal($presupuesto) }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -79,5 +77,29 @@
 <script src="{{asset('plugins/global/vendors.min.js')}}"></script>
 <script src="{{asset('plugins/global/jquery-ui.min.js')}}"></script>
 <script src="{{asset('plugins/global/scrumboard.js')}}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cards = document.querySelectorAll('.card-body[data-presupuesto-id]');
+        let clickStartTime;
+
+        cards.forEach(card => {
+            card.addEventListener('mousedown', function () {
+                clickStartTime = new Date().getTime();
+            });
+
+            card.addEventListener('mouseup', function (event) {
+                const clickDuration = new Date().getTime() - clickStartTime;
+                if (clickDuration < 200) { // Considered as a short click
+                    const presupuestoId = this.getAttribute('data-presupuesto-id');
+                    window.location.href = `/admin/presupuestos-edit/${presupuestoId}`;
+                }
+            });
+        });
+    });
 </script>
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
 @endsection
