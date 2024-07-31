@@ -54,7 +54,7 @@ class NewslettersController extends Controller{
 
     public function create(){
         $clients = Paciente::where('estado_id', 3)->where('newsletter',1)->whereNotNull('email')->get();
-return view('newsletters.create', compact('clients'));
+        return view('newsletters.create', compact('clients'));
     }
 
     public function store(Request $request){
