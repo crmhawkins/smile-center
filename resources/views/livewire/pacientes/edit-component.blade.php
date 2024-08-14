@@ -31,7 +31,7 @@
                                 <div class="col-sm-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="nombre" class="form-control" name="nombre"
+                                        <input type="text" wire:model.defer="nombre" class="form-control" name="nombre"
                                             id="nombre" aria-label="Nombre" placeholder="Nombre">
                                         @error('nombre')
                                             <span class="text-danger">{{ $message }}</span>
@@ -46,7 +46,7 @@
                                 <div class="col-sm-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Apellidos</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="apellido" class="form-control" name="apellido"
+                                        <input type="text" wire:model.defer="apellido" class="form-control" name="apellido"
                                         id="apellido" placeholder="Apellidos">
                                         @error('apellido')
                                         <span class="text-danger">{{ $message }}</span>
@@ -65,7 +65,7 @@
                                 <div class="col-sm-6">
                                     <label for="email" class="col-sm-12 col-form-label">Email</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="email" class="form-control"
+                                        <input type="text" wire:model.defer="email" class="form-control"
                                             name="email" id="email" placeholder="Email">
                                         @error('email')
                                             <span class="text-danger">{{ $message }}</span>
@@ -81,7 +81,7 @@
                                 <div class="col-sm-6">
                                     <label for="telefono" class="col-sm-12 col-form-label">Télefono</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="telefono" class="form-control" name="telefono"
+                                        <input type="text" wire:model.defer="telefono" class="form-control" name="telefono"
                                             id="telefono" placeholder="Télefono">
                                         @error('telefono')
                                             <span class="text-danger">{{ $message }}</span>
@@ -100,7 +100,7 @@
                                 <div class="col-md-6">
                                     <label for="codigoPostal" class="col-sm-12 col-form-label">CP</label>
                                     <div class="col-sm-12">
-                                        <input type="number" wire:model.lazy="codigoPostal" class="form-control"
+                                        <input type="number" wire:model.defer="codigoPostal" class="form-control"
                                             name="codigoPostal" id="codigoPostal" placeholder="XXXXX">
                                         @error('codigoPostal')
                                             <span class="text-danger">{{ $message }}</span>
@@ -116,7 +116,7 @@
                                 <div class="col-md-6">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Direccion</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="direccion" class="form-control"
+                                        <input type="text" wire:model.defer="direccion" class="form-control"
                                             name="direccion" id="direccion" placeholder="direccion">
                                         @error('direccion')
                                             <span class="text-danger">{{ $message }}</span>
@@ -135,7 +135,7 @@
                                 <div class="col-md-6">
                                     <label for="poblacion" class="col-sm-12 col-form-label">Poblacion</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="poblacion" class="form-control"
+                                        <input type="text" wire:model.defer="poblacion" class="form-control"
                                             name="poblacion" id="poblacion" placeholder="poblacion">
                                         @error('poblacion')
                                             <span class="text-danger">{{ $message }}</span>
@@ -152,7 +152,7 @@
                                 <div class="col-md-6">
                                     <label for="provincia" class="col-sm-12 col-form-label">Provincia</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model.lazy="provincia" class="form-control"
+                                        <input type="text" wire:model.defer="provincia" class="form-control"
                                             name="provincia" id="provincia" placeholder="Provincia">
                                         @error('provincia')
                                             <span class="text-danger">{{ $message }}</span>
@@ -173,7 +173,7 @@
                                         <select data-pharaonic="select2"
                                                 data-component-id="{{ $this->id }}"
                                                 class="form-control"
-                                                wire:model="referido_id"
+                                                wire:model.defer="referido_id"
                                                 data-placeholder="Referido"
                                                 data-clear>
                                             <option value="">Seleccione</option>
@@ -192,7 +192,7 @@
                                         <select data-pharaonic="select2"
                                                 data-component-id="{{ $this->id }}"
                                                 class="form-control"
-                                                wire:model="empresa_id"
+                                                wire:model.defer="empresa_id"
                                                 data-placeholder="Empresa"
                                                 data-clear>
                                             <option value="">Seleccione</option>
@@ -213,7 +213,7 @@
                                         <select data-pharaonic="select2"
                                                 data-component-id="{{ $this->id }}"
                                                 class="form-control"
-                                                wire:model="aseguradora_id"
+                                                wire:model.defer="aseguradora_id"
                                                 data-placeholder="Aseguradora"
                                                 data-clear>
                                             <option value="">Seleccione</option>
@@ -229,7 +229,7 @@
                                 <div class="col-md-6">
                                     <label for="origen" class="col-sm-12 col-form-label">Origen</label>
                                     <div class="col-sm-12">
-                                        <input type="text" wire:model="origen" class="form-control"
+                                        <input type="text" wire:model.defer="origen" class="form-control"
                                             name="origen" id="origen" placeholder="Web/RR.SS/...">
                                         @error('origen')
                                             <span class="text-danger">{{ $message }}</span>
@@ -245,7 +245,7 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-12 d-inline-flex align-items-center ms-5">
-                                    <input class="form-check-input mt-0" wire:model.lazy="newsletter" type="checkbox"
+                                    <input class="form-check-input mt-0" wire:model.defer="newsletter" type="checkbox"
                                         name="newsletter" id="newsletter">
                                     <label for="confPostal" class="col-form-label">¿Newsletter?</label>
                                 </div>

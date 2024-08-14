@@ -92,8 +92,8 @@
                                     </div>
                                     <div class="desc">
                                         <h5 class="font-14 mb-1 pt-2 text-dark">
-                                            <span class="badge badge-warning">Pendiente</span> Presupuesto nº
-                                            {{ $presupuesto->id }}</h5>
+                                            <span class="badge badge-warning">Pendiente</span>
+                                            {{ $presupuesto->paciente->nombre ?? 'Presupuesto nº' }} {{ $presupuesto->paciente->apellido ?? $presupuesto->id }}</h5>
                                         <p class="text-muted">{{ $presupuesto->fechaEmision }}</p>
                                     </div>
                                 </div>
@@ -120,8 +120,8 @@
                                     </div>
                                     <div class="desc">
                                         <h5 class="font-14 mb-1 pt-2 text-dark">
-                                            <span class="badge badge-success">Aceptado</span>  Presupuesto nº
-                                            {{ $presupuesto->id }}</h5>
+                                            <span class="badge badge-success">Aceptado</span>
+                                            {{ $presupuesto->paciente->nombre ?? 'Presupuesto nº' }} {{ $presupuesto->paciente->apellido ?? $presupuesto->id }}</h5>
                                         <p class="text-muted">{{ $presupuesto->fechaEmision }}</p>
                                     </div>
                                 </div>

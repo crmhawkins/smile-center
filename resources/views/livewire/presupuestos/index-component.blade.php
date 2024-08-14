@@ -61,14 +61,16 @@
                                         <span class="badge badge-info">{{$this->getEstado($presup->estado_id)}}</span>
                                     @endswitch
                                 </td>
-                                <td>{{ $this->getTotal($presup->id) }}</td>
-                                <td> <a href="presupuestos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                                <td>{{ number_format(intval($this->getTotal($presup->id)), 2, ',', '.') }}</td>
+                                <td>
+                                    <a href="presupuestos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                     @else
-                    <h6 class="text-center">No se encuentran presupuestos disponibles</h6>
+                        <h6 class="text-center">No se encuentran presupuestos disponibles</h6>
                     @endif
                 </div>
             </div>

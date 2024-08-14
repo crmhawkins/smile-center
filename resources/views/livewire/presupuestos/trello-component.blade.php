@@ -52,7 +52,7 @@
                                                     <div class="task">
                                                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                                                             <h5 class="card-title" data-taskTitle="titulo">{{ $this->getClienteNombre($presupuesto->paciente_id) }}</h5>
-                                                            <p class="card-text"><strong>Total:</strong> {{ $this->getTotal($presupuesto) }}</p>
+                                                            <p class="card-text"><strong>Total:</strong> {{ number_format(intval($this->getTotal($presupuesto)), 2, ',', '.') }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -61,7 +61,7 @@
                                     </div>
                                     <div class="sumatorio d-flex flex-row justify-content-around align-items-center">
                                         <label for="total">Total:</label>
-                                        <h4>{{ $presupuestosPorEstado['totales'][$estado->id] ?? 0 }} €</h4>
+                                        <h4>{{  number_format(($presupuestosPorEstado['totales'][$estado->id] ?? 0) , 2, ',', '.')}} €</h4>
                                     </div>
                                 </div>
                             </div>

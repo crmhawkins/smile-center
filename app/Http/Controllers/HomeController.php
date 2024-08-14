@@ -33,8 +33,8 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $presupuestos = Presupuesto::orderBy('fechaEmision', 'ASC')->get();
-        $presupuestosPendientes = Presupuesto::Where('estado_id', '1')->orderBy('fechaEmision', 'ASC')->get();
-        $presupuestosAceptados = Presupuesto::where('estado_id', '2')->orderBy('fechaEmision', 'ASC')->get();
+        $presupuestosPendientes = Presupuesto::whereIn('estado_id', [1, 2, 3])->orderBy('fechaEmision', 'ASC')->get();
+        $presupuestosAceptados = Presupuesto::where('estado_id', '4')->orderBy('fechaEmision', 'ASC')->get();
 
         $inicioSemana = Carbon::now()->startOfWeek();  // Lunes de esta semana
         $finSemana = Carbon::now()->endOfWeek();  // Domingo de esta semana
