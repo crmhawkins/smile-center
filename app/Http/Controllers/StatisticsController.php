@@ -638,7 +638,7 @@ class StatisticsController extends Controller{
         }
 
         $total = 0;
-        $facturas = Presupuesto::whereMonth('fechaEmision','=' ,$mes)->where('estado_id',5)->get();
+        $facturas = Presupuesto::whereMonth('fechaEmision','=' ,$mes)->where('estado_id',4)->get();
 
         foreach ($facturas as $factura) {
             $total += $factura->sum('total');
