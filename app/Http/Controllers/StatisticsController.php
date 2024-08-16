@@ -143,13 +143,13 @@ class StatisticsController extends Controller{
 
         $countTotalBudgets = 0;
         foreach ($proyectosStatus3 as $item) {
-            $countTotalBudgets += $item->servicios()->sum('total');
+            $countTotalBudgets += $item->sum('total');
         }
         foreach ($proyectosStatus5 as $item) {
-            $countTotalBudgets += $item->servicios()->sum('total');
+            $countTotalBudgets += $item->sum('total');
         }
         foreach ($proyectosStatus4 as $item) {
-            $countTotalBudgets += $item->servicios()->sum('total');
+            $countTotalBudgets += $item->sum('total');
         }
 
         return $countTotalBudgets;
@@ -641,7 +641,7 @@ class StatisticsController extends Controller{
         $facturas = Presupuesto::whereMonth('fechaEmision','=' ,$mes)->where('estado_id',5)->get();
 
         foreach ($facturas as $factura) {
-            $total += $factura->servicios()->sum('precio');
+            $total += $factura->sum('total');
         }
         $billing[] = number_format((float)$total, 2, '.', '');
 
