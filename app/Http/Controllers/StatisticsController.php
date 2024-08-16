@@ -115,7 +115,8 @@ class StatisticsController extends Controller{
 
 
         $proyectosStatus3 = Presupuesto::where('estado_id', 2)->get();
-        $proyectosStatus4 = Presupuesto::where('estado_id', 4)->get();
+        $proyectosStatus4 = Presupuesto::where('estado_id', 3)->get();
+        $proyectosStatus5 = Presupuesto::where('estado_id', 5)->get();
 
         $arrayProyectos = [];
         foreach ($proyectosStatus3 as $item) {
@@ -124,8 +125,11 @@ class StatisticsController extends Controller{
         foreach ($proyectosStatus4 as $item) {
             array_push($arrayProyectos, $item);
         }
+        foreach ($proyectosStatus5 as $item) {
+            array_push($arrayProyectos, $item);
+        }
 
-        $countBudgets = count($proyectosStatus3) + count($proyectosStatus4);
+        $countBudgets = count($proyectosStatus3) + count($proyectosStatus4) + count($proyectosStatus5);
 
         $data = [
             'array' => $arrayProyectos,
@@ -137,17 +141,17 @@ class StatisticsController extends Controller{
 
     public function budgets()
     {
-        $proyectosStatus3 = Presupuesto::where('estado_id', 2)->get();
-        $proyectosStatus4 = Presupuesto::where('estado_id', 3)->get();
-        $proyectosStatus5 = Presupuesto::where('estado_id', 5)->get();
+        // $proyectosStatus3 = Presupuesto::where('estado_id', 2)->get();
+        $proyectosStatus4 = Presupuesto::where('estado_id', 4)->get();
+        // $proyectosStatus5 = Presupuesto::where('estado_id', 5)->get();
 
-        $countTotalBudgets = 0;
-        foreach ($proyectosStatus3 as $item) {
-            $countTotalBudgets += $item->sum('total');
-        }
-        foreach ($proyectosStatus5 as $item) {
-            $countTotalBudgets += $item->sum('total');
-        }
+         $countTotalBudgets = 0;
+        // foreach ($proyectosStatus3 as $item) {
+        //     $countTotalBudgets += $item->sum('total');
+        // }
+        // foreach ($proyectosStatus5 as $item) {
+        //     $countTotalBudgets += $item->sum('total');
+        // }
         foreach ($proyectosStatus4 as $item) {
             $countTotalBudgets += $item->sum('total');
         }
