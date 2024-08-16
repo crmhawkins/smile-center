@@ -196,7 +196,7 @@ ul.nav.nav-tabs.custom-item a:hover {
                                                             <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->paciente()->first()->nombre}} {{$item->paciente()->first()->apellido}}</td>
                                                             <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->estado()->first()->estado}}</td>
                                                             <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->created_at}}</td>
-                                                            <td style="padding: 0.3rem; border: 1px solid lightgray;">{{$item->total}}</td>
+                                                            <td style="padding: 0.3rem; border: 1px solid lightgray;">{{number_format(intval($item->total), 2, ',', '.')}}</td>
                                                         </tr>
                                                         @endforeach
                                                     </table>
