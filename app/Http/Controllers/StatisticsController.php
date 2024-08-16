@@ -153,7 +153,7 @@ class StatisticsController extends Controller{
         //     $countTotalBudgets += $item->sum('total');
         // }
         foreach ($proyectosStatus4 as $item) {
-            $countTotalBudgets += $item->sum('total');
+            $countTotalBudgets += $item->total;
         }
 
         return $countTotalBudgets;
