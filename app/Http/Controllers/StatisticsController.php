@@ -138,7 +138,7 @@ class StatisticsController extends Controller{
     public function budgets()
     {
         $proyectosStatus3 = Presupuesto::where('estado_id', 2)->get();
-        $proyectosStatus4 = Presupuesto::where('estado_id', 4)->get();
+        $proyectosStatus4 = Presupuesto::where('estado_id', 3)->get();
         $proyectosStatus5 = Presupuesto::where('estado_id', 5)->get();
 
         $countTotalBudgets = 0;
